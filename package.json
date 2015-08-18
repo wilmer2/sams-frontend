@@ -1,0 +1,11 @@
+{
+  "name": "sams",
+  "version": "1.0.0",
+  "description": "aplicacion del lado del frotend",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "wilmer maldonadoo y alberto pedron",
+  "license": "mit"
+}

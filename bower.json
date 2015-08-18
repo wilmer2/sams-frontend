@@ -1,0 +1,19 @@
+{
+  "name": "Sams",
+  "version": "1.0.0",
+  "authors": [
+    "wilmer <mvc_wil@outlook.es>"
+  ],
+  "description": "aplicacion del lado del frontend",
+  "moduleType": [
+    "globals"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

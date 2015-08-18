@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Sams</title>
+	<link rel="stylesheet" href="static/dependencies/css/toast.css">
+	<!-- <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css"> -->
+</head>
+<body>
+	<header id="header-content" class="Header"></header>
+	<section id="main-content" class="Main"></section>
+</body>
+
+
+
+
+<!-- Content Actions -->
+<script id="contentActions-view" type="text/x-handlebars-template">
+		<form id="formDateAction">
+	 		<input type="date" id="actionDate" required>
+			<button type="submit">Buscar</button>
+		</form>
+	 <div id="content-events"></div>
+	 <div id="content-actions"></div>
+</script>
+
+<!--Div Error -->
+<script id="error-view" type="text/x-handlebars-template">
+	 <div>{{message}}</div>
+</script>
+
+<!-- Element Elder -->
+<script  id="elderElement-view" type="text/x-handlebars-template">
+  {{#if image_url}}
+	<td>
+		<figure>
+				<img src="{{image_url}}">
+		</figure>
+	</td>
+	{{else}}
+	<td>
+		<figure>
+			<img src="http://localhost/image/geriatric/profile_default_man.jpg">
+		</figure>
+	</td>
+	{{/if}}
+	<td>{{identity_card}}</td>
+	<td>{{full_name}}</td>
+	<td><button>Ver perfil</button></td>
+</script>
+
+<!-- Element Action -->
+<script id="actionElement-view" type="text/x-handlebars-template">
+	 <td id="test">{{description}}</td>
+	 {{#if employee_id}}
+	    {{#if employee.first_name}}
+	    	<td>{{employee.first_name}} {{employee.last_name}}</td>
+	    {{else}}
+	      <td>{{first_name}} {{last_name}}</td>
+	    {{/if}}
+	 {{else}}
+	 <td>{{responsible}}</td>
+	 {{/if}}
+	 {{#if hour_in}}
+	 <td>{{hour_in}}        
+	 		 {{#if hour_out}} 
+	 		  - {{hour_out}}
+	 		 {{/if}}
+	 </td>
+	 {{else}}
+	  <td>No establecido</td>
+	 {{/if}}
+</script>
+
+<!-- Img Init -->
+<script id="initialize-view" type="text/x-handlebars-template">
+	<figure class="Main-contentLogin">
+		<img src="static/img/geriatric.jpg" class="Main-imgLogin">
+	</figure>
+</script>
+
+
+<!-- Menu User -->
+<script id="menu-view" type="text/x-handlebars-template">
+	<ul>
+		<li>Menu User</li>
+		<li>Menu User</li>
+		<li>Menu User</li>
+		<li>Menu User</li>
+		<li>Menu User</li>
+		<li>Menu User</li>
+ </ul>
+ <div id="container-user"></div>
+ </script>
+
+<!-- Pagination Elder -->
+<script id="menuPaginate" type="text/-x-handlebars-template">
+	 	{{#prevBtn current}}
+	 		<button id="prevPage" class="prev btn-default btn">Anterior</button>
+		{{/prevBtn}}
+		<div class="btn-group">
+			  <button data-toggle="dropdown" class="btn btn-default dropdown-toggle">Page 
+			  {{current}} <span class="caret"></span></button>
+		
+				{{#itere items current}}
+       		{{items}}
+				{{/itere}}
+		</div>
+	  {{#nextBtn items current}}
+	 		<button id='nextPage' class="btn btn-default next">Siguiente</button>
+		{{/nextBtn}}
+</script>
+
+<!-- Table Elder -->
+<script id="elderTable-view" type="text/x-handlebars-template">
+  <button><a href="#activity/">Ver actividades</a></button>
+   <input type="text" placeholder="Buscar adulto mayor" id="searchElder">
+   <div class="btn-group">
+     <button data-toggle="dropdown" class="btn btn-default dropdown-toggle">Ordenar por 
+     <strong><span id="sortByText">Residente</span></strong> <span class="caret"></span>
+     </button>
+     <ul class="dropdown-menu" id="sortByField">
+       <li><a href="active">Residente</a></li>
+       <li><a href="deactivate">Fuera de lista</a></li>
+     </ul>
+   </div>
+	 <table>
+	 		<thead>
+				<tr>
+				 <th><h2>Adulto Mayor</h2></th>
+				</tr>
+				 <tr>
+		   		<th>Img</th><th>Cedula</th><th>Nombre</th><th>Perfil</th>
+		   </tr>
+			</thead>
+			<tbody>
+			
+	 		</tbody>
+	 </table>
+</script>
+
+<!-- Table Action -->
+<script id="actionTable-view" type="text/x-handlebars-template">
+	<table>
+		<thead>
+			<tr>
+				<th>
+					<h2>{{title}}</h2>
+				</th>
+	  	</tr>
+	  	<tr>
+	    	<th>Descripcion</th>
+	  		<th>Encargado</th>
+	  		<th>Horario</th>
+	  	</tr>
+		</thead>
+		<tbody>
+		</tbody>
+  </table>
+</script>
+
+<!-- View login -->
+<script id="login-view" type="text/x-handlebars-template">
+	<span>{{name_institution}}</span>
+  {{#if group}}
+		<span>{{first_name}}</span><span>{{last_name}}</span><span>{{email}}</span>
+		{{#if isSuperAdmin}}
+			<ul>
+				<li><a href="#">Menu user</a></li>
+				<li><a href="#">Menu administrador</a></li>
+				<li><a href="#">Configuracion</a></li>
+			</ul>
+		{{/if}}
+		{{#if hasIconMenu}}
+		  <ul>
+		   	<li>
+					<span id="icon-visited">icon-visited</span>
+					 {{#if visited}}
+		 					{{#numberMax visited}}
+								<span>{{visited}}</span>
+							{{/numberMax}}
+					 {{/if}}
+		 		</li>
+		 		<li>
+			  	<span id="icon-outputs">icon-outputs</span>	
+			  	  {{#if outputs}}
+							{{#numberMax outputs}}
+ 								<span>{{outputs}}</span>
+							{{/numberMax}}		 	
+						{{/if}}	
+		 		</li>
+		 		<li>
+					<span id="icon-citation">icon-citation</span>
+					  {{#if citation}}
+		 			  	{{#numberMax citation}}
+ 								 <span>{{citation}}</span>
+							{{/numberMax}}
+						{{/if}}
+		 		</li>
+		 	</ul>
+		{{/if}}
+  {{else}}
+		<form id="login">
+			<input type="email" name="email">
+			<input type="password" name="password">	
+			<input type="submit" value="enviar">
+  	</form>
+  {{/if}}
+</script>
+
+
+
+<!-- <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script> -->
+<!-- <script src="/bower_components/bootstrap/dist/js/bootstrap.js"></script> -->
+<script src="static/js/bundle.js"></script>
+</html>
+
