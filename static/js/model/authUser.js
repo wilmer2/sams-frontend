@@ -23,16 +23,17 @@ module.exports = Backbone.Model.extend({
 		} else {
 			this.set({hasIconMenu: true, isSuperAdmin: false}, {silent: true});
 		}
+		
 		this.confimedCitation();
 	},
 
 	confimedCitation: function () {
-		var citation         = this.get('citation');
-		var before           = this.get('before');
-		var citationCurrent  = citation - before;
+		var citation   = this.get('citation');
+		var before     = this.get('before');
+		var currentCit = citation - before;
 
 		this.set({'before': citation}, {silent: true});
-		this.set({'citation': citationCurrent}, {silent:true});
+		this.set({'citation': currentCit}, {silent:true});
 	},
 
 });

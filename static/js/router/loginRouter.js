@@ -1,10 +1,12 @@
-var Backbone       = require('backbone');
-var $              = require('jquery');
-var AuthUser       = require('../model/authUser');
-var LoginView      = require('../view/loginView');
-var MenuUser       = require('../view/menuView');
-var HomeRouter     = require('./homeRouter');
-var ActivityRouter = require('./ActivityRouter');
+var Backbone        = require('backbone');
+var $               = require('jquery');
+var AuthUser        = require('../model/authUser');
+var Citations       = require('../collection/citations');
+var CitationsNotify = require('../view/citationNotifyView');
+var LoginView       = require('../view/loginView');
+var MenuUser        = require('../view/menuView');
+var HomeRouter      = require('./homeRouter');
+var ActivityRouter  = require('./ActivityRouter');
 
 var util  = require('../util/util');
 
@@ -23,6 +25,8 @@ module.exports = Backbone.Router.extend({
 		this.userLogin = new AuthUser();
 		this.loginView = new LoginView({model: this.userLogin});
 		this.menuView  = new MenuUser({model: this.userLogin});
+		this.citations = new Citations();
+		this.citNotify = new CitationsNotify({collection: this.citations});
 
 		Backbone.history.start();
 	},
@@ -68,6 +72,10 @@ module.exports = Backbone.Router.extend({
 		}
 	},
 
+	closeNotify: function () {
+		this.citNotify.hideList();
+	},
+
 	selectMenu: function () {
 		var group = this.userLogin.get('group');
 
@@ -92,6 +100,7 @@ module.exports = Backbone.Router.extend({
 			  	 		this.interceptor(err);
 			  	 	}.bind(util))
 			  } else {
+					this.closeNotify();  	
 					this.loginView.render();
 			  }
 		}
@@ -130,13 +139,14 @@ module.exports = Backbone.Router.extend({
 	},
 
 	unSetUser: function () {
-		 var defaults = this.userLogin.pick(['viewVisited', 'viewOutputs','viewCitation',
-			                                  'before']);
+		  var defaults = this.userLogin.pick(['viewVisited', 'viewOutputs',
+		  	                                  'viewCitation', 'before']);
 		 this.userLogin.clear({silent: true});
 		 this.userLogin.set(defaults, {silent: true});
 	},
 
 	renderHeader: function () {
+		this.closeNotify();
 		this.loginView.renderHeader();
 	},
 

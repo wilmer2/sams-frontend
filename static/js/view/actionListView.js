@@ -17,7 +17,6 @@ module.exports = Backbone.View.extend({
 	},
 
 	addAll: function () {
-		console.log('addAll');
 		this.collection.forEach(this.addOne, this);
 	},
 

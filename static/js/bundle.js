@@ -22281,14 +22281,35 @@ $(function () {
 
 });
 
-},{"../../node_modules/backbone-async-route-filters/backbone-async-route-filter":4,"./router/loginRouter":50,"./util/appView":51,"./util/helper":52,"backbone":6,"handlebars":25,"jquery":37}],42:[function(require,module,exports){
+},{"../../node_modules/backbone-async-route-filters/backbone-async-route-filter":4,"./router/loginRouter":52,"./util/appView":53,"./util/helper":54,"backbone":6,"handlebars":25,"jquery":37}],42:[function(require,module,exports){
 var Backbone = require('backbone');
 var Action   = require('../model/action');
 
 module.exports = Backbone.Collection.extend({
 	model: Action
 });
-},{"../model/action":45,"backbone":6}],43:[function(require,module,exports){
+},{"../model/action":46,"backbone":6}],43:[function(require,module,exports){
+var Citation           = require('../model/citation');
+var PageableCollection = require('backbone.paginator');
+
+module.exports = PageableCollection.extend({
+  url: 'http://localhost/citations/hour/day',
+  model: Citation,
+  mode: 'client',
+
+  state: {
+    firstPage: 1,
+    currentPage: 1,
+    pageSize: 6,
+  },
+
+  parseRecords: function (res) {
+    if (res.status == 'success') {
+      return res.data;
+    }
+  }
+})
+},{"../model/citation":48,"backbone.paginator":5}],44:[function(require,module,exports){
 var Elder              = require('../model/elder');
 var PageableCollection = require('backbone.paginator');
 var _                  = require('underscore');
@@ -22356,13 +22377,13 @@ module.exports = PageableCollection.extend({
 
 
 
-},{"../model/elder":47,"backbone.paginator":5,"underscore":38}],44:[function(require,module,exports){
+},{"../model/elder":49,"backbone.paginator":5,"underscore":38}],45:[function(require,module,exports){
 arguments[4][42][0].apply(exports,arguments)
-},{"../model/action":45,"backbone":6,"dup":42}],45:[function(require,module,exports){
+},{"../model/action":46,"backbone":6,"dup":42}],46:[function(require,module,exports){
 var Backbone = require('backbone');
 
 module.exports = Backbone.Model.extend({});
-},{"backbone":6}],46:[function(require,module,exports){
+},{"backbone":6}],47:[function(require,module,exports){
 var Backbone = require('backbone');
 
 module.exports = Backbone.Model.extend({
@@ -22388,22 +22409,25 @@ module.exports = Backbone.Model.extend({
 		} else {
 			this.set({hasIconMenu: true, isSuperAdmin: false}, {silent: true});
 		}
+		
 		this.confimedCitation();
 	},
 
 	confimedCitation: function () {
-		var citation         = this.get('citation');
-		var before           = this.get('before');
-		var citationCurrent  = citation - before;
+		var citation   = this.get('citation');
+		var before     = this.get('before');
+		var currentCit = citation - before;
 
 		this.set({'before': citation}, {silent: true});
-		this.set({'citation': citationCurrent}, {silent:true});
+		this.set({'citation': currentCit}, {silent:true});
 	},
 
 });
-},{"backbone":6}],47:[function(require,module,exports){
-arguments[4][45][0].apply(exports,arguments)
-},{"backbone":6,"dup":45}],48:[function(require,module,exports){
+},{"backbone":6}],48:[function(require,module,exports){
+arguments[4][46][0].apply(exports,arguments)
+},{"backbone":6,"dup":46}],49:[function(require,module,exports){
+arguments[4][46][0].apply(exports,arguments)
+},{"backbone":6,"dup":46}],50:[function(require,module,exports){
 var Backbone    = require('backbone');
 var $           = require('jquery');
 var Subroute    = require('../../dependencies/backboneSubroutes/backboneSubroutes');
@@ -22430,7 +22454,7 @@ module.exports  = Subroute.extend({
 		 }.bind(this))
 		 .then(function (actions) {
 			 	if (actions.status == 'success') {
-			 		 contentView.addActions(actions.data);
+			 		contentView.addActions(actions.data);
 			 		appView.showUserView(contentView);
 			 } else {
 			 	  contentView.notActions(actions.message);
@@ -22465,7 +22489,7 @@ module.exports  = Subroute.extend({
 
 	
 })
-},{"../../dependencies/backboneSubroutes/backboneSubroutes":39,"../util/util":53,"../view/contentActionView":56,"backbone":6,"jquery":37}],49:[function(require,module,exports){
+},{"../../dependencies/backboneSubroutes/backboneSubroutes":39,"../util/util":55,"../view/contentActionView":60,"backbone":6,"jquery":37}],51:[function(require,module,exports){
 var Backbone   = require('backbone');
 var $          = require('jquery');
 var _          = require('underscore');
@@ -22489,14 +22513,16 @@ module.exports = Subroute.extend({
 	},
 
 })
-},{"../../dependencies/backboneSubroutes/backboneSubroutes":39,"../collection/elders":43,"../view/elderListView":58,"backbone":6,"jquery":37,"underscore":38}],50:[function(require,module,exports){
-var Backbone       = require('backbone');
-var $              = require('jquery');
-var AuthUser       = require('../model/authUser');
-var LoginView      = require('../view/loginView');
-var MenuUser       = require('../view/menuView');
-var HomeRouter     = require('./homeRouter');
-var ActivityRouter = require('./ActivityRouter');
+},{"../../dependencies/backboneSubroutes/backboneSubroutes":39,"../collection/elders":44,"../view/elderListView":62,"backbone":6,"jquery":37,"underscore":38}],52:[function(require,module,exports){
+var Backbone        = require('backbone');
+var $               = require('jquery');
+var AuthUser        = require('../model/authUser');
+var Citations       = require('../collection/citations');
+var CitationsNotify = require('../view/citationNotifyView');
+var LoginView       = require('../view/loginView');
+var MenuUser        = require('../view/menuView');
+var HomeRouter      = require('./homeRouter');
+var ActivityRouter  = require('./ActivityRouter');
 
 var util  = require('../util/util');
 
@@ -22515,6 +22541,8 @@ module.exports = Backbone.Router.extend({
 		this.userLogin = new AuthUser();
 		this.loginView = new LoginView({model: this.userLogin});
 		this.menuView  = new MenuUser({model: this.userLogin});
+		this.citations = new Citations();
+		this.citNotify = new CitationsNotify({collection: this.citations});
 
 		Backbone.history.start();
 	},
@@ -22560,6 +22588,10 @@ module.exports = Backbone.Router.extend({
 		}
 	},
 
+	closeNotify: function () {
+		this.citNotify.hideList();
+	},
+
 	selectMenu: function () {
 		var group = this.userLogin.get('group');
 
@@ -22584,6 +22616,7 @@ module.exports = Backbone.Router.extend({
 			  	 		this.interceptor(err);
 			  	 	}.bind(util))
 			  } else {
+					this.closeNotify();  	
 					this.loginView.render();
 			  }
 		}
@@ -22622,13 +22655,14 @@ module.exports = Backbone.Router.extend({
 	},
 
 	unSetUser: function () {
-		 var defaults = this.userLogin.pick(['viewVisited', 'viewOutputs','viewCitation',
-			                                  'before']);
+		  var defaults = this.userLogin.pick(['viewVisited', 'viewOutputs',
+		  	                                  'viewCitation', 'before']);
 		 this.userLogin.clear({silent: true});
 		 this.userLogin.set(defaults, {silent: true});
 	},
 
 	renderHeader: function () {
+		this.closeNotify();
 		this.loginView.renderHeader();
 	},
 
@@ -22653,7 +22687,7 @@ module.exports = Backbone.Router.extend({
 });
 
 
-},{"../model/authUser":46,"../util/util":53,"../view/loginView":59,"../view/menuView":60,"./ActivityRouter":48,"./homeRouter":49,"backbone":6,"jquery":37}],51:[function(require,module,exports){
+},{"../collection/citations":43,"../model/authUser":47,"../util/util":55,"../view/citationNotifyView":59,"../view/loginView":63,"../view/menuView":64,"./ActivityRouter":50,"./homeRouter":51,"backbone":6,"jquery":37}],53:[function(require,module,exports){
 var $ = require('jquery');
 
 function appView () {
@@ -22678,16 +22712,16 @@ function appView () {
 
 
 module.exports = appView;
-},{"jquery":37}],52:[function(require,module,exports){
+},{"jquery":37}],54:[function(require,module,exports){
 var Handlebars = require('handlebars');
 
 
 module.exports = function () {
-	// Handlebars.registerHelper('checkView', function (notification, count ,options) {
- //      if (!notification && count > 0) {
- //      	return options.fn(this);
- //      }
-	// });
+	Handlebars.registerHelper('checkView', function (notification, count ,options) {
+      if (!notification && count > 0) {
+      	return options.fn(this);
+      }
+	});
 
 	Handlebars.registerHelper('numberMax', function (count, options) {
 			if (count > 20) {
@@ -22724,7 +22758,7 @@ module.exports = function () {
 	});
 
 }
-},{"handlebars":25}],53:[function(require,module,exports){
+},{"handlebars":25}],55:[function(require,module,exports){
 var _      = require('underscore');
 var toastr = require('../../dependencies/toastr/toastr');
 
@@ -22774,7 +22808,7 @@ Task = {
 }
 
 module.exports = Task;
-},{"../../dependencies/toastr/toastr":40,"underscore":38}],54:[function(require,module,exports){
+},{"../../dependencies/toastr/toastr":40,"underscore":38}],56:[function(require,module,exports){
 var Backbone   = require('backbone');
 var $          = require('jquery');
 var Handlebars = require('handlebars');
@@ -22796,7 +22830,7 @@ module.exports = Backbone.View.extend({
 	},
 
 });
-},{"backbone":6,"handlebars":25,"jquery":37}],55:[function(require,module,exports){
+},{"backbone":6,"handlebars":25,"jquery":37}],57:[function(require,module,exports){
 var Backbone      = require('backbone');
 var $             = require('jquery');
 var Handlebars    = require('handlebars');
@@ -22816,7 +22850,6 @@ module.exports = Backbone.View.extend({
 	},
 
 	addAll: function () {
-		console.log('addAll');
 		this.collection.forEach(this.addOne, this);
 	},
 
@@ -22826,7 +22859,89 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"./actionElementView":54,"backbone":6,"handlebars":25,"jquery":37}],56:[function(require,module,exports){
+},{"./actionElementView":56,"backbone":6,"handlebars":25,"jquery":37}],58:[function(require,module,exports){
+var Backbone   = require('backbone');
+var $          = require('jquery');
+var Handlebars = require('handlebars');
+
+module.exports = Backbone.View.extend({
+  template: Handlebars.compile($('#citationElement-view').html()),
+
+  initialize: function () {
+    this.model.on('change', this.render, this);
+  },
+  
+  render: function () {
+    var data = this.model.toJSON();
+    var html = this.template(data);
+
+    this.$el.html(html);
+    return this;
+  },
+
+})
+},{"backbone":6,"handlebars":25,"jquery":37}],59:[function(require,module,exports){
+var Backbone        = require('backbone');
+var $               = require('jquery');
+var _               = require('underscore');
+var CitationElement = require('./citationElementView');
+
+module.exports = Backbone.View.extend({
+  el: $('#content-notify'),
+
+  events : {
+    'scroll' : 'test'
+  },
+
+  initialize: function () {
+    $('body').on('click', function () {
+        this.hideList();
+    }.bind(this));
+  },
+
+  render: function () {
+    this.collection.forEach(this.addOne, this);
+  },
+
+  addOne: function (citation) {
+     var element = new CitationElement({model: citation});
+     this.$el.append(element.render().el);
+  },
+
+  show: function () {
+    this.$el.show();
+    this.getFirst();
+  },
+
+  hideList: function () {
+    this.$el.hide();
+  },
+
+  getFirst: function () {
+    this.collection.getFirstPage({ fetch: true })
+      .done(function () {
+        this.$el.empty();
+        this.render();
+      }.bind(this))
+  },
+
+  test: function (e) {
+     var target     = $(e.target);
+     var height     = target.height();
+     var scrollSize = target[0].scrollHeight
+     var scrollTop  = target.scrollTop();
+
+     var sizeCurrent = scrollSize - scrollTop;
+
+     if (sizeCurrent == height) {
+        this.collection.getNextPage();
+        this.render();
+     }
+
+  }
+
+});
+},{"./citationElementView":58,"backbone":6,"jquery":37,"underscore":38}],60:[function(require,module,exports){
 var Backbone    = require('backbone');
 var $           = require('jquery');
 var Handlebars  = require('handlebars');
@@ -22924,7 +23039,7 @@ module.exports = Backbone.View.extend({
 
 });
 
-},{"../collection/actions":42,"../collection/events":44,"../util/util":53,"./actionListView":55,"backbone":6,"handlebars":25,"jquery":37}],57:[function(require,module,exports){
+},{"../collection/actions":42,"../collection/events":45,"../util/util":55,"./actionListView":57,"backbone":6,"handlebars":25,"jquery":37}],61:[function(require,module,exports){
 var Backbone   = require('backbone');
 var $          = require('jquery');
 var Handlebars = require('handlebars');
@@ -22947,7 +23062,7 @@ module.exports = Backbone.View.extend({
 
 });
 
-},{"backbone":6,"handlebars":25,"jquery":37}],58:[function(require,module,exports){
+},{"backbone":6,"handlebars":25,"jquery":37}],62:[function(require,module,exports){
 var Backbone     = require('backbone');
 var $            = require('jquery');
 var _            = require('underscore');
@@ -23053,19 +23168,23 @@ module.exports = Backbone.View.extend({
 
 })
 
-},{"../util/util":53,"./elderElementView":57,"./paginationView":61,"backbone":6,"jquery":37,"underscore":38}],59:[function(require,module,exports){
-var Backbone   = require('backbone');
-var $          = require('jquery');
-var Handlebars = require('handlebars');
-var util       = require('../util/util');
+},{"../util/util":55,"./elderElementView":61,"./paginationView":65,"backbone":6,"jquery":37,"underscore":38}],63:[function(require,module,exports){
+var Backbone        = require('backbone');
+var $               = require('jquery');
+var Handlebars      = require('handlebars');
+var util            = require('../util/util');
 
 module.exports = Backbone.View.extend({
 	el:  $('#header-content'),
 	section: $('#main-content'),
-
 	template: Handlebars.compile($('#login-view').html()),
 	templateSection: $('#initialize-view').html(),
-	
+
+  events: {
+		'submit #login'        : 'checkIn',
+		'click .MenuItem-icon' : 'viewNotifi',
+	},
+
 	render: function () {
 		this.renderHeader();
 		this.section.html(this.templateSection);
@@ -23074,11 +23193,8 @@ module.exports = Backbone.View.extend({
 	renderHeader: function () {
 		var data = this.model.toJSON();
 		var html = this.template(data);
-		this.$el.html(html);
-	},
 
-	events: {
-		'submit #login' : 'checkIn'
+		this.$el.html(html);
 	},
 
 	checkIn: function (e) {
@@ -23097,10 +23213,30 @@ module.exports = Backbone.View.extend({
 		 		.fail(function (err) {
 		 			util.interceptor(err);
 		 		})
-	}
+	},
+
+	viewNotifi: function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+
+		var icon = $(e.target);
+		var href = icon.attr('href');
+
+		if (href == 'visited') {
+			 this.model.set({viewVisited: true},{silent: true});
+		} else if (href == 'outputs') {
+			 this.model.set({viewOutputs: true}, {silent: true});
+		} else {
+			this.model.set({viewCitation: true}, {silent: true});
+    	Backbone.Main.citNotify.show();
+		}
+
+		this.renderHeader();
+	},
+
 
 });
-},{"../util/util":53,"backbone":6,"handlebars":25,"jquery":37}],60:[function(require,module,exports){
+},{"../util/util":55,"backbone":6,"handlebars":25,"jquery":37}],64:[function(require,module,exports){
 var Backbone = require('backbone');
 var $        = require('jquery');
 
@@ -23116,7 +23252,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"backbone":6,"jquery":37}],61:[function(require,module,exports){
+},{"backbone":6,"jquery":37}],65:[function(require,module,exports){
 var Backbone   = require('backbone');
 var $          = require('jquery');
 var Handlebars = require('handlebars');
@@ -23149,8 +23285,7 @@ module.exports = Backbone.View.extend({
 
 	goToPage: function (e) {
 		e.preventDefault();
-
-		console.log('go to page');
+		
 		var page  = $(e.target).text();
 		var page  = parseInt(page);
 		var total = this.items;
@@ -23167,7 +23302,6 @@ module.exports = Backbone.View.extend({
 	goToNext: function () {
 		var total   = this.items;
 		var current = this.currentPage;
-		console.log('go to next')
 
 		if (current < total) {
 			this.currentPage = current + 1;
@@ -23178,7 +23312,7 @@ module.exports = Backbone.View.extend({
 
 	goToPrev: function () {
 		var current = this.currentPage;
-    console.log('go to prev');
+
 		if (current > 1) {
 			this.currentPage = current - 1;
 		}

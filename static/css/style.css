@@ -1,0 +1,10 @@
+.u-disabled {
+  display: none;
+}
+
+.Notify {
+  border: solid 1px red;
+  height: 90px;
+  overflow-y: scroll;
+  width: 900px
+}

@@ -4,14 +4,14 @@
 	<meta charset="UTF-8">
 	<title>Sams</title>
 	<link rel="stylesheet" href="static/dependencies/css/toast.css">
+	<link rel="stylesheet" href="static/css/style.css">
 	<!-- <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css"> -->
 </head>
 <body>
 	<header id="header-content" class="Header"></header>
+	 <div id="content-notify" class="u-disabled Notify"></div>
 	<section id="main-content" class="Main"></section>
 </body>
-
-
 
 
 <!-- Content Actions -->
@@ -24,9 +24,22 @@
 	 <div id="content-actions"></div>
 </script>
 
+
 <!--Div Error -->
 <script id="error-view" type="text/x-handlebars-template">
 	 <div>{{message}}</div>
+</script>
+
+
+
+<!-- Element  Citation -->
+<script id="citationElement-view" type="text/x-handlebars-template">
+	<div>
+		<span>{{full_name}}</span>
+		<span>{{address}}</span>
+		<span>{{reason}}</span>
+		<span>{{hour}}</span>
+	</div>
 </script>
 
 <!-- Element Elder -->
@@ -174,28 +187,28 @@
 		{{#if hasIconMenu}}
 		  <ul>
 		   	<li>
-					<span id="icon-visited">icon-visited</span>
-					 {{#if visited}}
-		 					{{#numberMax visited}}
-								<span>{{visited}}</span>
+					<a href="visited" class="MenuItem-icon">icon-visited</a>
+					 {{#checkView viewVisited visited}}
+  						{{#numberMax visited}}
+		 						<span>{{visited}}</span>
 							{{/numberMax}}
-					 {{/if}}
+					 {{/checkView}}
 		 		</li>
 		 		<li>
-			  	<span id="icon-outputs">icon-outputs</span>	
-			  	  {{#if outputs}}
-							{{#numberMax outputs}}
- 								<span>{{outputs}}</span>
-							{{/numberMax}}		 	
-						{{/if}}	
+        	<a href="outputs" class="MenuItem-icon">icon-outputs</a>
+			  	{{#checkView viewOutputs outputs}}
+  					{{#numberMax outputs}}
+		 					<span>{{outputs}}</span>
+						{{/numberMax}}
+					{{/checkView}}
 		 		</li>
 		 		<li>
-					<span id="icon-citation">icon-citation</span>
-					  {{#if citation}}
-		 			  	{{#numberMax citation}}
- 								 <span>{{citation}}</span>
-							{{/numberMax}}
-						{{/if}}
+	         <a href="citation" class="MenuItem-icon">icon-citation</a>
+						{{#checkView viewCitation citation}}
+            	{{#numberMax citation}}
+		          	<span>{{citation}}</span>
+	          	{{/numberMax}}
+          	{{/checkView}}
 		 		</li>
 		 	</ul>
 		{{/if}}
@@ -214,4 +227,8 @@
 <!-- <script src="/bower_components/bootstrap/dist/js/bootstrap.js"></script> -->
 <script src="static/js/bundle.js"></script>
 </html>
+
+
+
+
 

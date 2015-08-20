@@ -30,8 +30,7 @@ module.exports = Backbone.View.extend({
 
 	goToPage: function (e) {
 		e.preventDefault();
-
-		console.log('go to page');
+		
 		var page  = $(e.target).text();
 		var page  = parseInt(page);
 		var total = this.items;
@@ -48,7 +47,6 @@ module.exports = Backbone.View.extend({
 	goToNext: function () {
 		var total   = this.items;
 		var current = this.currentPage;
-		console.log('go to next')
 
 		if (current < total) {
 			this.currentPage = current + 1;
@@ -59,7 +57,7 @@ module.exports = Backbone.View.extend({
 
 	goToPrev: function () {
 		var current = this.currentPage;
-    console.log('go to prev');
+
 		if (current > 1) {
 			this.currentPage = current - 1;
 		}

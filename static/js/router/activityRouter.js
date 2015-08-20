@@ -24,7 +24,7 @@ module.exports  = Subroute.extend({
 		 }.bind(this))
 		 .then(function (actions) {
 			 	if (actions.status == 'success') {
-			 		 contentView.addActions(actions.data);
+			 		contentView.addActions(actions.data);
 			 		appView.showUserView(contentView);
 			 } else {
 			 	  contentView.notActions(actions.message);
