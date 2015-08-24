@@ -5,6 +5,7 @@ var Handlebars  = require('handlebars');
 var AppView     = require('./util/appView');
 var Helpers     = require('./util/helper');
 var Filter      = require('../../node_modules/backbone-async-route-filters/backbone-async-route-filter');
+var typeahead   = require('../../bower_components/typeahead.js/dist/typeahead.jquery');
 
 Backbone.$ = $;
 
@@ -17,6 +18,7 @@ $(function () {
 	window.appView     = new AppView();
 
 	Backbone.Main = new RouterMain();
+
 
 
 });
