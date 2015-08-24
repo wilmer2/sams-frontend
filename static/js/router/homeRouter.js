@@ -1,13 +1,19 @@
-var Backbone   = require('backbone');
-var $          = require('jquery');
-var _          = require('underscore');
-var Subroute   = require('../../dependencies/backboneSubroutes/backboneSubroutes');
-var ListElders = require('../view/elderListView');
-var Elders     = require('../collection/elders');
+var Backbone    = require('backbone');
+var $           = require('jquery');
+var _           = require('underscore');
+var Subroute    = require('../../dependencies/backboneSubroutes/backboneSubroutes');
+var ListElders  = require('../view/elderListView');
+var FormInstace = require('../view/formInstanceView');
+var Elders      = require('../collection/elders');
 
 module.exports = Subroute.extend({
 	routes: {
 		'' : 'homeUser',
+		'register/instance': 'registerInst'
+	},
+
+	initialize: function () {
+		this.formInstance = new FormInstace();
 	},
 
 	homeUser: function () {
@@ -19,5 +25,10 @@ module.exports = Subroute.extend({
 				 appView.showUserView(this.eldersList);
 			}.bind(this));
 	},
+
+	registerInst: function () {
+		Backbone.Main.renderMenu();
+		appView.showUserView(this.formInstance);
+	}
 
 })

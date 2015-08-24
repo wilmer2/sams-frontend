@@ -7,13 +7,13 @@ module.exports = Backbone.View.extend({
 	template: Handlebars.compile($('#actionTable-view').html()),
 
 	initialize: function () {
-		this.listenTo(this.collection, 'reset', this.addAll, this);
+	  this.listenTo(this.collection, 'reset', this.addAll, this);
 	},
 
 	addTable: function (title) {
-		 var title = JSON.stringify({title: title});
-	   var html  = this.template(JSON.parse(title));
-	   this.$el.html(html);
+	  var title = JSON.stringify({title: title});
+	  var html  = this.template(JSON.parse(title));
+	  this.$el.html(html);
 	},
 
 	addAll: function () {

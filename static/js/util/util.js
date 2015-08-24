@@ -11,12 +11,16 @@ Task = {
 		toastr.error(message);
 	},
 
+	showSuccess: function (message) {
+		toastr.success(message);
+	},
+
 	multipleMessage: function (message) {
-		var messages = _.map(messages, function (value) {
+		var notify = _.map(message, function (value) {
 				return value + '<br>';
 		});
 
-		return messages;
+		return notify;
 	},
 
 	checkErr:function (err) {

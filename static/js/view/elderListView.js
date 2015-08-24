@@ -15,37 +15,37 @@ module.exports = Backbone.View.extend({
 	},
 
 	initialize: function () {
-		 this.paginateView = new PaginateView({collection: this.collection});
+	  this.paginateView = new PaginateView({collection: this.collection});
 
-		 this.listenTo(this.collection, 'reset', this.addAll, this);
-		 this.listenTo(this.collection, 'goTo', this.changePage, this);
-		 this.listenTo(this.collection, 'notData', function (message) {
-		 	  this.notElder(message);
-		 });
+		this.listenTo(this.collection, 'reset', this.addAll, this);
+		this.listenTo(this.collection, 'goTo', this.changePage, this);
+		this.listenTo(this.collection, 'notData', function (message) {
+		  this.notElder(message);
+		});
 
-		 this.addTable();
+		this.addTable();
 	},
 
 	addTable: function() {
-		 this.$el.html(this.template);	
+	  this.$el.html(this.template);	
 	},
 
 	addAll: function () {
-		 this.collection.forEach(this.addOne, this);
+	  this.collection.forEach(this.addOne, this);
 	},
 
 	addOne: function (elder) {
-		 var element = new ElderElement({model: elder});
-		 this.$el.find('table').children('tbody').append(element.render().el);
+	  var element = new ElderElement({model: elder});
+	  this.$el.find('table').children('tbody').append(element.render().el);
 	},
 
 	changePage: function () {
-		this.$el.find('table').children('tbody').empty();
-		this.render();
+	  this.$el.find('table').children('tbody').empty();
+	  this.render();
 	},
 
 	updateSortBy: function (e) {
-		e.preventDefault();
+	  e.preventDefault();
 		var currentSort = $(e.target).attr('href');
 
 		if (currentSort != 'active' && currentSort != 'deactivate') {
