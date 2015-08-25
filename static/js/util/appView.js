@@ -10,13 +10,6 @@ function appView () {
 	 		this.currentUserView.render();
 
 	 		$('#container-user').html(this.currentUserView.el);
-	 },
-
-	 this.showMain = function (view) {
-	 	  this.showMainView = view;
-	 	  this.showMainView.render();
-
-	 	  $('#main-content').html(this.showMainView.el);
 	 }
 }
 

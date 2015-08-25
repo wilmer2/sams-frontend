@@ -25138,7 +25138,8 @@ module.exports = Backbone.Router.extend({
 
 	renderMenu: function () {
 		this.renderHeader();
-		appView.showMain(this.menuView);
+		// appView.showMain(this.menuView);
+		this.menuView.render();
 	},
 
 	invokeHomeModule: function (subroute) {
@@ -25751,22 +25752,23 @@ module.exports = Backbone.View.extend({
 var Backbone   = require('backbone');
 var $          = require('jquery');
 var _          = require('underscore');
-var Bloodhound = require('../../../bower_components/typeahead.js/dist/bloodhound.js');
+var Bloodhound = require('../../../bower_components/typeahead.js/dist/bloodhound');
 var typeahead  = require('../../../bower_components/typeahead.js/dist/typeahead.jquery');
 
 
 module.exports = Backbone.View.extend({
+  el: $('#main-content'),
 	template: $('#menu-view').html(),
   
-
 	render: function () {
+    console.log('render menu');
 		this.$el.html(this.template);
     this.initTypehead();
 	},
 
   initTypehead: function () {
-       console.log('init typeahead test');
-       var substringMatcher = function(strs) {
+         console.log(typeahead);
+      var substringMatcher = function(strs) {
               
           return function findMatches(q, cb) {
           var matches, substringRegex;
@@ -25803,6 +25805,7 @@ module.exports = Backbone.View.extend({
           name: 'states',
           source: substringMatcher(states)
         });
+
   },
 
   close: function () {
@@ -25811,7 +25814,7 @@ module.exports = Backbone.View.extend({
 
 
 });
-},{"../../../bower_components/typeahead.js/dist/bloodhound.js":4,"../../../bower_components/typeahead.js/dist/typeahead.jquery":5,"backbone":8,"jquery":39,"underscore":40}],68:[function(require,module,exports){
+},{"../../../bower_components/typeahead.js/dist/bloodhound":4,"../../../bower_components/typeahead.js/dist/typeahead.jquery":5,"backbone":8,"jquery":39,"underscore":40}],68:[function(require,module,exports){
 var Backbone   = require('backbone');
 var $          = require('jquery');
 var Handlebars = require('handlebars');

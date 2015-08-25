@@ -152,7 +152,7 @@ module.exports = Backbone.Router.extend({
 
 	renderMenu: function () {
 		this.renderHeader();
-		appView.showMain(this.menuView);
+		this.menuView.render();
 	},
 
 	invokeHomeModule: function (subroute) {

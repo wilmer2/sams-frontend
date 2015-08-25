@@ -1,28 +1,37 @@
 var Backbone   = require('backbone');
 var $          = require('jquery');
 var _          = require('underscore');
-var Bloodhound = require('../../../bower_components/typeahead.js/dist/bloodhound.js');
+var Bloodhound = require('../../../bower_components/typeahead.js/dist/bloodhound');
 var typeahead  = require('../../../bower_components/typeahead.js/dist/typeahead.jquery');
 
 
 module.exports = Backbone.View.extend({
+  el: $('#main-content'),
 	template: $('#menu-view').html(),
   
-
 	render: function () {
+    console.log('render menu');
 		this.$el.html(this.template);
     this.initTypehead();
 	},
 
   initTypehead: function () {
-       console.log('init typeahead test');
-       var substringMatcher = function(strs) {
+         console.log(typeahead);
+      var substringMatcher = function(strs) {
               
           return function findMatches(q, cb) {
           var matches, substringRegex;
           // an array that will be populated with substring matches
-          matches = ['hola', 'mundo'];
-
+          matches = [];
+          // regex used to determine if a string contains the substring `q`
+          substrRegex = new RegExp(q, 'i');
+          // iterate through the pool of strings and for any string that
+          // contains the substring `q`, add it to the `matches` array
+          $.each(strs, function(i, str) {
+            if (substrRegex.test(str)) {
+                matches.push(str);
+            }
+          });
           cb(matches);
           };
       };
@@ -45,6 +54,7 @@ module.exports = Backbone.View.extend({
           name: 'states',
           source: substringMatcher(states)
         });
+
   },
 
   close: function () {
