@@ -350,6 +350,8 @@
 
   <label for="pathology_chronic">Patologia cronica</label>
   <textarea name="pathology_chronic"></textarea>
+  <label for="image_url">Subir foto</label>
+  <input type="file" name="image_url" id="file-record">
   <button class="initCamera btn btn-info" type="button">Tomar foto</button>
   </form>
   <canvas id="form-recordContainer"></canvas>
@@ -360,7 +362,7 @@
               <h4>Tomar</h4>
             </div>
             <div class="modal-body">
-              <video id="camera-record" autoplay></video>
+              <video id="camera-record" autoplay width=150 height=150></video>
               <canvas id="modal-pickContainer" class="u-disabled"></canvas>
             </div>
             <div class="modal-footer">

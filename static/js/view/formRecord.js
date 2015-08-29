@@ -9,7 +9,8 @@ module.exports = Backbone.View.extend({
     'click .initCamera': 'showModal',
     'click .pick': 'snapShot',
     'click  #snap-repeat': 'showCamera',
-    'click #confirm-modalPick': 'showPick'
+    'click #confirm-modalPick': 'showPick',
+    'change #file-record': 'uploadPick'
   },
 
 
@@ -35,8 +36,7 @@ module.exports = Backbone.View.extend({
                              navigator.mozGetUserMedia || navigator.msGetUserMedia  || false;
 
     if (!navigator.getUserMedia) {
-       var message = 'Navegador no compatible con funcion de camara';
-       util.showError(message);
+       this.closeModal();
     } else {
         window.dataVideo = {
          'StreamVideo': null,
@@ -50,7 +50,7 @@ module.exports = Backbone.View.extend({
             dataVideo.StreamVideo = streamVideo;
             dataVideo.url = window.URL.createObjectURL(streamVideo);
             this.closeCanvas();
-            this.closeBtn();
+            this.showBtn();
             this.$camera.show();
             this.$camera.attr('src', dataVideo.url);
         }.bind(this), function() {
@@ -67,31 +67,61 @@ module.exports = Backbone.View.extend({
 
     if (dataVideo.StreamVideo) {
       this.showCanvas();
+
       var canvas = this.$canvas;
       var camera = this.$camera;
-      var width  = camera.width();
-      var height = camera.height();
+      this.pickCam = camera[0];
 
-      this.widthImg  = width;
-      this.heightImg = height
-      this.pickCam   = camera[0];
+      canvas.attr({'width': 150,'height': 150});
 
-      canvas.attr({'width': this.widthImg,'height': this.heightImg});
       var ctx = canvas[0].getContext('2d');
-      ctx.drawImage(this.pickCam, 0 , 0 , this.widthImg, this.heightImg);
+
+      ctx.drawImage(this.pickCam, 0 , 0, 150, 150);
       this.closeCamera();
-      this.showBtn();
+      this.optBtn();
     }
    
   },
 
   showPick: function () {
     var canvasForm = this.$canvasForm;
-    canvasForm.attr({'width': this.widthImg, 'height': this.heightImg});
+
+    canvasForm.attr({'width': 150, 'height': 150});
 
     var ctxForm = canvasForm[0].getContext('2d');
-    ctxForm.drawImage(this.pickCam, 0, 0 , this.widthImg, this.heightImg);
+
+    ctxForm.drawImage(this.pickCam, 0, 0, 150, 150);
     this.closeModal();
+  },
+
+  uploadPick: function (e) {
+    var file = e.target.files[0];
+    var imageType = /image.*/;
+
+    if (file.type.match(imageType)) {
+      var reader = new FileReader();
+
+      reader.onloadend = function (e) {
+        var imgFile = $('<img>', {src: e.target.result});
+        var canvasFile = this.$canvasForm;
+
+        canvasFile.attr({'width': 150, 'height': 150});
+
+        var ctxFile = canvasFile[0].getContext('2d');
+
+        imgFile.load(function () {
+           ctxFile.drawImage(this, 0, 0, 150, 150);
+        });
+
+      }.bind(this)
+    } else {
+      $('input[type="file"]').val('');
+
+      var message = 'Ha ingresado un formato de archivo no valido';
+      util.showInfo(message);
+    }
+   
+    reader.readAsDataURL(file);
   },
 
   showCanvas: function () {
@@ -106,12 +136,12 @@ module.exports = Backbone.View.extend({
     this.$camera.hide();
   },
 
-  showBtn: function () {
+  optBtn: function () {
     this.$snapRecord.hide();
     this.$contentBtn.show();
   },
 
-  closeBtn: function () {
+  showBtn: function () {
     this.$snapRecord.show();
     this.$contentBtn.hide();
   },
