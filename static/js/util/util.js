@@ -15,6 +15,10 @@ Task = {
 		toastr.success(message);
 	},
 
+	showInfo: function (message) {
+		toastr.info(message);
+	},
+
 	multipleMessage: function (message) {
 		var notify = _.map(message, function (value) {
 				return value + '<br>';
@@ -25,7 +29,7 @@ Task = {
 
 	checkErr:function (err) {
 		if (err.status == 401) {
-			toastr.error('No autorizado');
+			toastr.error('Acceso no autorizado');
 		} else {
 			this.interceptor(err);
 		}

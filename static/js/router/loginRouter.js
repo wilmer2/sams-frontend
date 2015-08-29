@@ -6,7 +6,8 @@ var CitationsNotify = require('../view/citationNotifyView');
 var LoginView       = require('../view/loginView');
 var MenuUser        = require('../view/menuView');
 var HomeRouter      = require('./homeRouter');
-var ActivityRouter  = require('./ActivityRouter');
+var ActivityRouter  = require('./activityRouter');
+var ElderRouter     = require('./elderRouter');
 
 var util  = require('../util/util');
 
@@ -17,9 +18,11 @@ module.exports = Backbone.Router.extend({
 		'logout':'logout',
 		
 		'home/*subroute': 'invokeHomeModule',
-		'activity/*subroute': 'invokeActiveModule'
+		'elder/*subroute': 'invokeElderModule',
+		'activity/*subroute': 'invokeActiveModule',
 
 	},
+
 
 	initialize: function () {
 		this.userLogin = new AuthUser();
@@ -152,7 +155,7 @@ module.exports = Backbone.Router.extend({
 
 	renderMenu: function () {
 		this.renderHeader();
-		appView.showMain(this.menuView);
+		this.menuView.render();
 	},
 
 	invokeHomeModule: function (subroute) {
@@ -165,6 +168,12 @@ module.exports = Backbone.Router.extend({
 	invokeActiveModule: function (subroute) {
 		if (!Backbone.Main.Activity) {
 			Backbone.Main.Activity = new ActivityRouter('activity/');
+		}
+	},
+
+	invokeElderModule: function (subroute) {
+		if (!Backbone.Main.Elder) {
+			Backbone.Main.Elder = new ElderRouter('elder/');
 		}
 	}
 	

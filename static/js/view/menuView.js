@@ -1,66 +1,47 @@
 var Backbone   = require('backbone');
 var $          = require('jquery');
+var Handlebars = require('handlebars');
 var Bloodhound = require('../../../bower_components/typeahead.js/dist/bloodhound.js');
 var typeahead  = require('../../../bower_components/typeahead.js/dist/typeahead.jquery');
 
 
 module.exports = Backbone.View.extend({
+  el: $('#main-content'),
 	template: $('#menu-view').html(),
   
-  events : {
-    'keyup #search-elder' : 'test'
-  },
-
 	render: function () {
 		this.$el.html(this.template);
+    this.initTypehead();
 	},
+   
 
-  test: function (e) {
-     console.log('frotend');
-                           var substringMatcher = function(strs) {
-  return function findMatches(q, cb) {
-    var matches, substringRegex;
-
-    // an array that will be populated with substring matches
-    matches = [];
-
-    // regex used to determine if a string contains the substring `q`
-    substrRegex = new RegExp(q, 'i');
-
-    // iterate through the pool of strings and for any string that
-    // contains the substring `q`, add it to the `matches` array
-    $.each(strs, function(i, str) {
-      if (substrRegex.test(str)) {
-        matches.push(str);
-      }
+  initTypehead: function (e) {
+    var elders = new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        remote: {
+          url: 'http://localhost/search/elders?q=%QUERY',
+          wildcard: '%QUERY'
+        }
     });
 
-    cb(matches);
-  };
-};
+    $('#remote .typeahead').typeahead({
+        hint: true,
+        minLength: 2
+      },
 
-var states = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',
-  'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii',
-  'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana',
-  'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota',
-  'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire',
-  'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota',
-  'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island',
-  'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont',
-  'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
-];
+      {
+        name: 'elder',
+        source: elders,
+        display: 'full_name',
+        templates: {
+         suggestion: Handlebars.compile('<div><a href="#elder/{{id}}">{{full_name}}</a></div>')
+        }
 
-$('#remote .typeahead').typeahead({
-  hint: true,
-  highlight: true,
-  minLength: 1
-},
-{
-  name: 'states',
-  source: substringMatcher(states)
-});                
-},
-  
+      });
+
+  },
+
 	close: function () {
 		this.remove();
 	},

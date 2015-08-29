@@ -12,13 +12,17 @@ function appView () {
 	 		$('#container-user').html(this.currentUserView.el);
 	 },
 
-	 this.showMain = function (view) {
-	 	  this.showMainView = view;
-	 	  this.showMainView.render();
+   this.showElderView = function (view) {
+      if (this.currentElderView) {
+        this.currentElderView.close();
+      }
 
-	 	  $('#main-content').html(this.showMainView.el);
-	 }
+      this.currentElderView = view;
+      this.currentElderView.render();
+      
+      $('#content-elder').html(this.currentElderView.el);
+   }
+
 }
-
 
 module.exports = appView;

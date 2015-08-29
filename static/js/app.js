@@ -1,5 +1,6 @@
 var Backbone    = require('backbone');
 var $           = require('jquery');
+var Bootstrap   = require('../../bower_components/bootstrap/dist/js/bootstrap');
 var RouterMain  = require('./router/loginRouter');
 var Handlebars  = require('handlebars');
 var AppView     = require('./util/appView');
