@@ -11,14 +11,15 @@ module.exports = Backbone.View.extend({
 
   render: function () {
     this.$el.html(this.template);
+    this.$form = this.$el.find('#form-instance');
   },
 
   register: function (e) {
     e.preventDefault();
 
-    var data = $('#form-instance').serialize();
+    var data = this.$form.serialize();
 
-    $.post(Backend_url + 'register/notifications', data)
+    $.post(Backend_url + 'instance/register', data)
       .done(function (res) {
         if (res.status == 'success') {
           this.cleanForm();
@@ -30,7 +31,11 @@ module.exports = Backbone.View.extend({
   },
 
   cleanForm: function () {
-    $('#form-instance').find('input').val('');
+    this.$form.find('input').val('');
+  },
+
+  close: function () {
+    this.remove();
   }
 
 });

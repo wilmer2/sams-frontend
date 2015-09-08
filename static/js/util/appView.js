@@ -1,9 +1,20 @@
 var $ = require('jquery');
 
 function appView () {
+   this.showAdminView = function (view) {
+     if (this.currentAdminView) {
+       this.currentAdminView.close();
+     }
+
+     this.currentAdminView = view;
+     this.currentAdminView.render();
+
+     $('#container-admin').html(this.currentAdminView.el);
+   }
+
 	 this.showUserView = function (view) {
 	 		if (this.currentUserView) {
-	 				this.currentUserView.close();
+	 			this.currentUserView.close();
 	 		}
 
 	 		this.currentUserView = view;
@@ -13,14 +24,25 @@ function appView () {
 	 },
 
    this.showElderView = function (view) {
-      if (this.currentElderView) {
-        this.currentElderView.close();
-      }
+     if (this.currentElderView) {
+       this.currentElderView.close();
+     }
 
-      this.currentElderView = view;
-      this.currentElderView.render();
-      
-      $('#content-elder').html(this.currentElderView.el);
+     this.currentElderView = view;
+     this.currentElderView.render();
+       
+     $('#content-elder').html(this.currentElderView.el);
+   },
+
+   this.showEmployeeView = function (view) {
+     if (this.currentEmployeeView) {
+       this.currentEmployeeView.close();
+     }
+
+     this.currentEmployeeView = view;
+     this.currentEmployeeView.render();
+
+     $('#content-employee').html(this.currentEmployeeView.el);
    }
 
 }

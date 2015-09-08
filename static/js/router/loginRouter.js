@@ -8,6 +8,9 @@ var MenuUser        = require('../view/menuView');
 var HomeRouter      = require('./homeRouter');
 var ActivityRouter  = require('./activityRouter');
 var ElderRouter     = require('./elderRouter');
+var AdminRouter     = require('./adminRouter');
+var EmployeeRouter  = require('./employeeRouter');
+var AttendanceRouter = require('./attendanceRouter');
 
 var util  = require('../util/util');
 
@@ -18,11 +21,12 @@ module.exports = Backbone.Router.extend({
 		'logout':'logout',
 		
 		'home/*subroute': 'invokeHomeModule',
+		'admin/*subroute': 'invokeAdminModule',
 		'elder/*subroute': 'invokeElderModule',
+		'employee/*subroute': 'invokeEmployeeModule',
 		'activity/*subroute': 'invokeActiveModule',
-
+		'attendance/*subroute': 'invokeAttendanceModule'
 	},
-
 
 	initialize: function () {
 		this.userLogin = new AuthUser();
@@ -85,7 +89,7 @@ module.exports = Backbone.Router.extend({
 		if (group.name == 'User') {
 			this.navigate('home/', {trigger: true});
 		} else {
-			console.log('menu admin');
+			this.navigate('admin/', {trigger: true});
 		}
 	},
 
@@ -165,6 +169,12 @@ module.exports = Backbone.Router.extend({
 		}
 	},
 
+	invokeAdminModule: function (subroute) {
+		if (!Backbone.Main.Admin) {
+			Backbone.Main.Admin = new AdminRouter('admin/');
+		}
+	},
+
 	invokeActiveModule: function (subroute) {
 		if (!Backbone.Main.Activity) {
 			Backbone.Main.Activity = new ActivityRouter('activity/');
@@ -174,6 +184,18 @@ module.exports = Backbone.Router.extend({
 	invokeElderModule: function (subroute) {
 		if (!Backbone.Main.Elder) {
 			Backbone.Main.Elder = new ElderRouter('elder/');
+		}
+	},
+
+	invokeEmployeeModule: function (subroute) {
+		if (!Backbone.Main.Employee) {
+			Backbone.Main.Employee = new EmployeeRouter('employee/');
+		}
+	},
+
+	invokeAttendanceModule: function (subroute) {
+		if (!Backbone.Main.Attendance) {
+			Backbone.Main.Attendance = new AttendanceRouter('attendance/');
 		}
 	}
 	

@@ -4,14 +4,11 @@ var Handlebars = require('handlebars');
 var util       = require('../util/util');
 
 module.exports = Backbone.View.extend({
-  template: Handlebars.compile($('#instance-data').html()),
-
+  template: Handlebars.compile($('#instance-waiting').html()),
   events: {
-    'click #confirm-show'   : 'showConfirm',
-    'click #confirm-cancel' : 'closeConfirm',
-    'click #reject-show'    : 'showReject',
-    'click #reject-cancel'  : 'closeReject',
-    'click .Modal-item'     : 'confirmInstance',
+    'click .Modal-config' : 'showConfirm',
+    'click .Modal-reject' : 'showReject',
+    'click .Modal-item' : 'selectState',
   },
 
   render: function () {
@@ -19,52 +16,60 @@ module.exports = Backbone.View.extend({
     var html = this.template(data);
 
     this.$el.html(html);
+    
+    this.$confirmModal = this.$el.find('#modal-instanceConfirm');
+    this.$rejectModal = this.$el.find('#modal-instanceReject')
+    this.$modal = this.$el.find('.Modal');
   },
 
   showConfirm: function () {
-    this.$el.find('#modal-instanceConfirm').removeClass('u-disabled');
+   this.$confirmModal.show();
   },
 
   showReject: function () {
-    this.$el.find('#modal-instanceReject').removeClass('u-disabled');
-  },
-  
-  closeConfirm: function () {
-    this.$el.find('#modal-instanceConfirm').addClass('u-disabled');
+    this.$rejectModal.show();
   },
 
-  closeReject:function () {
-    this.$el.find('#modal-instanceReject').addClass('u-disabled');  
+  closeModal: function () {
+    this.$modal.hide();
   },
 
-  confirmInstance: function (e) {
+  selectState: function (e) {
     e.preventDefault();
-    e.stopPropagation();
 
-    var target = $(e.target);
-    var data   = target.attr('href');
+    var state = $(e.target).attr('href');
 
-    data = data.split('/');
+    if (state == 'cancel') {
+      this.closeModal();
+    } else {
+      this.confirmInst(state);
+    }
+  },
 
-    var id = data[0];
-    var state = data[1];
-    var url;
+  confirmInst: function (state) {
+    var id = this.model.get('id');
+    var elderId = this.model.get('elder_id');
+    var url = '';
 
-    $.get(Backend_url + 'confirmed/notifications/' +id + '?state=' + state)
-      .done(function (res) {
-        if (res.status == 'info') {
-            util.showSuccess(res.message);
-            this.closeReject();
-            url = '#elder/' + id;
+    $.get(Backend_url + 'instance/' + id + '/confirmed?state=' + state)
+     .done(function (res) {
+        if (res.status == 'success') {
+          url = '#elder/' + elderId + '/edit';
+
+          this.redirect(url, res.message);
         } else {
-          util.showSuccess(res.message);
-          this.closeConfirm();
-          url = '#elder/' + id + '/edit';
+          url = '#elder/' + elderId;
+          
+          this.redirect(url, res.message);
         }
-        
-        Backbone.Main.Elder.elder.clear();
-        window.location.replace(url);
-      }.bind(this))
+     }.bind(this))
+  },
+
+  redirect: function (url, message) {
+    this.closeModal();
+    util.showSuccess(message);
+    Backbone.Main.Elder.elder.clear();
+    window.location.replace(url);
   },
 
   close: function () {

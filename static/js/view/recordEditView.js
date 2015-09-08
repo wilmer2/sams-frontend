@@ -5,7 +5,7 @@ var Handlebars = require('handlebars');
 var util       = require('../util/util');
 
 module.exports = Backbone.View.extend({
-  template: Handlebars.compile($('#register-record').html()),
+  template: Handlebars.compile($('#recordEdit-view').html()),
 
   events: {
     'click .Form-btnCamera' : 'showModal',
@@ -13,7 +13,7 @@ module.exports = Backbone.View.extend({
     'click .Modal-repeat': 'repeat',
     'click .Modal-btnPic': 'showPic',
     'change .Form-file': 'uploadPic',
-    'submit #form-record': 'register',
+    'submit #form-editRecord'  : 'edit',
   },
 
   initialize: function () {
@@ -34,6 +34,9 @@ module.exports = Backbone.View.extend({
     this.$canvasForm = this.$el.find('.Lienzo');
     this.$containerBtn = this.$el.find('.Modal-btn');
     this.$typeFile = this.$el.find('input[type="file"]');
+
+    this.loadPic();
+
   },
 
   showModal: function () {
@@ -54,12 +57,14 @@ module.exports = Backbone.View.extend({
          'StreamVideo': null,
          'url': null
         }
+
         navigator.getUserMedia({
          'audio': false,
          'video': true
         }, function(streamVideo) {
             dataVideo.StreamVideo = streamVideo;
             dataVideo.url = window.URL.createObjectURL(streamVideo);
+
             this.closeCanvas();
             this.$containerBtn.show();
             this.showBtn();
@@ -67,6 +72,7 @@ module.exports = Backbone.View.extend({
             this.$camera.attr('src', dataVideo.url);
         }.bind(this), function() {
             var message = 'No fue posible obtener acceso a la cámara.';
+
             util.showInfo(message);
             this.closeModal();
         }.bind(this));
@@ -87,8 +93,11 @@ module.exports = Backbone.View.extend({
       canvas.attr({'width': 150,'height': 150});
 
       var ctx = canvas[0].getContext('2d');
+
       ctx.drawImage(this.pickCam, 0 , 0, 150, 150);
+
       this.photoSource = canvas[0].toDataURL('image/png')
+
       this.closeCamera();
       this.optBtn();
     }
@@ -97,10 +106,13 @@ module.exports = Backbone.View.extend({
 
   showPic: function () {
     this.$typeFile.val('');
+
     var canvasForm = this.$canvasForm;
+
     canvasForm.attr({'width': 150, 'height': 150});
 
     var ctxForm = canvasForm[0].getContext('2d');
+
     ctxForm.drawImage(this.pickCam, 0, 0, 150, 150);
     this.closeModal();
   },
@@ -118,7 +130,9 @@ module.exports = Backbone.View.extend({
         var canvasFile = this.$canvasForm;
 
         canvasFile.attr({'width': 150, 'height': 150});
+
         var ctxFile = canvasFile[0].getContext('2d');
+
         imgFile.load(function () {
            ctxFile.drawImage(this, 0, 0, 150, 150);
         });
@@ -130,10 +144,34 @@ module.exports = Backbone.View.extend({
       this.$typeFile.val('');
 
       var message = 'Ha ingresado un formato de archivo no valido';
+
       util.showInfo(message);
     }
    
     reader.readAsDataURL(file);
+  },
+
+  loadPic: function () {
+    var imageUrl = this.model.get('image_url');
+
+    if (!_.isUndefined(imageUrl)) {
+      var defaultUrl = 'http://localhost/image/geriatric/profile_default_man.jpg';
+    
+      if (imageUrl != defaultUrl) {
+        var image = new Image();
+        image.src = imageUrl;
+
+        var canvas = this.$canvasForm;
+
+        canvas.attr({'width': 150, 'height': 150});
+        
+        var ctx = canvas[0].getContext('2d');
+
+        image.onload = function () {
+          ctx.drawImage(image, 0, 0);
+        }
+      }
+    }
   },
 
   showCanvas: function () {
@@ -149,8 +187,8 @@ module.exports = Backbone.View.extend({
   },
 
   optBtn: function () {
-    this.$snap.hide();
-    this.$confirmBtn.show();
+   this.$snap.hide();
+   this.$confirmBtn.show();
   },
 
   showBtn: function () {
@@ -176,16 +214,13 @@ module.exports = Backbone.View.extend({
     }
   },
 
-  close: function () {
-    this.remove();
-  },
-
-  register: function (e) {
+  edit: function (e) {
     e.preventDefault();
+    var id = this.model.get('id');
+    var elderId = this.model.get('elder_id');
+    var formData = new FormData($('#form-editRecord')[0]);
 
-    var formData = new FormData($('#form-record')[0]);
-
-    if (!_.isEmpty(this.photoSource)) {
+     if (!_.isEmpty(this.photoSource)) {
       var mime = util.extractMime(this.photoSource);
 
       formData.append('photo', this.photoSource);
@@ -193,35 +228,35 @@ module.exports = Backbone.View.extend({
     }
 
     $('input[type="checkbox"]').each(function () {
-      var checkbox = $(this);
+       var checkbox = $(this);
 
-      if (checkbox.is(':checked')) {
+       if (checkbox.is(':checked')) {
         formData.append(checkbox.attr('name'), 1);
-      } else {
+       } else {
         formData.append(checkbox.attr('name'), 0);
-      }
+       }
     
     });
 
-    var elderId = this.model.get('id');
-
     $.ajax({
-       url: Backend_url + 'record/' + elderId +'/register',
-       type: 'POST',
-       data: formData,
-       processData : false, 
-       contentType : false,
+      url: Backend_url + 'edit/record/' + id + '?_method=PUT',
+      type: 'POST',
+      data: formData,
+      processData : false, 
+      contentType : false,
     })
     .done(function (res) {
       if (res.status == 'success') {
         util.showSuccess(res.message);
-        this.model.clear();
-        window.location.replace('#elder/' + elderId);
+        Backbone.Main.Elder.elder.clear();
+        window.location.replace('#elder/' + elderId + '/record/' + id);
       } else {
         util.showError(res.message);
       }
-    }.bind(this));
-    
-  }
+    })
+  },
 
-});
+  close: function () {
+    this.remove();
+  }
+})

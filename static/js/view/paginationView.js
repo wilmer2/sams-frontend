@@ -13,44 +13,45 @@ module.exports = Backbone.View.extend({
 	},
 
 	initialize: function () {
-		 	this.pagInit();
+		this.pagInit();
 	},
 
 	render: function () {
-		this.items   = this.collection.totalPage();
-
+		this.items = this.collection.totalPage();
 		var current = this.currentPage;
-		var data    = JSON.stringify({items: this.items, current: current});
-		var html    = this.template(JSON.parse(data));
+		var data = JSON.stringify({items: this.items, current: current});
+		var html = this.template(JSON.parse(data));
 
 		this.$el.html(html);
+
 		return this;
 	},
-
 
 	goToPage: function (e) {
 		e.preventDefault();
 		
-		var page  = $(e.target).text();
-		var page  = parseInt(page);
+		var page = $(e.target).text();
+		page = parseInt(page);
 		var total = this.items;
 
-		if (page <= 0 || page > total  || isNaN(page)) {
+		if (page <= 0 || page > total || isNaN(page)) {
 			page = 1;
 		}
 
 		this.currentPage = page;
+
 		this.collection.trigger('goTo');
 		this.collection.getPage(page);
 	},
 
 	goToNext: function () {
-		var total   = this.items;
+		var total = this.items;
 		var current = this.currentPage;
 
 		if (current < total) {
 			this.currentPage = current + 1;
 		}
+
 		this.collection.trigger('goTo');
 		this.collection.getNextPage();
 	},

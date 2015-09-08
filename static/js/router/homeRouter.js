@@ -1,34 +1,42 @@
-var Backbone    = require('backbone');
-var $           = require('jquery');
-var _           = require('underscore');
-var Subroute    = require('../../dependencies/backboneSubroutes/backboneSubroutes');
-var ListElders  = require('../view/elderListView');
-var FormInstace = require('../view/formInstanceView');
-var Elders      = require('../collection/elders');
+var Backbone       = require('backbone');
+var $              = require('jquery');
+var _              = require('underscore');
+var Subroute       = require('../../dependencies/backboneSubroutes/backboneSubroutes');
+var ElderList      = require('../view/elderListView');
+var Elders         = require('../collection/elders');
+var InstanceCtrl   = require('../controller/instanceController');
 
 module.exports = Subroute.extend({
 	routes: {
 		'' : 'homeUser',
-		'register/instance': 'registerInst'
+		'register/instance': 'formInst',
+	},
+
+	before: {
+		'*any': 'renderMenu'
+	},
+
+	renderMenu: function (fragment, arg, next) {
+		Backbone.Main.renderMenu();
+		next();
 	},
 
 	initialize: function () {
-		this.formInstance = new FormInstace();
+		this.instanceCtrl = new InstanceCtrl();
 	},
 
 	homeUser: function () {
-		this.elders     = new Elders();
-		this.eldersList = new ListElders({collection: this.elders});
-		Backbone.Main.renderMenu();
-		this.elders.getFirstPage({ fetch: true })
-		  .done(function () {
-				 appView.showUserView(this.eldersList);
-			}.bind(this));
+		var elders = new Elders();
+		var eldersList = new ElderList({collection: elders});
+
+		elders.getFirstPage({fetch: true})
+		.done(function () {
+			appView.showUserView(eldersList);
+		});
 	},
 
-	registerInst: function () {
-		Backbone.Main.renderMenu();
-		appView.showUserView(this.formInstance);
+	formInst: function () {
+		this.instanceCtrl.formInstance();
 	}
 
 })

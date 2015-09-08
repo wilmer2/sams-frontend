@@ -1,11 +1,16 @@
 var Backbone   = require('backbone');
 var $          = require('jquery');
 var _          = require('underscore');
-var Handlebars = require('handlebars');
+var Hanblebars = require('handlebars');
 var util       = require('../util/util');
 
+
 module.exports = Backbone.View.extend({
-  template: Handlebars.compile($('#register-record').html()),
+  template: Hanblebars.compile($('#employeeEdit-view').html()),
+
+  initialize: function () {
+    this.photoSource = '';
+  },
 
   events: {
     'click .Form-btnCamera' : 'showModal',
@@ -13,19 +18,15 @@ module.exports = Backbone.View.extend({
     'click .Modal-repeat': 'repeat',
     'click .Modal-btnPic': 'showPic',
     'change .Form-file': 'uploadPic',
-    'submit #form-record': 'register',
-  },
-
-  initialize: function () {
-    this.photoSource = '';
+    'submit #form-editEmployee': 'edit'
   },
 
   render: function () {
     var data = this.model.toJSON();
     var html = this.template(data);
+    var gender = this.model.get('gender');
 
     this.$el.html(html);
-
     this.$modalPic = this.$el.find('.Modal');
     this.$camera = this.$el.find('.Modal-camera');
     this.$canvas = this.$el.find('.Modal-lienzo');
@@ -34,6 +35,12 @@ module.exports = Backbone.View.extend({
     this.$canvasForm = this.$el.find('.Lienzo');
     this.$containerBtn = this.$el.find('.Modal-btn');
     this.$typeFile = this.$el.find('input[type="file"]');
+
+    var radio = this.$el.find('input[value=' + gender + ']:radio');
+    radio.prop('checked', true);
+
+    this.loadPic();
+
   },
 
   showModal: function () {
@@ -106,6 +113,7 @@ module.exports = Backbone.View.extend({
   },
 
   uploadPic: function (e) {
+    console.log('change');
     var file = e.target.files[0];
     var imageType = /image.*/;
 
@@ -164,6 +172,27 @@ module.exports = Backbone.View.extend({
     this.showCamera();
   },
 
+  loadPic: function () {
+    var imageUrl = this.model.get('image_url');
+
+    if (!_.isUndefined(imageUrl)) {
+      var defaultUrl = 'http://localhost/image/geriatric/profile_default_man.jpg';
+
+      if (imageUrl != defaultUrl) {
+        var image = new Image();
+        image.src = imageUrl;
+
+        var canvas = this.$canvasForm;
+        canvas.attr({'width': 150, 'height': 150});
+        var ctx = canvas[0].getContext('2d');
+
+        image.onload = function () {
+          ctx.drawImage(image, 0, 0);
+        }
+      }
+    }
+  },
+
   closeModal: function () {
     this.closeReception();
     this.$modalPic.hide();
@@ -176,14 +205,10 @@ module.exports = Backbone.View.extend({
     }
   },
 
-  close: function () {
-    this.remove();
-  },
-
-  register: function (e) {
+  edit: function (e) {
     e.preventDefault();
-
-    var formData = new FormData($('#form-record')[0]);
+    var id = this.model.get('id');
+    var formData = new FormData($('#form-editEmployee')[0]);
 
     if (!_.isEmpty(this.photoSource)) {
       var mime = util.extractMime(this.photoSource);
@@ -191,37 +216,27 @@ module.exports = Backbone.View.extend({
       formData.append('photo', this.photoSource);
       formData.append('mime', mime);
     }
-
-    $('input[type="checkbox"]').each(function () {
-      var checkbox = $(this);
-
-      if (checkbox.is(':checked')) {
-        formData.append(checkbox.attr('name'), 1);
-      } else {
-        formData.append(checkbox.attr('name'), 0);
-      }
-    
-    });
-
-    var elderId = this.model.get('id');
-
+      
     $.ajax({
-       url: Backend_url + 'record/' + elderId +'/register',
-       type: 'POST',
-       data: formData,
-       processData : false, 
-       contentType : false,
+      url: Backend_url + 'employee/' + id + '/edit?_method=PUT',
+      type: 'POST',
+      data: formData,
+      processData : false, 
+      contentType : false,
     })
     .done(function (res) {
       if (res.status == 'success') {
+        this.model.clear({silent:true});
         util.showSuccess(res.message);
-        this.model.clear();
-        window.location.replace('#elder/' + elderId);
+        Backbone.Main.navigate('employee/' + id, {trigger: true});
       } else {
         util.showError(res.message);
       }
-    }.bind(this));
-    
+    }.bind(this))
+  },
+
+  close: function () {
+    this.remove();
   }
 
 });

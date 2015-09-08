@@ -43,11 +43,11 @@ module.exports = Backbone.View.extend({
   },
 
   getData: function (e) {
-     var target     = $(e.target);
-     var height     = target.height();
+     var target = $(e.target);
+     var height = target.height();
      var scrollSize = target[0].scrollHeight
-     var scrollTop  = target.scrollTop();
-
+     var scrollTop = target.scrollTop();
+     
      var sizeCurrent = scrollSize - scrollTop;
 
      if (sizeCurrent == height) {

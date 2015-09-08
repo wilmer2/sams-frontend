@@ -13,7 +13,7 @@ module.exports  = Subroute.extend({
 
 	activity: function () {
 		Backbone.Main.renderMenu();
-		var date        = util.currentDate();
+		var date = util.currentDate();
 		var contentView = new ContentView();
 		this.getEvents(date)
 		 .then(function (events) {

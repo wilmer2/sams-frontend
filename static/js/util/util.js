@@ -1,7 +1,6 @@
 var _      = require('underscore');
 var toastr = require('../../dependencies/toastr/toastr');
 
-
 Task = {
 	showError: function (message) {
 		if (_.isObject(message)) {
@@ -49,9 +48,77 @@ Task = {
 		var month = date.getMonth() + 1;
 		var day   = date.getDate();
 
-		return year + '-' + month  + '-' + day;
+    if(month < 10){
+      month = '0'+ month;
+    }
 
-	}
+    if (day < 10){
+      day ='0'+ day
+    }
+
+		return year + '-' + month  + '-' + day;
+	},
+
+	extractMime: function (source) {
+		var segment = source.split('/');
+    var path = segment[1].split(';');
+    var mime = path[0];
+
+    return mime;
+	},
+
+	getFragmentId: function (fragment) {
+		var segment = fragment.split('/');
+		var id = segment[1];
+
+		return id;
+	},
+
+	selectDays: function (days) {
+		var days = days.split(' ');
+		var slectDays = '';
+    
+		_.each(days, function (day) {
+			  var day = this.extractDay(day);
+			  if (_.isEmpty(slectDays)) {
+			  	slectDays = day;
+			  } else {
+			  	slectDays = slectDays + ' ' + day;
+			  }
+		}.bind(this))
+
+		return slectDays;
+	},
+  
+  extractDay: function (day) {
+  	var slectDay = '';
+  	switch(day) {
+  		case 'monday':
+  		 slectDay = 'Lunes'
+  		 break;
+  		case 'tuesday':
+  			slectDay = 'Martes'
+  			break;
+  		case 'wednesday':
+  			slectDay = 'Miercoles'
+  			break
+  		case 'thursday':
+  			slectDay = 'Jueves'
+  			break
+  		case 'friday':
+  			slectDay = 'Viernes'
+  			break
+  		case 'saturday':
+  			slectDay = 'Sabado'
+  			break
+  		case 'sunday':
+  			slectDay = 'Domingo'
+  			break
+  	}
+
+  	return slectDay;
+  }
+
 }
 
 module.exports = Task;

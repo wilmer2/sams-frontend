@@ -234,37 +234,70 @@ var substr = 'ab'.substr(-1) === 'b'
 var process = module.exports = {};
 var queue = [];
 var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
 
 function drainQueue() {
     if (draining) {
         return;
     }
+    var timeout = setTimeout(cleanUpNextTick);
     draining = true;
-    var currentQueue;
+
     var len = queue.length;
     while(len) {
         currentQueue = queue;
         queue = [];
-        var i = -1;
-        while (++i < len) {
-            currentQueue[i]();
+        while (++queueIndex < len) {
+            currentQueue[queueIndex].run();
         }
+        queueIndex = -1;
         len = queue.length;
     }
+    currentQueue = null;
     draining = false;
+    clearTimeout(timeout);
 }
+
 process.nextTick = function (fun) {
-    queue.push(fun);
-    if (!draining) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
         setTimeout(drainQueue, 0);
     }
 };
 
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
 process.title = 'browser';
 process.browser = true;
 process.env = {};
 process.argv = [];
 process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
 
 function noop() {}
 
@@ -2654,7 +2687,7 @@ if (typeof jQuery === 'undefined') {
 
 }(jQuery);
 
-},{"jquery":40}],5:[function(require,module,exports){
+},{"jquery":41}],5:[function(require,module,exports){
 /*!
  * typeahead.js 0.11.1
  * https://github.com/twitter/typeahead.js
@@ -3573,7 +3606,7 @@ if (typeof jQuery === 'undefined') {
     }();
     return Bloodhound;
 });
-},{"jquery":40}],6:[function(require,module,exports){
+},{"jquery":41}],6:[function(require,module,exports){
 /*!
  * typeahead.js 0.11.1
  * https://github.com/twitter/typeahead.js
@@ -5112,7 +5145,3358 @@ if (typeof jQuery === 'undefined') {
         }
     })();
 });
-},{"jquery":40}],7:[function(require,module,exports){
+},{"jquery":41}],7:[function(require,module,exports){
+/**
+ * alertifyjs 1.4.1 http://alertifyjs.com
+ * AlertifyJS is a javascript framework for developing pretty browser dialogs and notifications.
+ * Copyright 2015 Mohammad Younes <Mohammad@alertifyjs.com> (http://alertifyjs.com) 
+ * Licensed under MIT <http://opensource.org/licenses/mit-license.php>*/
+( function ( window ) {
+    'use strict';
+    
+    /**
+     * Keys enum
+     * @type {Object}
+     */
+    var keys = {
+        ENTER: 13,
+        ESC: 27,
+        F1: 112,
+        F12: 123,
+        LEFT: 37,
+        RIGHT: 39
+    };
+    /**
+     * Default options 
+     * @type {Object}
+     */
+    var defaults = {
+        modal:true,
+        basic:false,
+        frameless:false,
+        movable:true,
+        resizable:true,
+        closable:true,
+        closableByDimmer:true,
+        maximizable:true,
+        startMaximized:false,
+        pinnable:true,
+        pinned:true,
+        padding: true,
+        overflow:true,
+        maintainFocus:true,
+        transition:'pulse',
+        autoReset:true,
+        notifier:{
+            delay:5,
+            position:'bottom-right'
+        },
+        glossary:{
+            title:'AlertifyJS',
+            ok: 'OK',
+            cancel: 'Cancel',
+            acccpt: 'Accept',
+            deny: 'Deny',
+            confirm: 'Confirm',
+            decline: 'Decline',
+            close: 'Close',
+            maximize: 'Maximize',
+            restore: 'Restore',
+        },
+        theme:{
+            input:'ajs-input',
+            ok:'ajs-ok',
+            cancel:'ajs-cancel',
+        }
+    };
+    
+    //holds open dialogs instances
+    var openDialogs = [];
+
+    /**
+     * [Helper]  Adds the specified class(es) to the element.
+     *
+     * @element {node}      The element
+     * @className {string}  One or more space-separated classes to be added to the class attribute of the element.
+     * 
+     * @return {undefined}
+     */
+    function addClass(element,classNames){
+        element.className += ' ' + classNames;
+    }
+    
+    /**
+     * [Helper]  Removes the specified class(es) from the element.
+     *
+     * @element {node}      The element
+     * @className {string}  One or more space-separated classes to be removed from the class attribute of the element.
+     * 
+     * @return {undefined}
+     */
+    function removeClass(element,classNames){
+        var classes = classNames.split(' ');
+        for(var x=0;x<classes.length;x+=1){
+            element.className = element.className.replace(' ' + classes[x], '');
+        }
+    }
+
+    /**
+     * [Helper]  Checks if the document is RTL
+     *
+     * @return {Boolean} True if the document is RTL, false otherwise.
+     */
+    function isRightToLeft(){
+        return window.getComputedStyle(document.body).direction === 'rtl';
+    }
+    /**
+     * [Helper]  Get the document current scrollTop
+     *
+     * @return {Number} current document scrollTop value
+     */
+    function getScrollTop(){
+        return ((document.documentElement && document.documentElement.scrollTop) || document.body.scrollTop);
+    }
+
+    /**
+     * [Helper]  Get the document current scrollLeft
+     *
+     * @return {Number} current document scrollLeft value
+     */
+    function getScrollLeft(){
+        return ((document.documentElement && document.documentElement.scrollLeft) || document.body.scrollLeft);
+    }
+
+    /**
+    * Helper: clear contents
+    *
+    */
+    function clearContents(element){
+        while (element.lastChild) {
+            element.removeChild(element.lastChild);
+        }
+    }
+        
+
+    /**
+     * Use a closure to return proper event listener method. Try to use
+     * `addEventListener` by default but fallback to `attachEvent` for
+     * unsupported browser. The closure simply ensures that the test doesn't
+     * happen every time the method is called.
+     *
+     * @param    {Node}     el    Node element
+     * @param    {String}   event Event type
+     * @param    {Function} fn    Callback of event
+     * @return   {Function}
+     */
+    var on = (function () {
+        if (document.addEventListener) {
+            return function (el, event, fn, useCapture) {
+                el.addEventListener(event, fn, useCapture === true);
+            };
+        } else if (document.attachEvent) {
+            return function (el, event, fn) {
+                el.attachEvent('on' + event, fn);
+            };
+        }
+    }());
+
+    /**
+     * Use a closure to return proper event listener method. Try to use
+     * `removeEventListener` by default but fallback to `detachEvent` for
+     * unsupported browser. The closure simply ensures that the test doesn't
+     * happen every time the method is called.
+     *
+     * @param    {Node}     el    Node element
+     * @param    {String}   event Event type
+     * @param    {Function} fn    Callback of event
+     * @return   {Function}
+     */
+    var off = (function () {
+        if (document.removeEventListener) {
+            return function (el, event, fn, useCapture) {
+                el.removeEventListener(event, fn, useCapture === true);
+            };
+        } else if (document.detachEvent) {
+            return function (el, event, fn) {
+                el.detachEvent('on' + event, fn);
+            };
+        }
+    }());
+
+    /**
+     * Prevent default event from firing
+     *
+     * @param  {Event} event Event object
+     * @return {undefined}
+
+    function prevent ( event ) {
+        if ( event ) {
+            if ( event.preventDefault ) {
+                event.preventDefault();
+            } else {
+                event.returnValue = false;
+            }
+        }
+    }
+    */
+    var transition = (function () {
+        var t, type;
+        var supported = false;
+        var transitions = {
+            'animation'        : 'animationend',
+            'OAnimation'       : 'oAnimationEnd oanimationend',
+            'msAnimation'      : 'MSAnimationEnd',
+            'MozAnimation'     : 'animationend',
+            'WebkitAnimation'  : 'webkitAnimationEnd'
+        };
+
+        for (t in transitions) {
+            if (document.documentElement.style[t] !== undefined) {
+                type = transitions[t];
+                supported = true;
+                break;
+            }
+        }
+
+        return {
+            type: type,
+            supported: supported
+        };
+    }());
+
+    /**
+    * Creates event handler delegate that sends the instance as last argument.
+    * 
+    * @return {Function}    a function wrapper which sends the instance as last argument.
+    */
+    function delegate(context, method) {
+        return function () {
+            if (arguments.length > 0) {
+                var args = [];
+                for (var x = 0; x < arguments.length; x += 1) {
+                    args.push(arguments[x]);
+                }
+                args.push(context);
+                return method.apply(context, args);
+            }
+            return method.apply(context, [null, context]);
+        };
+    }
+    /**
+    * Helper for creating a dialog close event.
+    * 
+    * @return {object}
+    */
+    function createCloseEvent(index, button) {
+        return {
+            index: index,
+            button: button,
+            cancel: false
+        };
+    }
+
+
+    /**
+     * Super class for all dialogs
+     *
+     * @return {Object}		base dialog prototype
+     */
+    var dialog = (function () {
+        var //holds the list of used keys.
+            usedKeys = [],
+            //dummy variable, used to trigger dom reflow.
+            reflow = null,
+            //condition for detecting safari
+            isSafari = window.navigator.userAgent.indexOf('Safari') > -1 && window.navigator.userAgent.indexOf('Chrome') < 0,
+            //dialog building blocks
+            templates = {
+                dimmer:'<div class="ajs-dimmer"></div>',
+                /*tab index required to fire click event before body focus*/
+                modal: '<div class="ajs-modal" tabindex="0"></div>',
+                dialog: '<div class="ajs-dialog" tabindex="0"></div>',
+                reset: '<button class="ajs-reset"></button>',
+                commands: '<div class="ajs-commands"><button class="ajs-pin"></button><button class="ajs-maximize"></button><button class="ajs-close"></button></div>',
+                header: '<div class="ajs-header"></div>',
+                body: '<div class="ajs-body"></div>',
+                content: '<div class="ajs-content"></div>',
+                footer: '<div class="ajs-footer"></div>',
+                buttons: { primary: '<div class="ajs-primary ajs-buttons"></div>', auxiliary: '<div class="ajs-auxiliary ajs-buttons"></div>' },
+                button: '<button class="ajs-button"></button>',
+                resizeHandle: '<div class="ajs-handle"></div>',
+            },
+            //common class names
+            classes = {
+                base: 'alertify',
+                prefix: 'ajs-',
+                hidden: 'ajs-hidden',
+                noSelection: 'ajs-no-selection',
+                noOverflow: 'ajs-no-overflow',
+                noPadding:'ajs-no-padding',
+                modeless: 'ajs-modeless',
+                movable: 'ajs-movable',
+                resizable: 'ajs-resizable',
+                capture: 'ajs-capture',
+                fixed: 'ajs-fixed',
+                closable:'ajs-closable',
+                maximizable:'ajs-maximizable',
+                maximize: 'ajs-maximize',
+                restore: 'ajs-restore',
+                pinnable:'ajs-pinnable',
+                unpinned:'ajs-unpinned',
+                pin:'ajs-pin',
+                maximized: 'ajs-maximized',
+                animationIn: 'ajs-in',
+                animationOut: 'ajs-out',
+                shake:'ajs-shake',
+                basic:'ajs-basic',
+                frameless:'ajs-frameless'
+            };
+			
+        /**
+         * Helper: initializes the dialog instance
+         * 
+         * @return	{Number}	The total count of currently open modals.
+         */
+        function initialize(instance){
+            
+            if(!instance.__internal){
+				
+                //no need to expose init after this.
+                delete instance.__init;
+				
+                //in case the script was included before body.
+                //after first dialog gets initialized, it won't be null anymore!				
+                if(null === reflow){
+                    // set tabindex attribute on body element this allows script to give it
+                    // focus after the dialog is closed
+                    document.body.setAttribute( 'tabindex', '0' );
+                }
+				
+                //get dialog buttons/focus setup
+                var setup;
+                if(typeof instance.setup === 'function'){
+                    setup = instance.setup();
+                    setup.options = setup.options  || {};
+                    setup.focus = setup.focus  || {};
+                }else{
+                    setup = {
+                        buttons:[],
+                        focus:{
+                            element:null,
+                            select:false
+                        },
+                        options:{
+                        }
+                    };
+                }
+                
+                //initialize hooks object.
+                if(typeof instance.hooks !== 'object'){
+                    instance.hooks = {};
+                }
+
+                //copy buttons defintion
+                var buttonsDefinition = [];
+                if(Array.isArray(setup.buttons)){
+                    for(var b=0;b<setup.buttons.length;b+=1){
+                        var ref  = setup.buttons[b],
+                            copy = {};
+                        for (var i in ref) {
+                            if (ref.hasOwnProperty(i)) {
+                                copy[i] = ref[i];
+                            }
+                        }
+                        buttonsDefinition.push(copy);
+                    }
+                }
+
+                var internal = instance.__internal = {
+                    /**
+                     * Flag holding the open state of the dialog
+                     * 
+                     * @type {Boolean}
+                     */
+                    isOpen:false,
+                    /**
+                     * Active element is the element that will receive focus after
+                     * closing the dialog. It defaults as the body tag, but gets updated
+                     * to the last focused element before the dialog was opened.
+                     *
+                     * @type {Node}
+                     */
+                    activeElement:document.body,
+                    timerIn:undefined,
+                    timerOut:undefined,
+                    buttons: buttonsDefinition,
+                    focus: setup.focus,
+                    options: {
+                        title: undefined,
+                        modal: undefined,
+                        basic:undefined,
+                        frameless:undefined,
+                        pinned: undefined,
+                        movable: undefined,
+                        resizable: undefined,
+                        autoReset: undefined,
+                        closable: undefined,
+                        closableByDimmer: undefined,
+                        maximizable: undefined,
+                        startMaximized: undefined,
+                        pinnable: undefined,
+                        transition: undefined,
+                        padding:undefined,
+                        overflow:undefined,
+                        onshow:undefined,
+                        onclose:undefined,
+                        onfocus:undefined,
+                    },
+                    resetHandler:undefined,
+                    beginMoveHandler:undefined,
+                    beginResizeHandler:undefined,
+                    bringToFrontHandler:undefined,
+                    modalClickHandler:undefined,
+                    buttonsClickHandler:undefined,
+                    commandsClickHandler:undefined,
+                    transitionInHandler:undefined,
+                    transitionOutHandler:undefined
+                };
+				
+                                
+                var elements = {};
+                //root node
+                elements.root = document.createElement('div');
+                
+                elements.root.className = classes.base + ' ' + classes.hidden + ' ';
+				
+                elements.root.innerHTML = templates.dimmer + templates.modal;
+                
+                //dimmer
+                elements.dimmer = elements.root.firstChild;
+				
+                //dialog
+                elements.modal = elements.root.lastChild;
+                elements.modal.innerHTML = templates.dialog;
+                elements.dialog = elements.modal.firstChild;
+                elements.dialog.innerHTML = templates.reset + templates.commands + templates.header + templates.body + templates.footer + templates.resizeHandle + templates.reset;
+
+                //reset links
+                elements.reset = [];
+                elements.reset.push(elements.dialog.firstChild);
+                elements.reset.push(elements.dialog.lastChild);
+                
+                //commands
+                elements.commands = {};
+                elements.commands.container = elements.reset[0].nextSibling;
+                elements.commands.pin = elements.commands.container.firstChild;
+                elements.commands.maximize = elements.commands.pin.nextSibling;
+                elements.commands.close = elements.commands.maximize.nextSibling;
+                
+                //header
+                elements.header = elements.commands.container.nextSibling;
+
+                //body
+                elements.body = elements.header.nextSibling;
+                elements.body.innerHTML = templates.content;
+                elements.content = elements.body.firstChild;
+
+                //footer
+                elements.footer = elements.body.nextSibling;
+                elements.footer.innerHTML = templates.buttons.auxiliary + templates.buttons.primary;
+                
+                //resize handle
+                elements.resizeHandle = elements.footer.nextSibling;
+
+                //buttons
+                elements.buttons = {};
+                elements.buttons.auxiliary = elements.footer.firstChild;
+                elements.buttons.primary = elements.buttons.auxiliary.nextSibling;
+                elements.buttons.primary.innerHTML = templates.button;
+                elements.buttonTemplate = elements.buttons.primary.firstChild;
+                //remove button template
+                elements.buttons.primary.removeChild(elements.buttonTemplate);
+                               
+                for(var x=0; x < instance.__internal.buttons.length; x+=1) {
+                    var button = instance.__internal.buttons[x];
+                    
+                    // add to the list of used keys.
+                    if(usedKeys.indexOf(button.key) < 0){
+                        usedKeys.push(button.key);
+                    }
+
+                    button.element = elements.buttonTemplate.cloneNode();
+                    button.element.innerHTML = button.text;
+                    if(typeof button.className === 'string' &&  button.className !== ''){
+                        addClass(button.element, button.className);
+                    }
+                    for(var key in button.attrs){
+                        if(key !== 'className' && button.attrs.hasOwnProperty(key)){
+                            button.element.setAttribute(key, button.attrs[key]);
+                        }
+                    }
+                    if(button.scope === 'auxiliary'){
+                        elements.buttons.auxiliary.appendChild(button.element);
+                    }else{
+                        elements.buttons.primary.appendChild(button.element);
+                    }
+                }
+                //make elements pubic
+                instance.elements = elements;
+                
+                //save event handlers delegates
+                internal.resetHandler = delegate(instance, onReset);
+                internal.beginMoveHandler = delegate(instance, beginMove);
+                internal.beginResizeHandler = delegate(instance, beginResize);
+                internal.bringToFrontHandler = delegate(instance, bringToFront);
+                internal.modalClickHandler = delegate(instance, modalClickHandler);
+                internal.buttonsClickHandler = delegate(instance, buttonsClickHandler);
+                internal.commandsClickHandler = delegate(instance, commandsClickHandler);
+                internal.transitionInHandler = delegate(instance, handleTransitionInEvent);
+                internal.transitionOutHandler = delegate(instance, handleTransitionOutEvent);
+
+                
+                //settings
+                instance.set('title', setup.options.title === undefined ? alertify.defaults.glossary.title : setup.options.title);
+				
+                instance.set('modal', setup.options.modal === undefined ? alertify.defaults.modal : setup.options.modal);
+                instance.set('basic', setup.options.basic === undefined ? alertify.defaults.basic : setup.options.basic);
+                instance.set('frameless', setup.options.frameless === undefined ? alertify.defaults.frameless : setup.options.frameless);
+							
+                instance.set('movable', setup.options.movable === undefined ? alertify.defaults.movable : setup.options.movable);
+                instance.set('resizable', setup.options.resizable === undefined ? alertify.defaults.resizable : setup.options.resizable);
+                instance.set('autoReset', setup.options.autoReset === undefined ? alertify.defaults.autoReset : setup.options.autoReset);
+				
+                instance.set('closable', setup.options.closable === undefined ? alertify.defaults.closable : setup.options.closable);
+                instance.set('closableByDimmer', setup.options.closableByDimmer === undefined ? alertify.defaults.closableByDimmer : setup.options.closableByDimmer);
+                instance.set('maximizable', setup.options.maximizable === undefined ? alertify.defaults.maximizable : setup.options.maximizable);
+                instance.set('startMaximized', setup.options.startMaximized === undefined ? alertify.defaults.startMaximized : setup.options.startMaximized);
+				
+                instance.set('pinnable', setup.options.pinnable === undefined ? alertify.defaults.pinnable : setup.options.pinnable);
+                instance.set('pinned', setup.options.pinned === undefined ? alertify.defaults.pinned : setup.options.pinned);
+				
+                instance.set('transition', setup.options.transition === undefined ? alertify.defaults.transition : setup.options.transition);
+
+                instance.set('padding', setup.options.padding === undefined ? alertify.defaults.padding : setup.options.padding);
+                instance.set('overflow', setup.options.overflow === undefined ? alertify.defaults.overflow : setup.options.overflow);
+				
+
+                // allow dom customization
+                if(typeof instance.build === 'function'){
+                    instance.build();
+                }
+            }
+            
+            //add to the end of the DOM tree.
+            document.body.appendChild(instance.elements.root);
+        }
+
+        /**
+         * Helper: maintains scroll position
+         *
+         */
+        var scrollX, scrollY;
+        function saveScrollPosition(){
+            scrollX = window.scrollX;
+            scrollY = window.scrollY;
+        }
+        function restoreScrollPosition(){
+            window.scrollTo(scrollX, scrollY);
+        }
+
+        /**
+         * Helper: adds/removes no-overflow class from body
+         *
+         */
+        function ensureNoOverflow(){
+            var requiresNoOverflow = 0;
+            for(var x=0;x<openDialogs.length;x+=1){
+                var instance = openDialogs[x];
+                if(instance.isModal() || instance.isMaximized()){
+                    requiresNoOverflow+=1;
+                }
+            }
+            if(requiresNoOverflow === 0){
+                //last open modal or last maximized one
+                removeClass(document.body, classes.noOverflow);
+            }else if(requiresNoOverflow > 0 && document.body.className.indexOf(classes.noOverflow) < 0){
+                //first open modal or first maximized one
+                addClass(document.body, classes.noOverflow);
+            }
+        }
+		
+        /**
+         * Sets the name of the transition used to show/hide the dialog
+         * 
+         * @param {Object} instance The dilog instance.
+         *
+         */
+        function updateTransition(instance, value, oldValue){
+            if(typeof oldValue === 'string'){
+                removeClass(instance.elements.root,classes.prefix +  oldValue);
+            }
+            addClass(instance.elements.root, classes.prefix + value);
+            reflow = instance.elements.root.offsetWidth;
+        }
+		
+        /**
+         * Toggles the dialog display mode
+         *
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function updateDisplayMode(instance){
+            if(instance.get('modal')){
+
+                //make modal
+                removeClass(instance.elements.root, classes.modeless);
+				
+                //only if open
+                if(instance.isOpen()){
+                    unbindModelessEvents(instance);
+					
+                    //in case a pinned modless dialog was made modal while open.
+                    updateAbsPositionFix(instance);
+					
+                    ensureNoOverflow();
+                }
+            }else{
+                //make modelss
+                addClass(instance.elements.root, classes.modeless);
+								
+                //only if open
+                if(instance.isOpen()){
+                    bindModelessEvents(instance);
+					
+                    //in case pin/unpin was called while a modal is open
+                    updateAbsPositionFix(instance);
+										
+                    ensureNoOverflow();
+                }
+            }
+        }
+
+        /**
+         * Toggles the dialog basic view mode 
+         *
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function updateBasicMode(instance){
+            if (instance.get('basic')) {
+                // add class
+                addClass(instance.elements.root, classes.basic);
+            } else {
+                // remove class
+                removeClass(instance.elements.root, classes.basic);
+            }
+        }
+
+        /**
+         * Toggles the dialog frameless view mode 
+         *
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function updateFramelessMode(instance){
+            if (instance.get('frameless')) {
+                // add class
+                addClass(instance.elements.root, classes.frameless);
+            } else {
+                // remove class
+                removeClass(instance.elements.root, classes.frameless);
+            }
+        }
+		
+        /**
+         * Helper: Brings the modeless dialog to front, attached to modeless dialogs.
+         *
+         * @param {Event} event Focus event
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function bringToFront(event, instance){
+            
+            // Do not bring to front if preceeded by an open modal
+            var index = openDialogs.indexOf(instance);
+            for(var x=index+1;x<openDialogs.length;x+=1){
+                if(openDialogs[x].isModal()){
+                    return;
+                }
+            }
+			
+            // Bring to front by making it the last child.
+            if(document.body.lastChild !== instance.elements.root){
+                document.body.appendChild(instance.elements.root);
+                //also make sure its at the end of the list
+                openDialogs.splice(openDialogs.indexOf(instance),1);
+                openDialogs.push(instance);
+                setFocus(instance);
+            }
+			
+            return false;
+        }
+		
+        /**
+         * Helper: reflects dialogs options updates
+         *
+         * @param {Object} instance The dilog instance.
+         * @param {String} option The updated option name.
+         *
+         * @return	{undefined}	
+         */
+        function optionUpdated(instance, option, oldValue, newValue){
+            switch(option){
+            case 'title':
+                instance.setHeader(newValue);
+                break;
+            case 'modal':
+                updateDisplayMode(instance);
+                break;
+            case 'basic':
+                updateBasicMode(instance);
+                break;
+            case 'frameless':
+                updateFramelessMode(instance);
+                break;
+            case 'pinned':
+                updatePinned(instance);
+                break;
+            case 'closable':
+                updateClosable(instance);
+                break;
+            case 'maximizable':
+                updateMaximizable(instance);
+                break;
+            case 'pinnable':
+                updatePinnable(instance);
+                break;
+            case 'movable':
+                updateMovable(instance);
+                break;
+            case 'resizable':
+                updateResizable(instance);
+                break;
+            case 'transition':
+                updateTransition(instance,newValue, oldValue);
+                break;
+            case 'padding':
+                if(newValue){
+                    removeClass(instance.elements.root, classes.noPadding);
+                }else if(instance.elements.root.className.indexOf(classes.noPadding) < 0){
+                    addClass(instance.elements.root, classes.noPadding);
+                }
+                break;
+            case 'overflow':
+                if(newValue){
+                    removeClass(instance.elements.root, classes.noOverflow);
+                }else if(instance.elements.root.className.indexOf(classes.noOverflow) < 0){
+                    addClass(instance.elements.root, classes.noOverflow);
+                }
+                break;
+            case 'transition':
+                updateTransition(instance,newValue, oldValue);
+                break;
+            }
+
+            // internal on option updated event
+            if(typeof instance.hooks.onupdate === 'function'){
+                instance.hooks.onupdate.call(instance, option, oldValue, newValue);
+            }
+        }
+		
+        /**
+         * Helper: reflects dialogs options updates
+         *
+         * @param {Object} instance The dilog instance.
+         * @param {Object} obj The object to set/get a value on/from.
+         * @param {Function} callback The callback function to call if the key was found.
+         * @param {String|Object} key A string specifying a propery name or a collection of key value pairs.
+         * @param {Object} value Optional, the value associated with the key (in case it was a string).
+         * @param {String} option The updated option name.
+         *
+         * @return	{Object} result object 
+         *	The result objects has an 'op' property, indicating of this is a SET or GET operation.
+         *		GET: 
+         *		- found: a flag indicating if the key was found or not.
+         *		- value: the property value.
+         *		SET:
+         *		- items: a list of key value pairs of the properties being set.
+         *				each contains:
+         *					- found: a flag indicating if the key was found or not.
+         *					- key: the property key.
+         *					- value: the property value.
+         */
+        function update(instance, obj, callback, key, value){
+            var result = {op:undefined, items: [] };
+            if(typeof value === 'undefined' && typeof key === 'string') {
+                //get
+                result.op = 'get';
+                if(obj.hasOwnProperty(key)){
+                    result.found = true;
+                    result.value = obj[key];
+                }else{
+                    result.found = false;
+                    result.value = undefined;
+                }
+            }
+            else
+            {
+                var old;
+                //set
+                result.op = 'set';
+                if(typeof key === 'object'){
+                    //set multiple
+                    var args = key;
+                    for (var prop in args) {
+                        if (obj.hasOwnProperty(prop)) {
+                            if(obj[prop] !== args[prop]){
+                                old = obj[prop];
+                                obj[prop] = args[prop];
+                                callback.call(instance,prop, old, args[prop]);
+                            }
+                            result.items.push({ 'key': prop, 'value': args[prop], 'found':true});
+                        }else{
+                            result.items.push({ 'key': prop, 'value': args[prop], 'found':false});
+                        }
+                    }
+                } else if (typeof key === 'string'){
+                    //set single
+                    if (obj.hasOwnProperty(key)) {
+                        if(obj[key] !== value){
+                            old  = obj[key];
+                            obj[key] = value;
+                            callback.call(instance,key, old, value);
+                        }
+                        result.items.push({'key': key, 'value': value , 'found':true});
+						
+                    }else{
+                        result.items.push({'key': key, 'value': value , 'found':false});
+                    }
+                } else {
+                    //invalid params
+                    throw new Error('args must be a string or object');
+                }
+            }
+            return result;
+        }
+		
+
+        /**
+         * Triggers a close event.
+         *
+         * @param {Object} instance	The dilog instance.
+         * 
+         * @return {undefined}
+         */
+        function triggerClose(instance) {
+            var found;
+            triggerCallback(instance, function (button) {
+                return found = (button.invokeOnClose === true);
+            });
+            //none of the buttons registered as onclose callback
+            //close the dialog
+            if (!found && instance.isOpen()) {
+                instance.close();
+            }
+        }
+
+        /**
+         * Dialogs commands event handler, attached to the dialog commands element.
+         *
+         * @param {Event} event	DOM event object.
+         * @param {Object} instance	The dilog instance.
+         * 
+         * @return {undefined}
+         */
+        function commandsClickHandler(event, instance) {
+            var target = event.srcElement || event.target;
+            switch (target) {
+            case instance.elements.commands.pin:
+                if (!instance.isPinned()) {
+                    pin(instance);
+                } else {
+                    unpin(instance);
+                }
+                break;
+            case instance.elements.commands.maximize:
+                if (!instance.isMaximized()) {
+                    maximize(instance);
+                } else {
+                    restore(instance);
+                }
+                break;
+            case instance.elements.commands.close:
+                triggerClose(instance);
+                break;
+            }
+            return false;
+        }
+
+        /**
+         * Helper: pins the modeless dialog.
+         *
+         * @param {Object} instance	The dialog instance.
+         * 
+         * @return {undefined}
+         */
+        function pin(instance) {
+            //pin the dialog
+            instance.set('pinned', true);
+        }
+
+        /**
+         * Helper: unpins the modeless dialog.
+         *
+         * @param {Object} instance	The dilog instance.
+         * 
+         * @return {undefined}
+         */
+        function unpin(instance) {
+            //unpin the dialog 
+            instance.set('pinned', false);
+        }
+
+
+        /**
+         * Helper: enlarges the dialog to fill the entire screen.
+         *
+         * @param {Object} instance	The dilog instance.
+         * 
+         * @return {undefined}
+         */
+        function maximize(instance) {
+            //maximize the dialog 
+            addClass(instance.elements.root, classes.maximized);
+            if (instance.isOpen()) {
+                ensureNoOverflow();
+            }
+        }
+
+        /**
+         * Helper: returns the dialog to its former size.
+         *
+         * @param {Object} instance	The dilog instance.
+         * 
+         * @return {undefined}
+         */
+        function restore(instance) {
+            //maximize the dialog 
+            removeClass(instance.elements.root, classes.maximized);
+            if (instance.isOpen()) {
+                ensureNoOverflow();
+            }
+        }
+
+        /**
+         * Show or hide the maximize box.
+         *
+         * @param {Object} instance The dilog instance.
+         * @param {Boolean} on True to add the behavior, removes it otherwise.
+         *
+         * @return {undefined}
+         */
+        function updatePinnable(instance) {
+            if (instance.get('pinnable')) {
+                // add class
+                addClass(instance.elements.root, classes.pinnable);
+            } else {
+                // remove class
+                removeClass(instance.elements.root, classes.pinnable);
+            }
+        }
+
+        /**
+         * Helper: Fixes the absolutly positioned modal div position.
+         *
+         * @param {Object} instance The dialog instance.
+         *
+         * @return {undefined}
+         */
+        function addAbsPositionFix(instance) {
+            var scrollLeft = getScrollLeft();
+            instance.elements.modal.style.marginTop = getScrollTop() + 'px';
+            instance.elements.modal.style.marginLeft = scrollLeft + 'px';
+            instance.elements.modal.style.marginRight = (-scrollLeft) + 'px';
+        }
+
+        /**
+         * Helper: Removes the absolutly positioned modal div position fix.
+         *
+         * @param {Object} instance The dialog instance.
+         *
+         * @return {undefined}
+         */
+        function removeAbsPositionFix(instance) {
+            var marginTop = parseInt(instance.elements.modal.style.marginTop, 10);
+            var marginLeft = parseInt(instance.elements.modal.style.marginLeft, 10);
+            instance.elements.modal.style.marginTop = '';
+            instance.elements.modal.style.marginLeft = '';
+            instance.elements.modal.style.marginRight = '';
+
+            if (instance.isOpen()) {
+                var top = 0,
+                    left = 0
+                ;
+                if (instance.elements.dialog.style.top !== '') {
+                    top = parseInt(instance.elements.dialog.style.top, 10);
+                }
+                instance.elements.dialog.style.top = (top + (marginTop - getScrollTop())) + 'px';
+
+                if (instance.elements.dialog.style.left !== '') {
+                    left = parseInt(instance.elements.dialog.style.left, 10);
+                }
+                instance.elements.dialog.style.left = (left + (marginLeft - getScrollLeft())) + 'px';
+            }
+        }
+        /**
+         * Helper: Adds/Removes the absolutly positioned modal div position fix based on its pinned setting.
+         *
+         * @param {Object} instance The dialog instance.
+         *
+         * @return {undefined}
+         */
+        function updateAbsPositionFix(instance) {
+            // if modeless and unpinned add fix
+            if (!instance.get('modal') && !instance.get('pinned')) {
+                addAbsPositionFix(instance);
+            } else {
+                removeAbsPositionFix(instance);
+            }
+        }
+        /**
+         * Toggles the dialog position lock | modeless only.
+         *
+         * @param {Object} instance The dilog instance.
+         * @param {Boolean} on True to make it modal, false otherwise.
+         *
+         * @return {undefined}
+         */
+        function updatePinned(instance) {
+            if (instance.get('pinned')) {
+                removeClass(instance.elements.root, classes.unpinned);
+                if (instance.isOpen()) {
+                    removeAbsPositionFix(instance);
+                }
+            } else {
+                addClass(instance.elements.root, classes.unpinned);
+                if (instance.isOpen() && !instance.isModal()) {
+                    addAbsPositionFix(instance);
+                }
+            }
+        }
+
+        /**
+         * Show or hide the maximize box.
+         *
+         * @param {Object} instance The dilog instance.
+         * @param {Boolean} on True to add the behavior, removes it otherwise.
+         *
+         * @return {undefined}
+         */
+        function updateMaximizable(instance) {
+            if (instance.get('maximizable')) {
+                // add class
+                addClass(instance.elements.root, classes.maximizable);
+            } else {
+                // remove class
+                removeClass(instance.elements.root, classes.maximizable);
+            }
+        }
+
+        /**
+         * Show or hide the close box.
+         *
+         * @param {Object} instance The dilog instance.
+         * @param {Boolean} on True to add the behavior, removes it otherwise.
+         *
+         * @return {undefined}
+         */
+        function updateClosable(instance) {
+            if (instance.get('closable')) {
+                // add class
+                addClass(instance.elements.root, classes.closable);
+                bindClosableEvents(instance);
+            } else {
+                // remove class
+                removeClass(instance.elements.root, classes.closable);
+                unbindClosableEvents(instance);
+            }
+        }
+
+        // flag to cancel click event if already handled by end resize event (the mousedown, mousemove, mouseup sequence fires a click event.).
+        var cancelClick = false;
+
+        /**
+         * Helper: closes the modal dialog when clicking the modal
+         *
+         * @param {Event} event	DOM event object.
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function modalClickHandler(event, instance) {
+            var target = event.srcElement || event.target;
+            if (!cancelClick && target === instance.elements.modal && instance.get('closableByDimmer') === true) {
+                triggerClose(instance);
+            }
+            cancelClick = false;
+            return false;
+        }
+
+        // flag to cancel keyup event if already handled by click event (pressing Enter on a focusted button).
+        var cancelKeyup = false;
+        /** 
+         * Helper: triggers a button callback
+         *
+         * @param {Object}		The dilog instance.
+         * @param {Function}	Callback to check which button triggered the event.
+         *
+         * @return {undefined}
+         */
+        function triggerCallback(instance, check) {
+            for (var idx = 0; idx < instance.__internal.buttons.length; idx += 1) {
+                var button = instance.__internal.buttons[idx];
+                if (!button.element.disabled && check(button)) {
+                    var closeEvent = createCloseEvent(idx, button);
+                    if (typeof instance.callback === 'function') {
+                        instance.callback.apply(instance, [closeEvent]);
+                    }
+                    //close the dialog only if not canceled.
+                    if (closeEvent.cancel === false) {
+                        instance.close();
+                    }
+                    break;
+                }
+            }
+        }
+
+        /**
+         * Clicks event handler, attached to the dialog footer.
+         *
+         * @param {Event}		DOM event object.
+         * @param {Object}		The dilog instance.
+         * 
+         * @return {undefined}
+         */
+        function buttonsClickHandler(event, instance) {
+            var target = event.srcElement || event.target;
+            triggerCallback(instance, function (button) {
+                // if this button caused the click, cancel keyup event
+                return button.element === target && (cancelKeyup = true);
+            });
+        }
+
+        /**
+         * Keyup event handler, attached to the document.body
+         *
+         * @param {Event}		DOM event object.
+         * @param {Object}		The dilog instance.
+         * 
+         * @return {undefined}
+         */
+        function keyupHandler(event) {
+            //hitting enter while button has focus will trigger keyup too.
+            //ignore if handled by clickHandler
+            if (cancelKeyup) {
+                cancelKeyup = false;
+                return;
+            }
+            var instance = openDialogs[openDialogs.length - 1];
+            var keyCode = event.keyCode;
+            if (instance.__internal.buttons.length === 0 && keyCode === keys.ESC && instance.get('closable') === true) {
+                triggerClose(instance);
+                return false;
+            }else if (usedKeys.indexOf(keyCode) > -1) {
+                triggerCallback(instance, function (button) {
+                    return button.key === keyCode;
+                });
+                return false;
+            }
+        }
+        /**
+        * Keydown event handler, attached to the document.body
+        *
+        * @param {Event}		DOM event object.
+        * @param {Object}		The dilog instance.
+        * 
+        * @return {undefined}
+        */
+        function keydownHandler(event) {
+            var instance = openDialogs[openDialogs.length - 1];
+            var keyCode = event.keyCode;
+            if (keyCode === keys.LEFT || keyCode === keys.RIGHT) {
+                var buttons = instance.__internal.buttons;
+                for (var x = 0; x < buttons.length; x += 1) {
+                    if (document.activeElement === buttons[x].element) {
+                        switch (keyCode) {
+                        case keys.LEFT:
+                            buttons[(x || buttons.length) - 1].element.focus();
+                            return;
+                        case keys.RIGHT:
+                            buttons[(x + 1) % buttons.length].element.focus();
+                            return;
+                        }
+                    }
+                }
+            }else if (keyCode < keys.F12 + 1 && keyCode > keys.F1 - 1 && usedKeys.indexOf(keyCode) > -1) {
+                event.preventDefault();
+                event.stopPropagation();
+                triggerCallback(instance, function (button) {
+                    return button.key === keyCode;
+                });
+                return false;
+            }
+        }
+
+
+        /**
+         * Sets focus to proper dialog element
+         *
+         * @param {Object} instance The dilog instance.
+         * @param {Node} [resetTarget=undefined] DOM element to reset focus to.
+         *
+         * @return {undefined}
+         */
+        function setFocus(instance, resetTarget) {
+            // reset target has already been determined.
+            if (resetTarget) {
+                resetTarget.focus();
+            } else {
+                // current instance focus settings
+                var focus = instance.__internal.focus;
+                // the focus element.
+                var element = focus.element;
+
+                switch (typeof focus.element) {
+                // a number means a button index
+                case 'number':
+                    if (instance.__internal.buttons.length > focus.element) {
+                        //in basic view, skip focusing the buttons.
+                        if (instance.get('basic') === true) {
+                            element = instance.elements.reset[0];
+                        } else {
+                            element = instance.__internal.buttons[focus.element].element;
+                        }
+                    }
+                    break;
+                // a string means querySelector to select from dialog body contents.
+                case 'string':
+                    element = instance.elements.body.querySelector(focus.element);
+                    break;
+                // a function should return the focus element.
+                case 'function':
+                    element = focus.element.call(instance);
+                    break;
+                }
+                
+                // if no focus element, default to first reset element.
+                if ((typeof element === 'undefined' || element === null) && instance.__internal.buttons.length === 0) {
+                    element = instance.elements.reset[0];
+                }
+                // focus
+                if (element && element.focus) {
+                    element.focus();
+                    // if selectable
+                    if (focus.select && element.select) {
+                        element.select();
+                    }
+                }
+            }
+        }
+
+        /**
+         * Focus event handler, attached to document.body and dialogs own reset links.
+         * handles the focus for modal dialogs only.
+         *
+         * @param {Event} event DOM focus event object.
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function onReset(event, instance) {
+
+            // should work on last modal if triggered from document.body 
+            if (!instance) {
+                for (var x = openDialogs.length - 1; x > -1; x -= 1) {
+                    if (openDialogs[x].isModal()) {
+                        instance = openDialogs[x];
+                        break;
+                    }
+                }
+            }
+            // if modal
+            if (instance && instance.isModal()) {
+                // determine reset target to enable forward/backward tab cycle.
+                var resetTarget, target = event.srcElement || event.target;
+                var lastResetElement = target === instance.elements.reset[1] || (instance.__internal.buttons.length === 0 && target === document.body);
+
+                // if last reset link, then go to maximize or close
+                if (lastResetElement) {
+                    if (instance.get('maximizable')) {
+                        resetTarget = instance.elements.commands.maximize;
+                    } else if (instance.get('closable')) {
+                        resetTarget = instance.elements.commands.close;
+                    }
+                }
+                // if no reset target found, try finding the best button
+                if (resetTarget === undefined) {
+                    if (typeof instance.__internal.focus.element === 'number') {
+                        // button focus element, go to first available button
+                        if (target === instance.elements.reset[0]) {
+                            resetTarget = instance.elements.buttons.auxiliary.firstChild || instance.elements.buttons.primary.firstChild;
+                        } else if (lastResetElement) {
+                            //restart the cycle by going to first reset link
+                            resetTarget = instance.elements.reset[0];
+                        }
+                    } else {
+                        // will reach here when tapping backwards, so go to last child
+                        // The focus element SHOULD NOT be a button (logically!).
+                        if (target === instance.elements.reset[0]) {
+                            resetTarget = instance.elements.buttons.primary.lastChild || instance.elements.buttons.auxiliary.lastChild;
+                        }
+                    }
+                }
+                // focus
+                setFocus(instance, resetTarget);
+            }
+        }
+        /**
+         * Transition in transitionend event handler. 
+         *
+         * @param {Event}		TransitionEnd event object.
+         * @param {Object}		The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function handleTransitionInEvent(event, instance) {
+            // clear the timer
+            clearTimeout(instance.__internal.timerIn);
+
+            // once transition is complete, set focus
+            setFocus(instance);
+
+            //restore scroll to prevent document jump
+            restoreScrollPosition();
+
+            // allow handling key up after transition ended.
+            cancelKeyup = false;
+
+            // allow custom `onfocus` method
+            if (typeof instance.get('onfocus') === 'function') {
+                instance.get('onfocus').call(instance);
+            }
+
+            // unbind the event
+            off(instance.elements.dialog, transition.type, instance.__internal.transitionInHandler);
+
+            removeClass(instance.elements.root, classes.animationIn);
+        }
+
+        /**
+         * Transition out transitionend event handler. 
+         *
+         * @param {Event}		TransitionEnd event object.
+         * @param {Object}		The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function handleTransitionOutEvent(event, instance) {
+            // clear the timer
+            clearTimeout(instance.__internal.timerOut);
+            // unbind the event
+            off(instance.elements.dialog, transition.type, instance.__internal.transitionOutHandler);
+
+            // reset move updates
+            resetMove(instance);
+            // reset resize updates
+            resetResize(instance);
+
+            // restore if maximized
+            if (instance.isMaximized() && !instance.get('startMaximized')) {
+                restore(instance);
+            }
+
+            // return focus to the last active element
+            if (alertify.defaults.maintainFocus && instance.__internal.activeElement) {
+                instance.__internal.activeElement.focus();
+                instance.__internal.activeElement = null;
+            }
+        }
+        /* Controls moving a dialog around */
+        //holde the current moving instance
+        var movable = null,
+            //holds the current X offset when move starts
+            offsetX = 0,
+            //holds the current Y offset when move starts
+            offsetY = 0,
+            xProp = 'pageX',
+            yProp = 'pageY'
+        ;
+
+        /**
+         * Helper: sets the element top/left coordinates
+         *
+         * @param {Event} event	DOM event object.
+         * @param {Node} element The element being moved.
+         * 
+         * @return {undefined}
+         */
+        function moveElement(event, element) {
+            element.style.left = (event[xProp] - offsetX) + 'px';
+            element.style.top = (event[yProp] - offsetY) + 'px';
+        }
+
+        /**
+         * Triggers the start of a move event, attached to the header element mouse down event.
+         * Adds no-selection class to the body, disabling selection while moving.
+         *
+         * @param {Event} event	DOM event object.
+         * @param {Object} instance The dilog instance.
+         * 
+         * @return {Boolean} false
+         */
+        function beginMove(event, instance) {
+            if (resizable === null && !instance.isMaximized() && instance.get('movable')) {
+                var eventSrc;
+                if (event.type === 'touchstart') {
+                    event.preventDefault();
+                    eventSrc = event.targetTouches[0];
+                    xProp = 'clientX';
+                    yProp = 'clientY';
+                } else if (event.button === 0) {
+                    eventSrc = event;
+                }
+
+                if (eventSrc) {
+
+                    movable = instance;
+                    offsetX = eventSrc[xProp];
+                    offsetY = eventSrc[yProp];
+
+                    var element = instance.elements.dialog;
+                    addClass(element, classes.capture);
+
+                    if (element.style.left) {
+                        offsetX -= parseInt(element.style.left, 10);
+                    }
+
+                    if (element.style.top) {
+                        offsetY -= parseInt(element.style.top, 10);
+                    }
+                    moveElement(eventSrc, element);
+
+                    addClass(document.body, classes.noSelection);
+                    return false;
+                }
+            }
+        }
+
+        /**
+         * The actual move handler,  attached to document.body mousemove event.
+         *
+         * @param {Event} event	DOM event object.
+         * 
+         * @return {undefined}
+         */
+        function move(event) {
+            if (movable) {
+                var eventSrc;
+                if (event.type === 'touchmove') {
+                    event.preventDefault();
+                    eventSrc = event.targetTouches[0];
+                } else if (event.button === 0) {
+                    eventSrc = event;
+                }
+                if (eventSrc) {
+                    moveElement(eventSrc, movable.elements.dialog);
+                }
+            }
+        }
+
+        /**
+         * Triggers the end of a move event,  attached to document.body mouseup event.
+         * Removes no-selection class from document.body, allowing selection.
+         *
+         * @return {undefined}
+         */
+        function endMove() {
+            if (movable) {
+                var element = movable.elements.dialog;
+                movable = null;
+                removeClass(document.body, classes.noSelection);
+                removeClass(element, classes.capture);
+            }
+        }
+
+        /**
+         * Resets any changes made by moving the element to its original state,
+         *
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function resetMove(instance) {
+            movable = null;
+            var element = instance.elements.dialog;
+            element.style.left = element.style.top = '';
+        }
+
+        /**
+         * Updates the dialog move behavior.
+         *
+         * @param {Object} instance The dilog instance.
+         * @param {Boolean} on True to add the behavior, removes it otherwise.
+         *
+         * @return {undefined}
+         */
+        function updateMovable(instance) {
+            if (instance.get('movable')) {
+                // add class
+                addClass(instance.elements.root, classes.movable);
+                if (instance.isOpen()) {
+                    bindMovableEvents(instance);
+                }
+            } else {
+
+                //reset
+                resetMove(instance);
+                // remove class
+                removeClass(instance.elements.root, classes.movable);
+                if (instance.isOpen()) {
+                    unbindMovableEvents(instance);
+                }
+            }
+        }
+
+        /* Controls moving a dialog around */
+        //holde the current instance being resized		
+        var resizable = null,
+            //holds the staring left offset when resize starts.
+            startingLeft = Number.Nan,
+            //holds the staring width when resize starts.
+            startingWidth = 0,
+            //holds the initial width when resized for the first time.
+            minWidth = 0,
+            //holds the offset of the resize handle.
+            handleOffset = 0
+        ;
+
+        /**
+         * Helper: sets the element width/height and updates left coordinate if neccessary.
+         *
+         * @param {Event} event	DOM mousemove event object.
+         * @param {Node} element The element being moved.
+         * @param {Boolean} pinned A flag indicating if the element being resized is pinned to the screen.
+         * 
+         * @return {undefined}
+         */
+        function resizeElement(event, element, pageRelative) {
+
+            //calculate offsets from 0,0
+            var current = element;
+            var offsetLeft = 0;
+            var offsetTop = 0;
+            do {
+                offsetLeft += current.offsetLeft;
+                offsetTop += current.offsetTop;
+            } while (current = current.offsetParent);
+
+            // determine X,Y coordinates.
+            var X, Y;
+            if (pageRelative === true) {
+                X = event.pageX;
+                Y = event.pageY;
+            } else {
+                X = event.clientX;
+                Y = event.clientY;
+            }
+            // rtl handling
+            var isRTL = isRightToLeft();
+            if (isRTL) {
+                // reverse X 
+                X = document.body.offsetWidth - X;
+                // if has a starting left, calculate offsetRight
+                if (!isNaN(startingLeft)) {
+                    offsetLeft = document.body.offsetWidth - offsetLeft - element.offsetWidth;
+                }
+            }
+
+            // set width/height
+            element.style.height = (Y - offsetTop + handleOffset) + 'px';
+            element.style.width = (X - offsetLeft + handleOffset) + 'px';
+
+            // if the element being resized has a starting left, maintain it.
+            // the dialog is centered, divide by half the offset to maintain the margins.
+            if (!isNaN(startingLeft)) {
+                var diff = Math.abs(element.offsetWidth - startingWidth) * 0.5;
+                if (isRTL) {
+                    //negate the diff, why?
+                    //when growing it should decrease left
+                    //when shrinking it should increase left
+                    diff *= -1;
+                }
+                if (element.offsetWidth > startingWidth) {
+                    //growing
+                    element.style.left = (startingLeft + diff) + 'px';
+                } else if (element.offsetWidth >= minWidth) {
+                    //shrinking
+                    element.style.left = (startingLeft - diff) + 'px';
+                }
+            }
+        }
+
+        /**
+         * Triggers the start of a resize event, attached to the resize handle element mouse down event.
+         * Adds no-selection class to the body, disabling selection while moving.
+         *
+         * @param {Event} event	DOM event object.
+         * @param {Object} instance The dilog instance.
+         * 
+         * @return {Boolean} false
+         */
+        function beginResize(event, instance) {
+            if (!instance.isMaximized()) {
+                var eventSrc;
+                if (event.type === 'touchstart') {
+                    event.preventDefault();
+                    eventSrc = event.targetTouches[0];
+                } else if (event.button === 0) {
+                    eventSrc = event;
+                }
+                if (eventSrc) {
+                    resizable = instance;
+                    handleOffset = instance.elements.resizeHandle.offsetHeight / 2;
+                    var element = instance.elements.dialog;
+                    addClass(element, classes.capture);
+                    startingLeft = parseInt(element.style.left, 10);
+                    element.style.height = element.offsetHeight + 'px';
+                    element.style.minHeight = instance.elements.header.offsetHeight + instance.elements.footer.offsetHeight + 'px';
+                    element.style.width = (startingWidth = element.offsetWidth) + 'px';
+
+                    if (element.style.maxWidth !== 'none') {
+                        element.style.minWidth = (minWidth = element.offsetWidth) + 'px';
+                    }
+                    element.style.maxWidth = 'none';
+                    addClass(document.body, classes.noSelection);
+                    return false;
+                }
+            }
+        }
+
+        /**
+         * The actual resize handler,  attached to document.body mousemove event.
+         *
+         * @param {Event} event	DOM event object.
+         * 
+         * @return {undefined}
+         */
+        function resize(event) {
+            if (resizable) {
+                var eventSrc;
+                if (event.type === 'touchmove') {
+                    event.preventDefault();
+                    eventSrc = event.targetTouches[0];
+                } else if (event.button === 0) {
+                    eventSrc = event;
+                }
+                if (eventSrc) {
+                    resizeElement(eventSrc, resizable.elements.dialog, !resizable.get('modal') && !resizable.get('pinned'));
+                }
+            }
+        }
+
+        /**
+         * Triggers the end of a resize event,  attached to document.body mouseup event.
+         * Removes no-selection class from document.body, allowing selection.
+         *
+         * @return {undefined}
+         */
+        function endResize() {
+            if (resizable) {
+                var element = resizable.elements.dialog;
+                resizable = null;
+                removeClass(document.body, classes.noSelection);
+                removeClass(element, classes.capture);
+                cancelClick = true;
+            }
+        }
+
+        /**
+         * Resets any changes made by resizing the element to its original state.
+         *
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function resetResize(instance) {
+            resizable = null;
+            var element = instance.elements.dialog;
+            if (element.style.maxWidth === 'none') {
+                //clear inline styles.
+                element.style.maxWidth = element.style.minWidth = element.style.width = element.style.height = element.style.minHeight = element.style.left = '';
+                //reset variables.
+                startingLeft = Number.Nan;
+                startingWidth = minWidth = handleOffset = 0;
+            }
+        }
+
+
+        /**
+         * Updates the dialog move behavior.
+         *
+         * @param {Object} instance The dilog instance.
+         * @param {Boolean} on True to add the behavior, removes it otherwise.
+         *
+         * @return {undefined}
+         */
+        function updateResizable(instance) {
+            if (instance.get('resizable')) {
+                // add class
+                addClass(instance.elements.root, classes.resizable);
+                if (instance.isOpen()) {
+                    bindResizableEvents(instance);
+                }
+            } else {
+                //reset
+                resetResize(instance);
+                // remove class
+                removeClass(instance.elements.root, classes.resizable);
+                if (instance.isOpen()) {
+                    unbindResizableEvents(instance);
+                }
+            }
+        }
+
+        /**
+         * Reset move/resize on window resize.
+         *
+         * @param {Event} event	window resize event object.
+         *
+         * @return {undefined}
+         */
+        function windowResize(/*event*/) {
+            for (var x = 0; x < openDialogs.length; x += 1) {
+                var instance = openDialogs[x];
+                if (instance.get('autoReset')) {
+                    resetMove(instance);
+                    resetResize(instance);
+                }
+            }
+        }
+        /**
+         * Bind dialogs events
+         *
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function bindEvents(instance) {
+            // if first dialog, hook global handlers
+            if (openDialogs.length === 1) {
+                //global
+                on(window, 'resize', windowResize);
+                on(document.body, 'keyup', keyupHandler);
+                on(document.body, 'keydown', keydownHandler);
+                on(document.body, 'focus', onReset);
+
+                //move
+                on(document.documentElement, 'mousemove', move);
+                on(document.documentElement, 'touchmove', move);
+                on(document.documentElement, 'mouseup', endMove);
+                on(document.documentElement, 'touchend', endMove);
+                //resize
+                on(document.documentElement, 'mousemove', resize);
+                on(document.documentElement, 'touchmove', resize);
+                on(document.documentElement, 'mouseup', endResize);
+                on(document.documentElement, 'touchend', endResize);
+            }
+
+            // common events
+            on(instance.elements.commands.container, 'click', instance.__internal.commandsClickHandler);
+            on(instance.elements.footer, 'click', instance.__internal.buttonsClickHandler);
+            on(instance.elements.reset[0], 'focus', instance.__internal.resetHandler);
+            on(instance.elements.reset[1], 'focus', instance.__internal.resetHandler);
+
+            //prevent handling key up when dialog is being opened by a key stroke.
+            cancelKeyup = true;
+            // hook in transition handler
+            on(instance.elements.dialog, transition.type, instance.__internal.transitionInHandler);
+
+            // modelss only events
+            if (!instance.get('modal')) {
+                bindModelessEvents(instance);
+            }
+
+            // resizable
+            if (instance.get('resizable')) {
+                bindResizableEvents(instance);
+            }
+
+            // movable
+            if (instance.get('movable')) {
+                bindMovableEvents(instance);
+            }
+        }
+
+        /**
+         * Unbind dialogs events
+         *
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function unbindEvents(instance) {
+            // if last dialog, remove global handlers
+            if (openDialogs.length === 1) {
+                //global
+                off(window, 'resize', windowResize);
+                off(document.body, 'keyup', keyupHandler);
+                off(document.body, 'keydown', keydownHandler);
+                off(document.body, 'focus', onReset);
+                //move
+                off(document.documentElement, 'mousemove', move);
+                off(document.documentElement, 'mouseup', endMove);
+                //resize
+                off(document.documentElement, 'mousemove', resize);
+                off(document.documentElement, 'mouseup', endResize);
+            }
+
+            // common events
+            off(instance.elements.commands.container, 'click', instance.__internal.commandsClickHandler);
+            off(instance.elements.footer, 'click', instance.__internal.buttonsClickHandler);
+            off(instance.elements.reset[0], 'focus', instance.__internal.resetHandler);
+            off(instance.elements.reset[1], 'focus', instance.__internal.resetHandler);
+
+            // hook out transition handler
+            on(instance.elements.dialog, transition.type, instance.__internal.transitionOutHandler);
+
+            // modelss only events
+            if (!instance.get('modal')) {
+                unbindModelessEvents(instance);
+            }
+
+            // movable
+            if (instance.get('movable')) {
+                unbindMovableEvents(instance);
+            }
+
+            // resizable
+            if (instance.get('resizable')) {
+                unbindResizableEvents(instance);
+            }
+
+        }
+
+        /**
+         * Bind modeless specific events
+         *
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function bindModelessEvents(instance) {
+            on(instance.elements.dialog, 'focus', instance.__internal.bringToFrontHandler, true);
+        }
+
+        /**
+         * Unbind modeless specific events
+         *
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function unbindModelessEvents(instance) {
+            off(instance.elements.dialog, 'focus', instance.__internal.bringToFrontHandler, true);
+        }
+
+
+
+        /**
+         * Bind movable specific events
+         *
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function bindMovableEvents(instance) {
+            on(instance.elements.header, 'mousedown', instance.__internal.beginMoveHandler);
+            on(instance.elements.header, 'touchstart', instance.__internal.beginMoveHandler);
+        }
+
+        /**
+         * Unbind movable specific events
+         *
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function unbindMovableEvents(instance) {
+            off(instance.elements.header, 'mousedown', instance.__internal.beginMoveHandler);
+            off(instance.elements.header, 'touchstart', instance.__internal.beginMoveHandler);
+        }
+
+
+
+        /**
+         * Bind resizable specific events
+         *
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function bindResizableEvents(instance) {
+            on(instance.elements.resizeHandle, 'mousedown', instance.__internal.beginResizeHandler);
+            on(instance.elements.resizeHandle, 'touchstart', instance.__internal.beginResizeHandler);
+        }
+
+        /**
+         * Unbind resizable specific events
+         *
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function unbindResizableEvents(instance) {
+            off(instance.elements.resizeHandle, 'mousedown', instance.__internal.beginResizeHandler);
+            off(instance.elements.resizeHandle, 'touchstart', instance.__internal.beginResizeHandler);
+        }
+
+        /**
+         * Bind closable events
+         *
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function bindClosableEvents(instance) {
+            on(instance.elements.modal, 'click', instance.__internal.modalClickHandler);
+        }
+
+        /**
+         * Unbind closable specific events
+         *
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function unbindClosableEvents(instance) {
+            off(instance.elements.modal, 'click', instance.__internal.modalClickHandler);
+        }
+        // dialog API
+        return {
+            __init:initialize,
+            /**
+             * Check if dialog is currently open
+             *
+             * @return {Boolean}
+             */
+            isOpen: function () {
+                return this.__internal.isOpen;
+            },
+            isModal: function (){
+                return this.elements.root.className.indexOf(classes.modeless) < 0;
+            },
+            isMaximized:function(){
+                return this.elements.root.className.indexOf(classes.maximized) > -1;
+            },
+            isPinned:function(){
+                return this.elements.root.className.indexOf(classes.unpinned) < 0;
+            },
+            maximize:function(){
+                if(!this.isMaximized()){
+                    maximize(this);
+                }
+                return this;
+            },
+            restore:function(){
+                if(this.isMaximized()){
+                    restore(this);
+                }
+                return this;
+            },
+            pin:function(){
+                if(!this.isPinned()){
+                    pin(this);
+                }
+                return this;
+            },
+            unpin:function(){
+                if(this.isPinned()){
+                    unpin(this);
+                }
+                return this;
+            },
+            /**
+             * Move the dialog to a specific x/y coordinates
+             *
+             * @param {Number} x    The new dialog x coordinate in pixels.
+             * @param {Number} y    The new dialog y coordinate in pixels.
+             *
+             * @return {Object} The dialog instance.
+             */
+            moveTo:function(x,y){
+                if(!isNaN(x) && !isNaN(y)){
+                    var element = this.elements.dialog,
+                        current = element,
+                        offsetLeft = 0,
+                        offsetTop = 0;
+                    
+                    //subtract existing left,top
+                    if (element.style.left) {
+                        offsetLeft -= parseInt(element.style.left, 10);
+                    }
+                    if (element.style.top) {
+                        offsetTop -= parseInt(element.style.top, 10);
+                    }
+                    //calc offset
+                    do {
+                        offsetLeft += current.offsetLeft;
+                        offsetTop += current.offsetTop;
+                    } while (current = current.offsetParent);
+
+                    //calc left, top
+                    var left = (x - offsetLeft);
+                    var top  = (y - offsetTop);
+
+                    //// rtl handling
+                    if (isRightToLeft()) {
+                        left *= -1;
+                    }
+
+                    element.style.left = left + 'px';
+                    element.style.top = top + 'px';
+                }
+                return this;
+            },
+            /**
+             * Resize the dialog to a specific width/height (the dialog must be 'resizable').
+             * The dialog can be resized to:
+             *  A minimum width equal to the initial display width
+             *  A minimum height equal to the sum of header/footer heights.
+             *
+             *
+             * @param {Number or String} width    The new dialog width in pixels or in percent.
+             * @param {Number or String} height   The new dialog height in pixels or in percent.
+             *
+             * @return {Object} The dialog instance.
+             */
+            resizeTo:function(width,height){
+                var w = parseFloat(width),
+                    h = parseFloat(height),
+                    regex = /(\d*\.\d+|\d+)%/
+                ;
+
+                if(!isNaN(w) && !isNaN(h) && this.get('resizable') === true){
+
+                    if(('' + width).match(regex)){
+                        w = w / 100 * document.documentElement.clientWidth ;
+                    }
+
+                    if(('' + height).match(regex)){
+                        h = h / 100 * document.documentElement.clientHeight;
+                    }
+
+                    var element = this.elements.dialog;
+                    if (element.style.maxWidth !== 'none') {
+                        element.style.minWidth = (minWidth = element.offsetWidth) + 'px';
+                    }
+                    element.style.maxWidth = 'none';
+                    element.style.minHeight = this.elements.header.offsetHeight + this.elements.footer.offsetHeight + 'px';
+                    element.style.width = w + 'px';
+                    element.style.height = h + 'px';
+                }
+                return this;
+            },
+            /**
+             * Gets or Sets dialog settings/options 
+             *
+             * @param {String|Object} key A string specifying a propery name or a collection of key/value pairs.
+             * @param {Object} value Optional, the value associated with the key (in case it was a string).
+             *
+             * @return {undefined}
+             */
+            setting : function (key, value) {
+                var self = this;
+                var result = update(this, this.__internal.options, function(k,o,n){ optionUpdated(self,k,o,n); }, key, value);
+                if(result.op === 'get'){
+                    if(result.found){
+                        return result.value;
+                    }else if(typeof this.settings !== 'undefined'){
+                        return update(this, this.settings, this.settingUpdated || function(){}, key, value).value;
+                    }else{
+                        return undefined;
+                    }
+                }else if(result.op === 'set'){
+                    if(result.items.length > 0){
+                        var callback = this.settingUpdated || function(){};
+                        for(var x=0;x<result.items.length;x+=1){
+                            var item = result.items[x];
+                            if(!item.found && typeof this.settings !== 'undefined'){
+                                update(this, this.settings, callback, item.key, item.value);
+                            }
+                        }
+                    }
+                    return this;
+                }
+            },
+            /**
+             * [Alias] Sets dialog settings/options 
+             */
+            set:function(key, value){
+                this.setting(key,value);
+                return this;
+            },
+            /**
+             * [Alias] Gets dialog settings/options 
+             */
+            get:function(key){
+                return this.setting(key);
+            },
+            /**
+            * Sets dialog header
+            * @content {string or element}
+            *
+            * @return {undefined}
+            */
+            setHeader:function(content){
+                if(typeof content === 'string'){
+                    clearContents(this.elements.header);
+                    this.elements.header.innerHTML = content;
+                }else if (content instanceof window.HTMLElement && this.elements.header.firstChild !== content){
+                    clearContents(this.elements.header);
+                    this.elements.header.appendChild(content);
+                }
+                return this;
+            },
+            /**
+            * Sets dialog contents
+            * @content {string or element}
+            *
+            * @return {undefined}
+            */
+            setContent:function(content){
+                if(typeof content === 'string'){
+                    clearContents(this.elements.content);
+                    this.elements.content.innerHTML = content;
+                }else if (content instanceof window.HTMLElement && this.elements.content.firstChild !== content){
+                    clearContents(this.elements.content);
+                    this.elements.content.appendChild(content);
+                }
+                return this;
+            },
+            /**
+             * Show the dialog as modal
+             *
+             * @return {Object} the dialog instance.
+             */
+            showModal: function(className){
+                return this.show(true, className);
+            },
+            /**
+             * Show the dialog
+             *
+             * @return {Object} the dialog instance.
+             */
+            show: function (modal, className) {
+                
+                // ensure initialization
+                initialize(this);
+								
+                if ( !this.__internal.isOpen ) {
+					
+                    // add to open dialogs
+                    this.__internal.isOpen = true;
+                    openDialogs.push(this);
+
+                    // save last focused element
+                    if(alertify.defaults.maintainFocus){
+                        this.__internal.activeElement = document.activeElement;
+                    }
+
+                    //allow custom dom manipulation updates before showing the dialog.
+                    if(typeof this.prepare === 'function'){
+                        this.prepare();
+                    }
+
+                    bindEvents(this);
+
+                    if(modal !== undefined){
+                        this.set('modal', modal);
+                    }
+					
+                    //save scroll to prevent document jump
+                    saveScrollPosition();
+
+                    ensureNoOverflow();
+					
+                    // allow custom dialog class on show
+                    if(typeof className === 'string' && className !== ''){
+                        this.__internal.className = className;
+                        addClass(this.elements.root, className);
+                    }
+
+                    // maximize if start maximized
+                    if ( this.get('startMaximized')) {
+                        this.maximize();
+                    }else if(this.isMaximized()){
+                        restore(this);
+                    }
+					
+                    updateAbsPositionFix(this);
+
+                    removeClass(this.elements.root, classes.animationOut);
+                    addClass(this.elements.root, classes.animationIn);
+
+                    // set 1s fallback in case transition event doesn't fire
+                    clearTimeout( this.__internal.timerIn);
+                    this.__internal.timerIn = setTimeout( this.__internal.transitionInHandler, transition.supported ? 1000 : 100 );
+
+                    if(isSafari){
+                        // force desktop safari reflow
+                        var root = this.elements.root;
+                        root.style.display  = 'none';
+                        setTimeout(function(){root.style.display  = 'block';}, 0);
+                    }
+
+                    //reflow
+                    reflow = this.elements.root.offsetWidth;
+                  
+                    // show dialog
+                    removeClass(this.elements.root, classes.hidden);
+
+                    // internal on show event
+                    if(typeof this.hooks.onshow === 'function'){
+                        this.hooks.onshow.call(this);
+                    }
+
+                    // allow custom `onshow` method
+                    if ( typeof this.get('onshow') === 'function' ) {
+                        this.get('onshow').call(this);
+                    }
+
+                }else{
+                    // reset move updates
+                    resetMove(this);
+                    // reset resize updates
+                    resetResize(this);
+                    // shake the dialog to indicate its already open
+                    addClass(this.elements.dialog, classes.shake);
+                    var self = this;
+                    setTimeout(function(){
+                        removeClass(self.elements.dialog, classes.shake);
+                    },200);
+                }
+                return this;
+            },
+            /**
+             * Close the dialog
+             *
+             * @return {Object} The dialog instance
+             */
+            close: function () {
+                if (this.__internal.isOpen ) {
+					
+                    unbindEvents(this);
+					
+                    removeClass(this.elements.root, classes.animationIn);
+                    addClass(this.elements.root, classes.animationOut);
+
+                    // set 1s fallback in case transition event doesn't fire
+                    clearTimeout( this.__internal.timerOut );
+                    this.__internal.timerOut = setTimeout( this.__internal.transitionOutHandler, transition.supported ? 1000 : 100 );
+                    // hide dialog
+                    addClass(this.elements.root, classes.hidden);
+                    //reflow
+                    reflow = this.elements.modal.offsetWidth;
+
+                    // remove custom dialog class on hide
+                    if (typeof this.__internal.className !== 'undefined' && this.__internal.className !== '') {
+                        removeClass(this.elements.root, this.__internal.className);
+                    }
+
+                    // internal on close event
+                    if(typeof this.hooks.onclose === 'function'){
+                        this.hooks.onclose.call(this);
+                    }
+
+                    // allow custom `onclose` method
+                    if ( typeof this.get('onclose') === 'function' ) {
+                        this.get('onclose').call(this);
+                    }
+					
+                    //remove from open dialogs               
+                    openDialogs.splice(openDialogs.indexOf(this),1);
+                    this.__internal.isOpen = false;
+					
+                    ensureNoOverflow();
+					
+                }
+                return this;
+            },
+            /**
+             * Close all open dialogs except this.
+             *
+             * @return {undefined}
+             */
+            closeOthers:function(){
+                alertify.closeAll(this);
+                return this;
+            }
+        };
+	} () );
+    var notifier = (function () {
+        var reflow,
+            element,
+            openInstances = [],
+            classes = {
+                base: 'alertify-notifier',
+                message: 'ajs-message',
+                top: 'ajs-top',
+                right: 'ajs-right',
+                bottom: 'ajs-bottom',
+                left: 'ajs-left',
+                visible: 'ajs-visible',
+                hidden: 'ajs-hidden'
+            };
+        /**
+         * Helper: initializes the notifier instance
+         * 
+         */
+        function initialize(instance) {
+
+            if (!instance.__internal) {
+                instance.__internal = {
+                    position: alertify.defaults.notifier.position,
+                    delay: alertify.defaults.notifier.delay,
+                };
+
+                element = document.createElement('DIV');
+
+                updatePosition(instance);
+            }
+
+            //add to DOM tree.
+            if (element.parentNode !== document.body) {
+                document.body.appendChild(element);
+            }
+        }
+        
+        function pushInstance(instance) {
+            instance.__internal.pushed = true;
+            openInstances.push(instance);
+        }
+        function popInstance(instance) {
+            openInstances.splice(openInstances.indexOf(instance), 1);
+            instance.__internal.pushed = false;
+        }
+        /**
+         * Helper: update the notifier instance position
+         * 
+         */
+        function updatePosition(instance) {
+            element.className = classes.base;
+            switch (instance.__internal.position) {
+            case 'top-right':
+                addClass(element, classes.top + ' ' + classes.right);
+                break;
+            case 'top-left':
+                addClass(element, classes.top + ' ' + classes.left);
+                break;
+            case 'bottom-left':
+                addClass(element, classes.bottom + ' ' + classes.left);
+                break;
+
+            default:
+            case 'bottom-right':
+                addClass(element, classes.bottom + ' ' + classes.right);
+                break;
+            }
+        }
+
+        /**
+        * creates a new notification message
+        *
+        * @param  {DOMElement} message	The notifier message element
+        * @param  {Number} wait   Time (in ms) to wait before the message is dismissed, a value of 0 means keep open till clicked.
+        * @param  {Function} callback A callback function to be invoked when the message is dismissed.
+        *
+        * @return {undefined}
+        */
+        function create(div, callback) {
+
+            function clickDelegate(event, instance) {
+                instance.dismiss(true);
+            }
+
+            function transitionDone(event, instance) {
+                // unbind event
+                off(instance.element, transition.type, transitionDone);
+                // remove the message
+                element.removeChild(instance.element);
+            }
+
+            function initialize(instance) {
+                if (!instance.__internal) {
+                    instance.__internal = {
+                        pushed: false,
+                        delay : undefined,
+                        timer: undefined,
+                        clickHandler: undefined,
+                        transitionEndHandler: undefined,
+                        transitionTimeout: undefined
+                    };
+                    instance.__internal.clickHandler = delegate(instance, clickDelegate);
+                    instance.__internal.transitionEndHandler = delegate(instance, transitionDone);
+                }
+                return instance;
+            }
+            function clearTimers(instance) {
+                clearTimeout(instance.__internal.timer);
+                clearTimeout(instance.__internal.transitionTimeout);
+            }
+            return initialize({
+                /* notification DOM element*/
+                element: div,
+                /*
+                 * Pushes a notification message 
+                 * @param {string or DOMElement} content The notification message content
+                 * @param {Number} wait The time (in seconds) to wait before the message is dismissed, a value of 0 means keep open till clicked.
+                 * 
+                 */
+                push: function (_content, _wait) {
+                    if (!this.__internal.pushed) {
+
+                        pushInstance(this);
+                        clearTimers(this);
+
+                        var content, wait;
+                        switch (arguments.length) {
+                        case 0:
+                            wait = this.__internal.delay;
+                            break;
+                        case 1:
+                            if (typeof (_content) === 'number') {
+                                wait = _content;
+                            } else {
+                                content = _content;
+                                wait = this.__internal.delay;
+                            }
+                            break;
+                        case 2:
+                            content = _content;
+                            wait = _wait;
+                            break;
+                        }
+                        // set contents
+                        if (typeof content !== 'undefined') {
+                            this.setContent(content);
+                        }
+                        // append or insert
+                        if (notifier.__internal.position.indexOf('top') < 0) {
+                            element.appendChild(this.element);
+                        } else {
+                            element.insertBefore(this.element, element.firstChild);
+                        }
+                        reflow = this.element.offsetWidth;
+                        addClass(this.element, classes.visible);
+                        // attach click event
+                        on(this.element, 'click', this.__internal.clickHandler);
+                        return this.delay(wait);
+                    }
+                    return this;
+                },
+                /*
+                 * {Function} callback function to be invoked before dismissing the notification message.
+                 * Remarks: A return value === 'false' will cancel the dismissal
+                 * 
+                 */
+                ondismiss: function () { },
+                /*
+                 * {Function} callback function to be invoked when the message is dismissed.
+                 * 
+                 */
+                callback: callback,
+                /*
+                 * Dismisses the notification message 
+                 * @param {Boolean} clicked A flag indicating if the dismissal was caused by a click.
+                 * 
+                 */
+                dismiss: function (clicked) {
+                    if (this.__internal.pushed) {
+                        clearTimers(this);
+                        if (!(typeof this.ondismiss === 'function' && this.ondismiss.call(this) === false)) {
+                            //detach click event
+                            off(this.element, 'click', this.__internal.clickHandler);
+                            // ensure element exists
+                            if (typeof this.element !== 'undefined' && this.element.parentNode === element) {
+                                //transition end or fallback
+                                this.__internal.transitionTimeout = setTimeout(this.__internal.transitionEndHandler, transition.supported ? 1000 : 100);
+                                removeClass(this.element, classes.visible);
+
+                                // custom callback on dismiss
+                                if (typeof this.callback === 'function') {
+                                    this.callback.call(this, clicked);
+                                }
+                            }
+                            popInstance(this);
+                        }
+                    }
+                    return this;
+                },
+                /*
+                 * Delays the notification message dismissal
+                 * @param {Number} wait The time (in seconds) to wait before the message is dismissed, a value of 0 means keep open till clicked.
+                 * 
+                 */
+                delay: function (wait) {
+                    clearTimers(this);
+                    this.__internal.delay = typeof wait !== 'undefined' && !isNaN(+wait) ? +wait : notifier.__internal.delay;
+                    if (this.__internal.delay > 0) {
+                        var  self = this;
+                        this.__internal.timer = setTimeout(function () { self.dismiss(); }, this.__internal.delay * 1000);
+                    }
+                    return this;
+                },
+                /*
+                 * Sets the notification message contents
+                 * @param {string or DOMElement} content The notification message content
+                 * 
+                 */
+                setContent: function (content) {
+                    if (typeof content === 'string') {
+                        clearContents(this.element);
+                        this.element.innerHTML = content;
+                    } else if (content instanceof window.HTMLElement && this.element.firstChild !== content) {
+                        clearContents(this.element);
+                        this.element.appendChild(content);
+                    }
+                    return this;
+                },
+                /*
+                 * Dismisses all open notifications except this.
+                 * 
+                 */
+                dismissOthers: function () {
+                    notifier.dismissAll(this);
+                    return this;
+                }
+            });
+        }
+
+        //notifier api
+        return {
+            /**
+             * Gets or Sets notifier settings. 
+             *
+             * @param {string} key The setting name
+             * @param {Variant} value The setting value.
+             *
+             * @return {Object}	if the called as a setter, return the notifier instance.
+             */
+            setting: function (key, value) {
+                //ensure init
+                initialize(this);
+
+                if (typeof value === 'undefined') {
+                    //get
+                    return this.__internal[key];
+                } else {
+                    //set
+                    switch (key) {
+                    case 'position':
+                        this.__internal.position = value;
+                        updatePosition(this);
+                        break;
+                    case 'delay':
+                        this.__internal.delay = value;
+                        break;
+                    }
+                }
+                return this;
+            },
+            /**
+             * [Alias] Sets dialog settings/options 
+             */
+            set:function(key,value){
+                this.setting(key,value);
+                return this;
+            },
+            /**
+             * [Alias] Gets dialog settings/options 
+             */
+            get:function(key){
+                return this.setting(key);
+            },
+            /**
+             * Creates a new notification message
+             *
+             * @param {string} type The type of notification message (simply a CSS class name 'ajs-{type}' to be added).
+             * @param {Function} callback  A callback function to be invoked when the message is dismissed.
+             *
+             * @return {undefined}
+             */
+            create: function (type, callback) {
+                //ensure notifier init
+                initialize(this);
+                //create new notification message
+                var div = document.createElement('div');
+                div.className = classes.message + ((typeof type === 'string' && type !== '') ? ' ajs-' + type : '');
+                return create(div, callback);
+            },
+            /**
+             * Dismisses all open notifications.
+             *
+             * @param {Object} excpet [optional] The notification object to exclude from dismissal.
+             *
+             */
+            dismissAll: function (except) {
+                var clone = openInstances.slice(0);
+                for (var x = 0; x < clone.length; x += 1) {
+                    var  instance = clone[x];
+                    if (except === undefined || except !== instance) {
+                        instance.dismiss();
+                    }
+                }
+            }
+        };
+    })();
+    /**
+     * Alertify public API
+     * This contains everything that is exposed through the alertify object.
+     *
+     * @return {Object}
+     */
+    function Alertify() {
+
+        // holds a references of created dialogs
+        var dialogs = {};
+
+        /**
+         * Extends a given prototype by merging properties from base into sub.
+         *
+         * @sub {Object} sub The prototype being overwritten.
+         * @base {Object} base The prototype being written.
+         *
+         * @return {Object} The extended prototype.
+         */
+        function extend(sub, base) {
+            // copy dialog pototype over definition.
+            for (var prop in base) {
+                if (base.hasOwnProperty(prop)) {
+                    sub[prop] = base[prop];
+                }
+            }
+            return sub;
+        }
+
+
+        /**
+        * Helper: returns a dialog instance from saved dialogs.
+        * and initializes the dialog if its not already initialized.
+        *
+        * @name {String} name The dialog name.
+        *
+        * @return {Object} The dialog instance.
+        */
+        function get_dialog(name) {
+            var dialog = dialogs[name].dialog;
+            //initialize the dialog if its not already initialized.
+            if (dialog && typeof dialog.__init === 'function') {
+                dialog.__init(dialog);
+            }
+            return dialog;
+        }
+
+        /**
+         * Helper:  registers a new dialog definition.
+         *
+         * @name {String} name The dialog name.
+         * @Factory {Function} Factory a function resposible for creating dialog prototype.
+         * @transient {Boolean} transient True to create a new dialog instance each time the dialog is invoked, false otherwise.
+         * @base {String} base the name of another dialog to inherit from.
+         *
+         * @return {Object} The dialog definition.
+         */
+        function register(name, Factory, transient, base) {
+            var definition = {
+                dialog: null,
+                factory: Factory
+            };
+
+            //if this is based on an existing dialog, create a new definition
+            //by applying the new protoype over the existing one.
+            if (base !== undefined) {
+                definition.factory = function () {
+                    return extend(new dialogs[base].factory(), new Factory());
+                };
+            }
+
+            if (!transient) {
+                //create a new definition based on dialog
+                definition.dialog = extend(new definition.factory(), dialog);
+            }
+            return dialogs[name] = definition;
+        }
+
+        return {
+            /**
+             * Alertify defaults
+             * 
+             * @type {Object}
+             */
+            defaults: defaults,
+            /**
+             * Dialogs factory 
+             *
+             * @param {string}      Dialog name.
+             * @param {Function}    A Dialog factory function.
+             * @param {Boolean}     Indicates whether to create a singleton or transient dialog.
+             * @param {String}      The name of the base type to inherit from.
+             */
+            dialog: function (name, Factory, transient, base) {
+
+                // get request, create a new instance and return it.
+                if (typeof Factory !== 'function') {
+                    return get_dialog(name);
+                }
+
+                if (this.hasOwnProperty(name)) {
+                    throw new Error('alertify.dialog: name already exists');
+                }
+
+                // register the dialog
+                var definition = register(name, Factory, transient, base);
+
+                if (transient) {
+
+                    // make it public
+                    this[name] = function () {
+                        //if passed with no params, consider it a get request
+                        if (arguments.length === 0) {
+                            return definition.dialog;
+                        } else {
+                            var instance = extend(new definition.factory(), dialog);
+                            //ensure init
+                            if (instance && typeof instance.__init === 'function') {
+                                instance.__init(instance);
+                            }
+                            instance['main'].apply(instance, arguments);
+                            return instance['show'].apply(instance);
+                        }
+                    };
+                } else {
+                    // make it public
+                    this[name] = function () {
+                        //ensure init
+                        if (definition.dialog && typeof definition.dialog.__init === 'function') {
+                            definition.dialog.__init(definition.dialog);
+                        }
+                        //if passed with no params, consider it a get request
+                        if (arguments.length === 0) {
+                            return definition.dialog;
+                        } else {
+                            var dialog = definition.dialog;
+                            dialog['main'].apply(definition.dialog, arguments);
+                            return dialog['show'].apply(definition.dialog);
+                        }
+                    };
+                }
+            },
+            /**
+             * Close all open dialogs.
+             *
+             * @param {Object} excpet [optional] The dialog object to exclude from closing.
+             *
+             * @return {undefined}
+             */
+            closeAll: function (except) {
+                var clone = openDialogs.slice(0);
+                for (var x = 0; x < clone.length; x += 1) {
+                    var instance = clone[x];
+                    if (except === undefined || except !== instance) {
+                        instance.close();
+                    }
+                }
+            },
+            /**
+             * Gets or Sets dialog settings/options. if the dialog is transient, this call does nothing.
+             *
+             * @param {string} name The dialog name.
+             * @param {String|Object} key A string specifying a propery name or a collection of key/value pairs.
+             * @param {Variant} value Optional, the value associated with the key (in case it was a string).
+             *
+             * @return {undefined}
+             */
+            setting: function (name, key, value) {
+
+                if (name === 'notifier') {
+                    return notifier.setting(key, value);
+                }
+
+                var dialog = get_dialog(name);
+                if (dialog) {
+                    return dialog.setting(key, value);
+                }
+            },
+            /**
+             * [Alias] Sets dialog settings/options 
+             */
+            set: function(name,key,value){
+                return this.setting(name, key,value);
+            },
+            /**
+             * [Alias] Gets dialog settings/options 
+             */
+            get: function(name, key){
+                return this.setting(name, key);
+            },
+            /**
+             * Creates a new notification message.
+             * If a type is passed, a class name "ajs-{type}" will be added.
+             * This allows for custom look and feel for various types of notifications.
+             *
+             * @param  {String | DOMElement}    [message=undefined]		Message text
+             * @param  {String}                 [type='']				Type of log message
+             * @param  {String}                 [wait='']				Time (in seconds) to wait before auto-close
+             * @param  {Function}               [callback=undefined]	A callback function to be invoked when the log is closed.
+             *
+             * @return {Object} Notification object.
+             */
+            notify: function (message, type, wait, callback) {
+                return notifier.create(type, callback).push(message, wait);
+            },
+            /**
+             * Creates a new notification message.
+             *
+             * @param  {String}		[message=undefined]		Message text
+             * @param  {String}     [wait='']				Time (in seconds) to wait before auto-close
+             * @param  {Function}	[callback=undefined]	A callback function to be invoked when the log is closed.
+             *
+             * @return {Object} Notification object.
+             */
+            message: function (message, wait, callback) {
+                return notifier.create(null, callback).push(message, wait);
+            },
+            /**
+             * Creates a new notification message of type 'success'.
+             *
+             * @param  {String}		[message=undefined]		Message text
+             * @param  {String}     [wait='']				Time (in seconds) to wait before auto-close
+             * @param  {Function}	[callback=undefined]	A callback function to be invoked when the log is closed.
+             *
+             * @return {Object} Notification object.
+             */
+            success: function (message, wait, callback) {
+                return notifier.create('success', callback).push(message, wait);
+            },
+            /**
+             * Creates a new notification message of type 'error'.
+             *
+             * @param  {String}		[message=undefined]		Message text
+             * @param  {String}     [wait='']				Time (in seconds) to wait before auto-close
+             * @param  {Function}	[callback=undefined]	A callback function to be invoked when the log is closed.
+             *
+             * @return {Object} Notification object.
+             */
+            error: function (message, wait, callback) {
+                return notifier.create('error', callback).push(message, wait);
+            },
+            /**
+             * Creates a new notification message of type 'warning'.
+             *
+             * @param  {String}		[message=undefined]		Message text
+             * @param  {String}     [wait='']				Time (in seconds) to wait before auto-close
+             * @param  {Function}	[callback=undefined]	A callback function to be invoked when the log is closed.
+             *
+             * @return {Object} Notification object.
+             */
+            warning: function (message, wait, callback) {
+                return notifier.create('warning', callback).push(message, wait);
+            },
+            /**
+             * Dismisses all open notifications
+             *
+             * @return {undefined}
+             */
+            dismissAll: function () {
+                notifier.dismissAll();
+            }
+        };
+    }
+    var alertify = new Alertify();
+
+    /**
+    * Alert dialog definition
+    *
+    * invoked by:
+    *	alertify.alert(message);
+    *	alertify.alert(title, message);
+    *	alertify.alert(message, onok);
+    *	alertify.alert(title, message, onok);
+     */
+    alertify.dialog('alert', function () {
+        return {
+            main: function (_title, _message, _onok) {
+                var title, message, onok;
+                switch (arguments.length) {
+                case 1:
+                    message = _title;
+                    break;
+                case 2:
+                    if (typeof _message === 'function') {
+                        message = _title;
+                        onok = _message;
+                    } else {
+                        title = _title;
+                        message = _message;
+                    }
+                    break;
+                case 3:
+                    title = _title;
+                    message = _message;
+                    onok = _onok;
+                    break;
+                }
+                this.set('title', title);
+                this.set('message', message);
+                this.set('onok', onok);
+                return this;
+            },
+            setup: function () {
+                return {
+                    buttons: [
+                        {
+                            text: alertify.defaults.glossary.ok,
+                            key: keys.ESC,
+                            invokeOnClose: true,
+                            className: alertify.defaults.theme.ok,
+                        }
+                    ],
+                    focus: {
+                        element: 0,
+                        select: false
+                    },
+                    options: {
+                        maximizable: false,
+                        resizable: false
+                    }
+                };
+            },
+            build: function () {
+                // nothing
+            },
+            prepare: function () {
+                //nothing
+            },
+            setMessage: function (message) {
+                this.setContent(message);
+            },
+            settings: {
+                message: undefined,
+                onok: undefined,
+                label: undefined,
+            },
+            settingUpdated: function (key, oldValue, newValue) {
+                switch (key) {
+                case 'message':
+                    this.setMessage(newValue);
+                    break;
+                case 'label':
+                    if (this.__internal.buttons[0].element) {
+                        this.__internal.buttons[0].element.innerHTML = newValue;
+                    }
+                    break;
+                }
+            },
+            callback: function (closeEvent) {
+                if (typeof this.get('onok') === 'function') {
+                    var returnValue = this.get('onok').call(this, closeEvent);
+                    if (typeof returnValue !== 'undefined') {
+                        closeEvent.cancel = !returnValue;
+                    }
+                }
+            }
+        };
+    });
+    /**
+     * Confirm dialog object
+     *
+     *	alertify.confirm(message);
+     *	alertify.confirm(message, onok);
+     *	alertify.confirm(message, onok, oncancel);
+     *	alertify.confirm(title, message, onok, oncancel);
+     */
+    alertify.dialog('confirm', function () {
+
+        var autoConfirm = {
+            timer: null,
+            index: null,
+            text: null,
+            duration: null,
+            task: function (event, self) {
+                if (self.isOpen()) {
+                    self.__internal.buttons[autoConfirm.index].element.innerHTML = autoConfirm.text + ' (&#8207;' + autoConfirm.duration + '&#8207;) ';
+                    autoConfirm.duration -= 1;
+                    if (autoConfirm.duration === -1) {
+                        clearAutoConfirm(self);
+                        var button = self.__internal.buttons[autoConfirm.index];
+                        var closeEvent = createCloseEvent(autoConfirm.index, button);
+
+                        if (typeof self.callback === 'function') {
+                            self.callback.apply(self, [closeEvent]);
+                        }
+                        //close the dialog.
+                        if (closeEvent.close !== false) {
+                            self.close();
+                        }
+                    }
+                } else {
+                    clearAutoConfirm(self);
+                }
+            }
+        };
+
+        function clearAutoConfirm(self) {
+            if (autoConfirm.timer !== null) {
+                clearInterval(autoConfirm.timer);
+                autoConfirm.timer = null;
+                self.__internal.buttons[autoConfirm.index].element.innerHTML = autoConfirm.text;
+            }
+        }
+
+        function startAutoConfirm(self, index, duration) {
+            clearAutoConfirm(self);
+            autoConfirm.duration = duration;
+            autoConfirm.index = index;
+            autoConfirm.text = self.__internal.buttons[index].element.innerHTML;
+            autoConfirm.timer = setInterval(delegate(self, autoConfirm.task), 1000);
+            autoConfirm.task(null, self);
+        }
+
+
+        return {
+            main: function (_title, _message, _onok, _oncancel) {
+                var title, message, onok, oncancel;
+                switch (arguments.length) {
+                case 1:
+                    message = _title;
+                    break;
+                case 2:
+                    message = _title;
+                    onok = _message;
+                    break;
+                case 3:
+                    message = _title;
+                    onok = _message;
+                    oncancel = _onok;
+                    break;
+                case 4:
+                    title = _title;
+                    message = _message;
+                    onok = _onok;
+                    oncancel = _oncancel;
+                    break;
+                }
+                this.set('title', title);
+                this.set('message', message);
+                this.set('onok', onok);
+                this.set('oncancel', oncancel);
+                return this;
+            },
+            setup: function () {
+                return {
+                    buttons: [
+                        {
+                            text: alertify.defaults.glossary.ok,
+                            key: keys.ENTER,
+                            className: alertify.defaults.theme.ok,
+                        },
+                        {
+                            text: alertify.defaults.glossary.cancel,
+                            key: keys.ESC,
+                            invokeOnClose: true,
+                            className: alertify.defaults.theme.cancel,
+                        }
+                    ],
+                    focus: {
+                        element: 0,
+                        select: false
+                    },
+                    options: {
+                        maximizable: false,
+                        resizable: false
+                    }
+                };
+            },
+            build: function () {
+                //nothing
+            },
+            prepare: function () {
+                //nothing
+            },
+            setMessage: function (message) {
+                this.setContent(message);
+            },
+            settings: {
+                message: null,
+                labels: null,
+                onok: null,
+                oncancel: null,
+                defaultFocus: null,
+                reverseButtons: null,
+            },
+            settingUpdated: function (key, oldValue, newValue) {
+                switch (key) {
+                case 'message':
+                    this.setMessage(newValue);
+                    break;
+                case 'labels':
+                    if ('ok' in newValue && this.__internal.buttons[0].element) {
+                        this.__internal.buttons[0].text = newValue.ok;
+                        this.__internal.buttons[0].element.innerHTML = newValue.ok;
+                    }
+                    if ('cancel' in newValue && this.__internal.buttons[1].element) {
+                        this.__internal.buttons[1].text = newValue.cancel;
+                        this.__internal.buttons[1].element.innerHTML = newValue.cancel;
+                    }
+                    break;
+                case 'reverseButtons':
+                    if (newValue === true) {
+                        this.elements.buttons.primary.appendChild(this.__internal.buttons[0].element);
+                    } else {
+                        this.elements.buttons.primary.appendChild(this.__internal.buttons[1].element);
+                    }
+                    break;
+                case 'defaultFocus':
+                    this.__internal.focus.element = newValue === 'ok' ? 0 : 1;
+                    break;
+                }
+            },
+            callback: function (closeEvent) {
+                clearAutoConfirm(this);
+                var returnValue;
+                switch (closeEvent.index) {
+                case 0:
+                    if (typeof this.get('onok') === 'function') {
+                        returnValue = this.get('onok').call(this, closeEvent);
+                        if (typeof returnValue !== 'undefined') {
+                            closeEvent.cancel = !returnValue;
+                        }
+                    }
+                    break;
+                case 1:
+                    if (typeof this.get('oncancel') === 'function') {
+                        returnValue = this.get('oncancel').call(this, closeEvent);
+                        if (typeof returnValue !== 'undefined') {
+                            closeEvent.cancel = !returnValue;
+                        }
+                    }
+                    break;
+                }
+            },
+            autoOk: function (duration) {
+                startAutoConfirm(this, 0, duration);
+                return this;
+            },
+            autoCancel: function (duration) {
+                startAutoConfirm(this, 1, duration);
+                return this;
+            }
+        };
+    });
+    /**
+     * Prompt dialog object
+     *
+     * invoked by:
+     *	alertify.prompt(message);
+     *	alertify.prompt(message, value);
+     *	alertify.prompt(message, value, onok);
+     *	alertify.prompt(message, value, onok, oncancel);
+     *	alertify.prompt(title, message, value, onok, oncancel);
+     */
+    alertify.dialog('prompt', function () {
+        var input = document.createElement('INPUT');
+        var p = document.createElement('P');
+        return {
+            main: function (_title, _message, _value, _onok, _oncancel) {
+                var title, message, value, onok, oncancel;
+                switch (arguments.length) {
+                case 1:
+                    message = _title;
+                    break;
+                case 2:
+                    message = _title;
+                    value = _message;
+                    break;
+                case 3:
+                    message = _title;
+                    value = _message;
+                    onok = _value;
+                    break;
+                case 4:
+                    message = _title;
+                    value = _message;
+                    onok = _value;
+                    oncancel = _onok;
+                    break;
+                case 5:
+                    title = _title;
+                    message = _message;
+                    value = _value;
+                    onok = _onok;
+                    oncancel = _oncancel;
+                    break;
+                }
+                this.set('title', title);
+                this.set('message', message);
+                this.set('value', value);
+                this.set('onok', onok);
+                this.set('oncancel', oncancel);
+                return this;
+            },
+            setup: function () {
+                return {
+                    buttons: [
+                        {
+                            text: alertify.defaults.glossary.ok,
+                            key: keys.ENTER,
+                            className: alertify.defaults.theme.ok,
+                        },
+                        {
+                            text: alertify.defaults.glossary.cancel,
+                            key: keys.ESC,
+                            invokeOnClose: true,
+                            className: alertify.defaults.theme.cancel,
+                        }
+                    ],
+                    focus: {
+                        element: input,
+                        select: true
+                    },
+                    options: {
+                        maximizable: false,
+                        resizable: false
+                    }
+                };
+            },
+            build: function () {
+                input.className = alertify.defaults.theme.input;
+                input.setAttribute('type', 'text');
+                input.value = this.get('value');
+                this.elements.content.appendChild(p);
+                this.elements.content.appendChild(input);
+            },
+            prepare: function () {
+                //nothing
+            },
+            setMessage: function (message) {
+                if (typeof message === 'string') {
+                    clearContents(p);
+                    p.innerHTML = message;
+                } else if (message instanceof window.HTMLElement && p.firstChild !== message) {
+                    clearContents(p);
+                    p.appendChild(message);
+                }
+            },
+            settings: {
+                message: undefined,
+                labels: undefined,
+                onok: undefined,
+                oncancel: undefined,
+                value: '',
+                type:'text',
+                reverseButtons: undefined,
+            },
+            settingUpdated: function (key, oldValue, newValue) {
+                switch (key) {
+                case 'message':
+                    this.setMessage(newValue);
+                    break;
+                case 'value':
+                    input.value = newValue;
+                    break;
+                case 'type':
+                    switch (newValue) {
+                    case 'text':
+                    case 'color':
+                    case 'date':
+                    case 'datetime-local':
+                    case 'email':
+                    case 'month':
+                    case 'number':
+                    case 'password':
+                    case 'search':
+                    case 'tel':
+                    case 'time':
+                    case 'week':
+                        input.type = newValue;
+                        break;
+                    default:
+                        input.type = 'text';
+                        break;
+                    }
+                    break;
+                case 'labels':
+                    if (newValue.ok && this.__internal.buttons[0].element) {
+                        this.__internal.buttons[0].element.innerHTML = newValue.ok;
+                    }
+                    if (newValue.cancel && this.__internal.buttons[1].element) {
+                        this.__internal.buttons[1].element.innerHTML = newValue.cancel;
+                    }
+                    break;
+                case 'reverseButtons':
+                    if (newValue === true) {
+                        this.elements.buttons.primary.appendChild(this.__internal.buttons[0].element);
+                    } else {
+                        this.elements.buttons.primary.appendChild(this.__internal.buttons[1].element);
+                    }
+                    break;
+                }
+            },
+            callback: function (closeEvent) {
+                var returnValue;
+                switch (closeEvent.index) {
+                case 0:
+                    this.settings.value = input.value;
+                    if (typeof this.get('onok') === 'function') {
+                        returnValue = this.get('onok').call(this, closeEvent, this.settings.value);
+                        if (typeof returnValue !== 'undefined') {
+                            closeEvent.cancel = !returnValue;
+                        }
+                    }
+                    break;
+                case 1:
+                    if (typeof this.get('oncancel') === 'function') {
+                        returnValue = this.get('oncancel').call(this, closeEvent);
+                        if (typeof returnValue !== 'undefined') {
+                            closeEvent.cancel = !returnValue;
+                        }
+                    }
+                    break;
+                }
+            }
+        };
+    });
+
+    // CommonJS
+    if ( typeof module === 'object' && typeof module.exports === 'object' ) {
+        module.exports = alertify;
+    // AMD
+    } else if ( typeof define === 'function' && define.amd) {
+        define( [], function () {
+            return alertify;
+        } );
+    // window
+    } else if ( !window.alertify ) {
+        window.alertify = alertify;
+    }
+
+} ( typeof window !== 'undefined' ? window : this ) );
+
+},{}],8:[function(require,module,exports){
 var Backbone = require('backbone');
 var _        = require('underscore');
 
@@ -5200,7 +8584,7 @@ var _        = require('underscore');
 
   });
 })(Backbone, _);
-},{"backbone":9,"underscore":41}],8:[function(require,module,exports){
+},{"backbone":10,"underscore":42}],9:[function(require,module,exports){
 /*
   backbone.paginator 2.0.0
   http://github.com/backbone-paginator/backbone.paginator
@@ -6527,7 +9911,7 @@ var _        = require('underscore');
 
 }));
 
-},{"backbone":9,"underscore":41}],9:[function(require,module,exports){
+},{"backbone":10,"underscore":42}],10:[function(require,module,exports){
 (function (global){
 //     Backbone.js 1.2.1
 
@@ -8404,7 +11788,7 @@ var _        = require('underscore');
 }));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"jquery":40,"underscore":10}],10:[function(require,module,exports){
+},{"jquery":41,"underscore":11}],11:[function(require,module,exports){
 //     Underscore.js 1.8.3
 //     http://underscorejs.org
 //     (c) 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -9954,7 +13338,7 @@ var _        = require('underscore');
   }
 }.call(this));
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 (function (global){
 "use strict";
 /*globals Handlebars: true */
@@ -10007,7 +13391,7 @@ Handlebars['default'] = Handlebars;
 
 exports["default"] = Handlebars;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./handlebars.runtime":12,"./handlebars/compiler/ast":14,"./handlebars/compiler/base":15,"./handlebars/compiler/compiler":17,"./handlebars/compiler/javascript-compiler":19}],12:[function(require,module,exports){
+},{"./handlebars.runtime":13,"./handlebars/compiler/ast":15,"./handlebars/compiler/base":16,"./handlebars/compiler/compiler":18,"./handlebars/compiler/javascript-compiler":20}],13:[function(require,module,exports){
 (function (global){
 "use strict";
 /*globals Handlebars: true */
@@ -10056,7 +13440,7 @@ Handlebars['default'] = Handlebars;
 
 exports["default"] = Handlebars;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./handlebars/base":13,"./handlebars/exception":24,"./handlebars/runtime":25,"./handlebars/safe-string":26,"./handlebars/utils":27}],13:[function(require,module,exports){
+},{"./handlebars/base":14,"./handlebars/exception":25,"./handlebars/runtime":26,"./handlebars/safe-string":27,"./handlebars/utils":28}],14:[function(require,module,exports){
 "use strict";
 var Utils = require("./utils");
 var Exception = require("./exception")["default"];
@@ -10300,7 +13684,7 @@ var createFrame = function(object) {
   return frame;
 };
 exports.createFrame = createFrame;
-},{"./exception":24,"./utils":27}],14:[function(require,module,exports){
+},{"./exception":25,"./utils":28}],15:[function(require,module,exports){
 "use strict";
 var AST = {
   Program: function(statements, blockParams, strip, locInfo) {
@@ -10443,7 +13827,7 @@ var AST = {
 // Must be exported as an object rather than the root of the module as the jison lexer
 // must modify the object to operate properly.
 exports["default"] = AST;
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 "use strict";
 var parser = require("./parser")["default"];
 var AST = require("./ast")["default"];
@@ -10472,7 +13856,7 @@ function parse(input, options) {
 }
 
 exports.parse = parse;
-},{"../utils":27,"./ast":14,"./helpers":18,"./parser":20,"./whitespace-control":23}],16:[function(require,module,exports){
+},{"../utils":28,"./ast":15,"./helpers":19,"./parser":21,"./whitespace-control":24}],17:[function(require,module,exports){
 "use strict";
 var isArray = require("../utils").isArray;
 
@@ -10627,7 +14011,7 @@ CodeGen.prototype = {
 };
 
 exports["default"] = CodeGen;
-},{"../utils":27,"source-map":29}],17:[function(require,module,exports){
+},{"../utils":28,"source-map":30}],18:[function(require,module,exports){
 "use strict";
 var Exception = require("../exception")["default"];
 var isArray = require("../utils").isArray;
@@ -11129,7 +14513,7 @@ function transformLiteralToPath(sexpr) {
     sexpr.path = new AST.PathExpression(false, 0, [literal.original+''], literal.original+'', literal.log);
   }
 }
-},{"../exception":24,"../utils":27,"./ast":14}],18:[function(require,module,exports){
+},{"../exception":25,"../utils":28,"./ast":15}],19:[function(require,module,exports){
 "use strict";
 var Exception = require("../exception")["default"];
 
@@ -11249,7 +14633,7 @@ exports.prepareRawBlock = prepareRawBlock;function prepareBlock(openBlock, progr
 }
 
 exports.prepareBlock = prepareBlock;
-},{"../exception":24}],19:[function(require,module,exports){
+},{"../exception":25}],20:[function(require,module,exports){
 "use strict";
 var COMPILER_REVISION = require("../base").COMPILER_REVISION;
 var REVISION_CHANGES = require("../base").REVISION_CHANGES;
@@ -12323,7 +15707,7 @@ function strictLookup(requireTerminal, compiler, parts, type) {
 }
 
 exports["default"] = JavaScriptCompiler;
-},{"../base":13,"../exception":24,"../utils":27,"./code-gen":16}],20:[function(require,module,exports){
+},{"../base":14,"../exception":25,"../utils":28,"./code-gen":17}],21:[function(require,module,exports){
 "use strict";
 /* jshint ignore:start */
 /* istanbul ignore next */
@@ -12882,7 +16266,7 @@ function Parser () { this.yy = {}; }Parser.prototype = parser;parser.Parser = Pa
 return new Parser;
 })();exports["default"] = handlebars;
 /* jshint ignore:end */
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 "use strict";
 var Visitor = require("./visitor")["default"];
 
@@ -13023,7 +16407,7 @@ PrintVisitor.prototype.Hash = function(hash) {
 PrintVisitor.prototype.HashPair = function(pair) {
   return pair.key + '=' + this.accept(pair.value);
 };
-},{"./visitor":22}],22:[function(require,module,exports){
+},{"./visitor":23}],23:[function(require,module,exports){
 "use strict";
 var Exception = require("../exception")["default"];
 var AST = require("./ast")["default"];
@@ -13147,7 +16531,7 @@ Visitor.prototype = {
 };
 
 exports["default"] = Visitor;
-},{"../exception":24,"./ast":14}],23:[function(require,module,exports){
+},{"../exception":25,"./ast":15}],24:[function(require,module,exports){
 "use strict";
 var Visitor = require("./visitor")["default"];
 
@@ -13360,7 +16744,7 @@ function omitLeft(body, i, multiple) {
 }
 
 exports["default"] = WhitespaceControl;
-},{"./visitor":22}],24:[function(require,module,exports){
+},{"./visitor":23}],25:[function(require,module,exports){
 "use strict";
 
 var errorProps = ['description', 'fileName', 'lineNumber', 'message', 'name', 'number', 'stack'];
@@ -13392,7 +16776,7 @@ function Exception(message, node) {
 Exception.prototype = new Error();
 
 exports["default"] = Exception;
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 "use strict";
 var Utils = require("./utils");
 var Exception = require("./exception")["default"];
@@ -13613,7 +16997,7 @@ exports.noop = noop;function initData(context, data) {
   }
   return data;
 }
-},{"./base":13,"./exception":24,"./utils":27}],26:[function(require,module,exports){
+},{"./base":14,"./exception":25,"./utils":28}],27:[function(require,module,exports){
 "use strict";
 // Build out our basic SafeString type
 function SafeString(string) {
@@ -13625,7 +17009,7 @@ SafeString.prototype.toString = SafeString.prototype.toHTML = function() {
 };
 
 exports["default"] = SafeString;
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 "use strict";
 /*jshint -W004 */
 var escape = {
@@ -13727,7 +17111,7 @@ exports.blockParams = blockParams;function appendContextPath(contextPath, id) {
 }
 
 exports.appendContextPath = appendContextPath;
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 // USAGE:
 // var handlebars = require('handlebars');
 
@@ -13755,7 +17139,7 @@ if (typeof require !== 'undefined' && require.extensions) {
   require.extensions[".hbs"] = extension;
 }
 
-},{"../dist/cjs/handlebars":11,"../dist/cjs/handlebars/compiler/printer":21,"../dist/cjs/handlebars/compiler/visitor":22,"fs":1}],29:[function(require,module,exports){
+},{"../dist/cjs/handlebars":12,"../dist/cjs/handlebars/compiler/printer":22,"../dist/cjs/handlebars/compiler/visitor":23,"fs":1}],30:[function(require,module,exports){
 /*
  * Copyright 2009-2011 Mozilla Foundation and contributors
  * Licensed under the New BSD license. See LICENSE.txt or:
@@ -13765,7 +17149,7 @@ exports.SourceMapGenerator = require('./source-map/source-map-generator').Source
 exports.SourceMapConsumer = require('./source-map/source-map-consumer').SourceMapConsumer;
 exports.SourceNode = require('./source-map/source-node').SourceNode;
 
-},{"./source-map/source-map-consumer":35,"./source-map/source-map-generator":36,"./source-map/source-node":37}],30:[function(require,module,exports){
+},{"./source-map/source-map-consumer":36,"./source-map/source-map-generator":37,"./source-map/source-node":38}],31:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -13864,7 +17248,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./util":38,"amdefine":39}],31:[function(require,module,exports){
+},{"./util":39,"amdefine":40}],32:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -14008,7 +17392,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./base64":32,"amdefine":39}],32:[function(require,module,exports){
+},{"./base64":33,"amdefine":40}],33:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -14052,7 +17436,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"amdefine":39}],33:[function(require,module,exports){
+},{"amdefine":40}],34:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -14134,7 +17518,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"amdefine":39}],34:[function(require,module,exports){
+},{"amdefine":40}],35:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2014 Mozilla Foundation and contributors
@@ -14222,7 +17606,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./util":38,"amdefine":39}],35:[function(require,module,exports){
+},{"./util":39,"amdefine":40}],36:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -14799,7 +18183,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./array-set":30,"./base64-vlq":31,"./binary-search":33,"./util":38,"amdefine":39}],36:[function(require,module,exports){
+},{"./array-set":31,"./base64-vlq":32,"./binary-search":34,"./util":39,"amdefine":40}],37:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -15201,7 +18585,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./array-set":30,"./base64-vlq":31,"./mapping-list":34,"./util":38,"amdefine":39}],37:[function(require,module,exports){
+},{"./array-set":31,"./base64-vlq":32,"./mapping-list":35,"./util":39,"amdefine":40}],38:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -15617,7 +19001,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./source-map-generator":36,"./util":38,"amdefine":39}],38:[function(require,module,exports){
+},{"./source-map-generator":37,"./util":39,"amdefine":40}],39:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -15938,7 +19322,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"amdefine":39}],39:[function(require,module,exports){
+},{"amdefine":40}],40:[function(require,module,exports){
 (function (process,__filename){
 /** vim: et:ts=4:sw=4:sts=4
  * @license amdefine 0.1.0 Copyright (c) 2011, The Dojo Foundation All Rights Reserved.
@@ -16241,7 +19625,7 @@ function amdefine(module, requireFn) {
 module.exports = amdefine;
 
 }).call(this,require('_process'),"/..\\..\\node_modules\\handlebars\\node_modules\\source-map\\node_modules\\amdefine\\amdefine.js")
-},{"_process":3,"path":2}],40:[function(require,module,exports){
+},{"_process":3,"path":2}],41:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v1.11.3
  * http://jquery.com/
@@ -26594,9 +29978,9 @@ return jQuery;
 
 }));
 
-},{}],41:[function(require,module,exports){
-arguments[4][10][0].apply(exports,arguments)
-},{"dup":10}],42:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
+arguments[4][11][0].apply(exports,arguments)
+},{"dup":11}],43:[function(require,module,exports){
 // backbone-subroute 0.4.5
 //
 // Copyright (C) 2012 Dave Cadwallader, Model N, Inc.
@@ -26706,7 +30090,7 @@ arguments[4][10][0].apply(exports,arguments)
     });
     return Backbone.SubRoute;
 }));
-},{"backbone":9,"underscore":41}],43:[function(require,module,exports){
+},{"backbone":10,"underscore":42}],44:[function(require,module,exports){
 /*
  * Toastr
  * Copyright 2012-2014 
@@ -27081,7 +30465,7 @@ arguments[4][10][0].apply(exports,arguments)
         window['toastr'] = factory(window['jQuery']);
     }
 }));
-},{"jquery":40}],44:[function(require,module,exports){
+},{"jquery":41}],45:[function(require,module,exports){
 var Backbone    = require('backbone');
 var $           = require('jquery');
 var Bootstrap   = require('../../bower_components/bootstrap/dist/js/bootstrap');
@@ -27090,30 +30474,88 @@ var Handlebars  = require('handlebars');
 var AppView     = require('./util/appView');
 var Helpers     = require('./util/helper');
 var Filter      = require('../../node_modules/backbone-async-route-filters/backbone-async-route-filter');
+var alertify    = require('alertifyjs');
 
 Backbone.$ = $;
 
 $(function () {
-
-
 	window.Backend_url = 'http://localhost/';
-	window.Hash_login  = '#login';
-	window.helper      = new Helpers();
-	window.appView     = new AppView();
-
+	window.Hash_login = '#login';
+	window.helper = new Helpers();
+	window.appView = new AppView();
+  window.silentData = {silent: true};
+  window.triggerData = {trigger: true};
+  window.fetchData = {fetch: true};
+  window.notFound = {notFound: true};
+  alertify.defaults.theme.ok = "btn btn-primary";
+  alertify.defaults.theme.cancel = "btn btn-danger";
 	Backbone.Main = new RouterMain();
 
 
 });
 
-},{"../../bower_components/bootstrap/dist/js/bootstrap":4,"../../node_modules/backbone-async-route-filters/backbone-async-route-filter":7,"./router/loginRouter":57,"./util/appView":59,"./util/helper":60,"backbone":9,"handlebars":28,"jquery":40}],45:[function(require,module,exports){
+},{"../../bower_components/bootstrap/dist/js/bootstrap":4,"../../node_modules/backbone-async-route-filters/backbone-async-route-filter":8,"./router/loginRouter":73,"./util/appView":76,"./util/helper":77,"alertifyjs":7,"backbone":10,"handlebars":29,"jquery":41}],46:[function(require,module,exports){
 var Backbone = require('backbone');
 var Action   = require('../model/action');
 
 module.exports = Backbone.Collection.extend({
 	model: Action
 });
-},{"../model/action":49,"backbone":9}],46:[function(require,module,exports){
+},{"../model/action":57,"backbone":10}],47:[function(require,module,exports){
+var PageableCollection = require('backbone.paginator');
+var _                  = require('underscore');
+var Attendance         = require('../model/attendance');
+
+module.exports = PageableCollection.extend({
+  model: Attendance,
+  mode: 'client',
+  state: {
+    firstPage: 1,
+    currentPage: 1,
+    pageSize: 20,
+    sortKey: 'start_time'
+  },
+
+  parseRecords: function (res) {
+    if (res.status == 'success') {
+      this.totalRecords = res.data.length;
+      var data = res.data;
+
+      return data;
+    }
+  },
+
+  totalPage: function () {
+    var perPage = 20;
+    var records = this.totalRecords;
+    var totalPage = Math.ceil(records / perPage);
+
+    return totalPage;
+  },
+
+  updateUrl: function (url) {
+    this.url = url;
+  },
+
+  search: function (letters) {
+    var letters = letters.trim();
+    var searchFor = ['identitfy_card','first_name', 'last_name'];
+
+    if (letters != '') {
+      return this.fullCollection.filter(function (model) {
+        return _.some(_.values(model.pick(searchFor)), function (value) {
+          return ~value.toLowerCase().indexOf(letters);
+        });
+      });
+    }
+  }
+
+})
+
+
+
+
+},{"../model/attendance":58,"backbone.paginator":9,"underscore":42}],48:[function(require,module,exports){
 var Citation           = require('../model/citation');
 var PageableCollection = require('backbone.paginator');
 
@@ -27134,7 +30576,7 @@ module.exports = PageableCollection.extend({
     }
   }
 })
-},{"../model/citation":51,"backbone.paginator":8}],47:[function(require,module,exports){
+},{"../model/citation":60,"backbone.paginator":9}],49:[function(require,module,exports){
 var Elder              = require('../model/elder');
 var PageableCollection = require('backbone.paginator');
 var _                  = require('underscore');
@@ -27143,7 +30585,6 @@ module.exports = PageableCollection.extend({
 	url: 'http://localhost/elders/active',
 	model: Elder,
 	mode: 'client',
-
 	state: {
 		firstPage: 1,
 		currentPage: 1,
@@ -27152,7 +30593,7 @@ module.exports = PageableCollection.extend({
 	},
 
 	search: function (letters) {
-		var letters   = letters.trim();
+		var letters = letters.trim();
 		var searchFor = ['full_name', 'identity_card'];
 
 		if (letters != '')  {
@@ -27166,17 +30607,19 @@ module.exports = PageableCollection.extend({
 
 	parseRecords: function (res) {
 		if (res.status == 'success') {
-			 this.totalRecords = res.data.length;
-			 return res.data;
+		  this.totalRecords = res.data.length;
+
+			return res.data;
 		} else {
-			 this.totalRecords = 0;
-			 this.trigger('notData', res.message);
+      this.totalRecords = 0;
+
+			this.trigger('notData', res.message);
 		}
 	},
   
   totalPage: function () {
-  	var perPage   = 20;
-  	var records   = this.totalRecords;
+  	var perPage = 20;
+  	var records = this.totalRecords;
   	var totalPage = Math.ceil( records / perPage);
 
   	return totalPage;
@@ -27188,10 +30631,11 @@ module.exports = PageableCollection.extend({
 
   sortByState: function (state) {
   	 var stateText;
+
   	 if (state == 'active') {
-  	 	   stateText = 'Residente';
+  	   stateText = 'Residente';
   	 } else {
-  	 	   stateText = 'Fuera de lista';
+  	   stateText = 'Fuera de lista';
   	 }
 
   	 return stateText;
@@ -27202,13 +30646,266 @@ module.exports = PageableCollection.extend({
 
 
 
-},{"../model/elder":52,"backbone.paginator":8,"underscore":41}],48:[function(require,module,exports){
-arguments[4][45][0].apply(exports,arguments)
-},{"../model/action":49,"backbone":9,"dup":45}],49:[function(require,module,exports){
+},{"../model/elder":61,"backbone.paginator":9,"underscore":42}],50:[function(require,module,exports){
+arguments[4][46][0].apply(exports,arguments)
+},{"../model/action":57,"backbone":10,"dup":46}],51:[function(require,module,exports){
+var $                 = require('jquery');
+var Attendances       = require('../collection/attendances');
+var AttendanceTableIn = require('../view/attendanceTableInView');
+
+function AttendanceCtrl () {
+  this.showAttendance = function () {
+    var attendances = this.instAttendance();
+    var attendanceTableIn = new AttendanceTableIn({collection: attendances});
+
+    attendances.getFirstPage(fetchData)
+    .done(function () {
+      appView.showUserView(attendanceTableIn);
+    })
+    
+  },
+
+  this.instAttendance = function () {
+    return new Attendances();
+  }
+}
+
+module.exports = AttendanceCtrl;
+
+},{"../collection/attendances":47,"../view/attendanceTableInView":82,"jquery":41}],52:[function(require,module,exports){
+var $         = require('jquery');
+var ElderData = require('../view/elderDataView');
+var ElderEdit = require('../view/elderEditView');
+
+function elderCtrl () {
+  this.showElder = function (elder) {
+    var instance = elder.get('instance');  
+    if (instance > 0) {
+      window.location.replace('#elder/' + elder.get('id') + '/instance-waiting');
+    } else {
+      var elderView = new ElderData({model:elder});
+      appView.showElderView(elderView);
+    }
+  },
+
+  this.showEdit = function (elder) {
+    var editView = new ElderEdit({model: elder});
+    appView.showElderView(editView);
+  },
+
+  this.getElder = function (id) {
+    return new Promise(function (resolve, reject) {
+      $.get(Backend_url + 'elder/' + id)
+       .done(function (data) {
+        resolve(data);
+      })
+       .fail(function (err) {
+        reject(err);
+      })
+     });
+  }
+}
+
+module.exports = elderCtrl;
+},{"../view/elderDataView":86,"../view/elderEditView":87,"jquery":41}],53:[function(require,module,exports){
+var $            = require('jquery');
+var EmployeeData = require('../view/employeeDataView');
+var EmployeeEdit = require('../view/employeeEditView');
+
+function employeeCtrl () {
+  this.showEmployee = function (employee) {
+    var employeeView = new EmployeeData({model: employee});
+    appView.showEmployeeView(employeeView);
+  },
+
+  this.showEdit = function (employee) {
+    var editView = new EmployeeEdit({model: employee});
+    appView.showEmployeeView(editView);
+  },
+
+  this.getEmployee = function (employeeId) {
+    return new Promise(function (resolve, reject) {
+      $.get(Backend_url + 'employee/' + employeeId)
+        .done(function (res) {
+          resolve(res);
+        })
+        .fail(function (err) {
+          reject(err);
+        });
+    });
+  }
+}
+
+module.exports = employeeCtrl;
+},{"../view/employeeDataView":90,"../view/employeeEditView":91,"jquery":41}],54:[function(require,module,exports){
+var $               = require('jquery');
+var Instance        = require('../model/instance');
+var InstaceForm     = require('../view/formInstanceView');
+var InstanceWaiting = require('../view/instanceWaitingView');
+
+function instanceCtrl () {
+  this.formInstance = function () {
+    var instaceForm = new InstaceForm();
+
+    appView.showUserView(instaceForm);
+  },
+
+  this.showWaiting = function (elderId) {
+    var instance = this.getInstance();
+    var instWaiting = new InstanceWaiting({model: instance});
+
+    this.getWaiting(elderId)
+    .then(function (res) {
+      if (res.status == 'success') {
+        var instanceData = res.instance;
+
+        instance.set(instanceData);
+        appView.showElderView(instWaiting);
+      }
+    })
+    .catch(function (err) {
+      if (err.status == 404) {
+        instance.set(notFound, silentData);
+        appView.showElderView(instWaiting);
+      }
+    })
+  },
+
+  this.getWaiting = function (elderId) {
+    return new Promise(function (resolve, reject) {
+      $.get(Backend_url + 'waiting/notifications/' + elderId)
+       .done(function (res) {
+          resolve(res);
+       })
+       .fail(function (err) {
+          reject(err);
+       })
+    });
+  },
+
+  this.getInstance = function () {
+    return new Instance();
+  }
+}
+
+module.exports = instanceCtrl;
+},{"../model/instance":63,"../view/formInstanceView":93,"../view/instanceWaitingView":95,"jquery":41}],55:[function(require,module,exports){
+var $                 = require('jquery');
+var Permit            = require('../model/permit');
+var PermitForm        = require('../view/permitForm');
+var PermitFormSpecial = require('../view/permitFormSpecial');
+
+function PermitCtrl () {
+  this.showForm = function (employeeId) {
+    var permit = this.instPermit();
+    var permitForm = new PermitForm({model: permit});
+    var employeData = {employee_id: employeeId};
+
+    permit.set(employeData, silentData);
+    appView.showEmployeeView(permitForm);
+  },
+
+  this.showFormSpecial = function (employeeId) {
+    var permit = this.instPermit();
+    var permitFormSpecial = new PermitFormSpecial({model: permit});
+    var employeData = {employee_id: employeeId};
+
+    permit.set(employeData, silentData);
+    appView.showEmployeeView(permitFormSpecial);
+  },
+
+  this.instPermit = function () {
+    return new Permit();
+  }
+}
+
+
+module.exports = PermitCtrl;
+},{"../model/permit":64,"../view/permitForm":102,"../view/permitFormSpecial":103,"jquery":41}],56:[function(require,module,exports){
+var $                = require('jquery');
+var Schedule         = require('../model/schedule');
+var ScheduleEmpView  = require('../view/scheduleEmployeeView');
+var ScheduleFormEmp  = require('../view/scheduleFormEmp');
+var ScheduleEditEmp  = require('../view/scheduleEditEmployee');
+
+function scheduleCtrl () {
+  this.getSchedule = function () {
+    return new Schedule();
+  },
+
+  this.formScheduleEmp = function (employee) {
+    var formScheduleEmp = new ScheduleFormEmp({model: employee});
+
+    appView.showEmployeeView(formScheduleEmp);
+  },
+
+  this.showEmp = function (employeeId, scheduleId) {
+    var schedule = this.getSchedule();
+    var scheduleEmpView = new ScheduleEmpView({model: schedule});
+
+    this.scheduleInEmp(scheduleId, employeeId)
+    .then(function (res) {
+      if (res.status == 'success') {
+        var employeeData = {employee_id: employeeId};
+        var scheduleData = res.schedule;
+
+        schedule.set(employeeData, silentData);
+        schedule.set(scheduleData);
+        appView.showEmployeeView(scheduleEmpView);
+      }
+    })
+    .catch(function (err) {
+      if (err.status == 404) {
+        schedule.set(notFound, silentData);
+        appView.showEmployeeView(scheduleEmpView);
+      }
+    })
+  },
+
+  this.editScheduleEmp = function (employeeId, scheduleId) {
+    var schedule = this.getSchedule();
+    var scheduleEditEmp = new ScheduleEditEmp({model: schedule});
+
+    this.scheduleInEmp(scheduleId, employeeId)
+    .then(function (res) {
+      if (res.status == 'success') {
+        var employeeData = {employee_id: employeeId};
+        var scheduleData = res.schedule;
+
+        schedule.set(scheduleData, silentData);
+        schedule.set(res.schedule);
+        appView.showEmployeeView(scheduleEditEmp);
+      }
+    })
+    .catch(function (err) {
+      if (err.status == 404) {
+        schedule.set(notFound, silentData);
+        appView.showEmployeeView(scheduleEditEmp);
+      }
+    })
+  },
+
+  this.scheduleInEmp = function (scheduleId, employeeId) {
+    return new Promise(function (resolve, reject) {
+      $.get(Backend_url + 'schedule/' + scheduleId + '/employee/' + employeeId)
+       .done(function (res) {
+        resolve(res);
+       })
+       .fail(function (err) {
+        reject(err);
+       })
+    })
+  }
+}
+
+module.exports = scheduleCtrl;
+},{"../model/schedule":66,"../view/scheduleEditEmployee":106,"../view/scheduleEmployeeView":107,"../view/scheduleFormEmp":108,"jquery":41}],57:[function(require,module,exports){
 var Backbone = require('backbone');
 
 module.exports = Backbone.Model.extend({});
-},{"backbone":9}],50:[function(require,module,exports){
+},{"backbone":10}],58:[function(require,module,exports){
+arguments[4][57][0].apply(exports,arguments)
+},{"backbone":10,"dup":57}],59:[function(require,module,exports){
 var Backbone = require('backbone');
 
 module.exports = Backbone.Model.extend({
@@ -27248,13 +30945,46 @@ module.exports = Backbone.Model.extend({
 	},
 
 });
-},{"backbone":9}],51:[function(require,module,exports){
-arguments[4][49][0].apply(exports,arguments)
-},{"backbone":9,"dup":49}],52:[function(require,module,exports){
-arguments[4][49][0].apply(exports,arguments)
-},{"backbone":9,"dup":49}],53:[function(require,module,exports){
-arguments[4][49][0].apply(exports,arguments)
-},{"backbone":9,"dup":49}],54:[function(require,module,exports){
+},{"backbone":10}],60:[function(require,module,exports){
+arguments[4][57][0].apply(exports,arguments)
+},{"backbone":10,"dup":57}],61:[function(require,module,exports){
+var Backbone = require('backbone');
+
+module.exports = Backbone.Model.extend({
+  initialize: function () {
+    this.on('change', function (model) {
+      model.set({notFound: false}, {silent: true});
+    });
+  }
+});
+},{"backbone":10}],62:[function(require,module,exports){
+var Backbone = require('backbone');
+
+module.exports = Backbone.Model.extend({
+  initialize: function () {
+    this.on('change', function (model) {
+      model.set({notFound: false}, {silent: true});
+    })
+  }
+});
+
+},{"backbone":10}],63:[function(require,module,exports){
+var Backbone = require('backbone');
+
+module.exports = Backbone.Model.extend({
+  initialize: function () {
+    this.on('change', function (model) {
+      model.set({notFound: false}, {silent: true});
+    })
+  }
+});
+},{"backbone":10}],64:[function(require,module,exports){
+arguments[4][57][0].apply(exports,arguments)
+},{"backbone":10,"dup":57}],65:[function(require,module,exports){
+arguments[4][63][0].apply(exports,arguments)
+},{"backbone":10,"dup":63}],66:[function(require,module,exports){
+arguments[4][57][0].apply(exports,arguments)
+},{"backbone":10,"dup":57}],67:[function(require,module,exports){
 var Backbone    = require('backbone');
 var $           = require('jquery');
 var Subroute    = require('../../dependencies/backboneSubroutes/backboneSubroutes');
@@ -27270,7 +31000,7 @@ module.exports  = Subroute.extend({
 
 	activity: function () {
 		Backbone.Main.renderMenu();
-		var date        = util.currentDate();
+		var date = util.currentDate();
 		var contentView = new ContentView();
 		this.getEvents(date)
 		 .then(function (events) {
@@ -27316,60 +31046,124 @@ module.exports  = Subroute.extend({
 
 	
 })
-},{"../../dependencies/backboneSubroutes/backboneSubroutes":42,"../util/util":61,"../view/contentActionView":66,"backbone":9,"jquery":40}],55:[function(require,module,exports){
-var Backbone        = require('backbone');
-var $               = require('jquery');
-var Subroute        = require('../../dependencies/backboneSubroutes/backboneSubroutes');
-var Elder           = require('../model/elder');
-var Instance        = require('../model/instance');
-var ElderMenu       = require('../view/menuElderView');
-var ElderData       = require('../view/elderDataView');
-var ElderEdit       = require('../view/elderEditView');
-var InstanceWaiting = require('../view/instanceWaitingView');
-var ErrorView       = require('../view/errorElderView');
-var RecordRouter    = require('./recordRouter');
+},{"../../dependencies/backboneSubroutes/backboneSubroutes":43,"../util/util":78,"../view/contentActionView":85,"backbone":10,"jquery":41}],68:[function(require,module,exports){
+var Backbone     = require('backbone');
+var $            = require('jquery');
+var Subroute     = require('../../dependencies/backboneSubroutes/backboneSubroutes');
+var MenuAdmin    = require('../view/menuAdminView');
+var FormEmployee = require('../view/formEmployee');
+
+
+module.exports = Subroute.extend({
+  routes: {
+    'register/employee' : 'registerEmp',
+  },
+
+  initialize: function () {
+    this.menuAdmin = new MenuAdmin();
+  },
+
+  before: {
+    '*any' : 'hasPermit',
+  },
+
+  hasPermit: function (fragment, args, next) {
+    var user = Backbone.Main.userLogin;
+    var group = user.get('group');
+
+    if (group.name == 'User') {
+      Backbone.Main.navigate('', {trigger: true});
+    } else {
+      Backbone.Main.renderHeader();
+      this.menuAdmin.render();
+      next();
+    }
+   
+  },
+  
+  registerEmp: function () {
+    var formEmployee = new FormEmployee();
+    appView.showAdminView(formEmployee);
+  },
+
+})
+},{"../../dependencies/backboneSubroutes/backboneSubroutes":43,"../view/formEmployee":92,"../view/menuAdminView":97,"backbone":10,"jquery":41}],69:[function(require,module,exports){
+var Backbone       = require('backbone');
+var Subroute       = require('../../dependencies/backboneSubroutes/backboneSubroutes');
+var AttendanceCtrl = require('../controller/attendanceController');
+
+
+module.exports = Subroute.extend({
+  routes: {
+    '': 'attendanceToday'
+  },
+
+  before: {
+    'attendance/': 'renderMenuUser'
+  },
+
+  initialize: function () {
+    this.attendanceCtrl = new AttendanceCtrl();
+  },
+
+  renderMenuUser: function (fragment, args, next) {
+    Backbone.Main.renderMenu();
+    next();
+  },
+
+  attendanceToday: function () {
+    this.attendanceCtrl.showAttendance();
+  }
+
+})
+},{"../../dependencies/backboneSubroutes/backboneSubroutes":43,"../controller/attendanceController":51,"backbone":10}],70:[function(require,module,exports){
+var Backbone     = require('backbone');
+var $            = require('jquery');
+var Subroute     = require('../../dependencies/backboneSubroutes/backboneSubroutes');
+var Elder        = require('../model/elder');
+var ElderMenu    = require('../view/menuElderView');
+var ElderCtrl    = require('../controller/elderController');
+var InstanceCtrl = require('../controller/instanceController');
+var RecordRouter = require('./recordRouter');
+
 
 var util = require('../util/util');
 
 module.exports = Subroute.extend({
   routes: {
-    ':id'                  : 'homeElder',
-    ':id/instance-waiting' : 'showInstanceWaiting',
-    ':id/edit'             : 'elderEdit',
+    ':id'                  : 'show',
+    ':id/instance-waiting' : 'instWaiting',
+    ':id/edit'             : 'edit',
     ':id/record/*subroute' : 'invokeRecord',
   },
 
   initialize: function () {
     this.elder     = new Elder();
-    this.instance  = new Instance();
     this.elderMenu = new ElderMenu({model: this.elder});
-    this.elderData = new ElderData({model: this.elder});
+    this.elderCtrl = new ElderCtrl();
+    this.instCtrl  = new InstanceCtrl();
   },
 
   before: {
     '*any' : 'loadElder',
   },
 
-  loadElder: function (fragment, args, next) {
+  loadElder: function (fragment, args, next, prueba) {
     Backbone.Main.renderHeader();
 
-    var segment = fragment.split('/');
-    var idELder = segment[1];
-
-    this.elder.set({id: idELder});
+    var id = util.getFragmentId(fragment);
+    
+    this.elder.set({id: id});
 
     if (this.elder.hasChanged('id')) {
-      this.getElder(idELder)
-        .then(function (data) {
-          if (data.status == 'success') {
-            this.elder.set(data.elder);
-            this.elderMenu.render();
-            next();
-          }
-        }.bind(this))
-        .catch(function (err) {
-           this.checkErr(err);
-        }.bind(util))
+      this.elderCtrl.getElder(id)
+      .then(function (data) {
+        if (data.status == 'success') {
+          this.elder.set(data.elder);
+          this.elderMenu.render();
+          next();
+        }
+      }.bind(this))
     } else {
        this.elderMenu.render();
        next();
@@ -27377,102 +31171,164 @@ module.exports = Subroute.extend({
 
   },
 
-  homeElder: function (id) {
-    var instance = this.elder.get('instance');
-
-    if (instance > 0) {
-      window.location.replace('#elder/' + id + '/instance-waiting');
-    } else {
-       appView.showElderView(this.elderData);
-    }
+  show: function () {
+    this.elderCtrl.showElder(this.elder);
   },
 
-  showInstanceWaiting: function (id) {
-    var instanceWaiting = new InstanceWaiting({model: this.instance});
-
-    $.get(Backend_url + 'waiting/notifications/' + id)
-      .done(function (data) {
-        if (data.status == 'success') {
-          var identityCard = this.elder.get('identity_card');
-          var fullName     = this.elder.get('full_name');
-          this.instance.set({full_name: fullName, identity_card: identityCard,id: id});
-          this.instance.set(data.instance);
-          appView.showElderView(instanceWaiting);
-        } else {
-          this.showError(data.message);
-        }
-      }.bind(this));
+  edit: function () {
+    this.elderCtrl.showEdit(this.elder);
   },
 
-  elderEdit: function () {
-    var elderEdit = new ElderEdit({model: this.elder});
-    appView.showElderView(elderEdit);
-  },
+  instWaiting: function () {
+    var elderId = this.elder.get('id');
 
-  showError: function (message) {
-     var errorView = new ErrorView();
-     
-     errorView.addMessage(message);
-     appView.showElderView(errorView);
-  },
-
-  getElder: function (id) {
-    return new Promise(function (resolve, reject) {
-      $.get(Backend_url + 'elder/' + id)
-        .done(function (data) {
-          resolve(data);
-        })
-        .fail(function (err) {
-          reject(err);
-        })
-    })
+    this.instCtrl.showWaiting(elderId);
   },
 
   invokeRecord: function (subroute) {
     if (!Backbone.Main.Record) {
       Backbone.Main.Record = new RecordRouter('elder/:id/record/');
     }
-  }
+  },
+
  
 })
 
 
-},{"../../dependencies/backboneSubroutes/backboneSubroutes":42,"../model/elder":52,"../model/instance":53,"../util/util":61,"../view/elderDataView":67,"../view/elderEditView":68,"../view/errorElderView":71,"../view/instanceWaitingView":74,"../view/menuElderView":76,"./recordRouter":58,"backbone":9,"jquery":40}],56:[function(require,module,exports){
-var Backbone    = require('backbone');
-var $           = require('jquery');
-var _           = require('underscore');
-var Subroute    = require('../../dependencies/backboneSubroutes/backboneSubroutes');
-var ListElders  = require('../view/elderListView');
-var FormInstace = require('../view/formInstanceView');
-var Elders      = require('../collection/elders');
+},{"../../dependencies/backboneSubroutes/backboneSubroutes":43,"../controller/elderController":52,"../controller/instanceController":54,"../model/elder":61,"../util/util":78,"../view/menuElderView":98,"./recordRouter":75,"backbone":10,"jquery":41}],71:[function(require,module,exports){
+var Backbone     = require('backbone');
+var $            = require('jquery');
+var Subroute     = require('../../dependencies/backboneSubroutes/backboneSubroutes');
+var Employee     = require('../model/employee');
+var EmployeeMenu = require('../view/menuEmployeeView');
+var EmployeeCtrl = require('../controller/employeeController');
+var ScheduleCtrl = require('../controller/scheduleController');
+var PermitRouter = require('./permitRouter');
+var util         = require('../util/util');
+
+
+module.exports = Subroute.extend({
+  routes : {
+    ':id' : 'show',
+    ':id/schedule/register' : 'formSchedule',
+    ':id/edit' : 'edit',
+    ':id/schedule/:scheduleId' : 'showSchedule',
+    ':id/schedule/:scheduleId/change' : 'changeSchedule',
+    ':id/permit/*subroute' : 'invokePermit'
+  },
+
+  initialize: function () {
+    this.employee     = new Employee();
+    this.employeeMenu = new EmployeeMenu({model: this.employee});
+    this.employeeCtrl = new EmployeeCtrl();
+    this.scheduleCtrl = new ScheduleCtrl();
+  },
+
+  before: {
+    '*any' : 'loadEmployee'
+  },
+
+  loadEmployee: function (fragment, args, next) {
+    Backbone.Main.renderHeader();
+
+    var id = util.getFragmentId(fragment);
+
+    this.employee.set({id: id});
+
+    if (this.employee.hasChanged('id')) {
+      this.employeeCtrl.getEmployee(id)
+      .then(function (res) {
+        if (res.status == 'success') {
+          this.employee.set(res.employee);
+          this.employeeMenu.render();
+          next();
+        }
+      }.bind(this))
+      .catch(function (err) {
+        if (err.status == 404) {
+          this.employee.clear({silent:true});
+          this.employee.set({notFound: true}, {silent: true});
+          this.employeeMenu.render();
+        }
+      }.bind(this))
+    } else {
+      this.employeeMenu.render();
+      next();
+    }
+
+  },
+
+  show: function () {
+    this.employeeCtrl.showEmployee(this.employee);
+  },
+
+  edit: function () {
+    this.employeeCtrl.showEdit(this.employee);
+  },
+
+  formSchedule: function () {
+    this.scheduleCtrl.formScheduleEmp(this.employee);
+  },
+
+  showSchedule: function (employeeId, scheduleId) {
+    this.scheduleCtrl.showEmp(employeeId, scheduleId);
+  },
+
+  changeSchedule: function (employeeId, scheduleId) {
+    this.scheduleCtrl.editScheduleEmp(employeeId, scheduleId);
+  },
+
+  invokePermit: function (subroute) {
+    if (!Backbone.Main.Permit) {
+      Backbone.Main.Permit = new PermitRouter('employee/:id/permit/');
+    }
+  }
+
+})
+},{"../../dependencies/backboneSubroutes/backboneSubroutes":43,"../controller/employeeController":53,"../controller/scheduleController":56,"../model/employee":62,"../util/util":78,"../view/menuEmployeeView":99,"./permitRouter":74,"backbone":10,"jquery":41}],72:[function(require,module,exports){
+var Backbone       = require('backbone');
+var $              = require('jquery');
+var _              = require('underscore');
+var Subroute       = require('../../dependencies/backboneSubroutes/backboneSubroutes');
+var ElderList      = require('../view/elderListView');
+var Elders         = require('../collection/elders');
+var InstanceCtrl   = require('../controller/instanceController');
 
 module.exports = Subroute.extend({
 	routes: {
 		'' : 'homeUser',
-		'register/instance': 'registerInst'
+		'register/instance': 'formInst',
+	},
+
+	before: {
+		'*any': 'renderMenu'
+	},
+
+	renderMenu: function (fragment, arg, next) {
+		Backbone.Main.renderMenu();
+		next();
 	},
 
 	initialize: function () {
-		this.formInstance = new FormInstace();
+		this.instanceCtrl = new InstanceCtrl();
 	},
 
 	homeUser: function () {
-		this.elders     = new Elders();
-		this.eldersList = new ListElders({collection: this.elders});
-		Backbone.Main.renderMenu();
-		this.elders.getFirstPage({ fetch: true })
-		  .done(function () {
-				 appView.showUserView(this.eldersList);
-			}.bind(this));
+		var elders = new Elders();
+		var eldersList = new ElderList({collection: elders});
+
+		elders.getFirstPage({fetch: true})
+		.done(function () {
+			appView.showUserView(eldersList);
+		});
 	},
 
-	registerInst: function () {
-		Backbone.Main.renderMenu();
-		appView.showUserView(this.formInstance);
+	formInst: function () {
+		this.instanceCtrl.formInstance();
 	}
 
 })
-},{"../../dependencies/backboneSubroutes/backboneSubroutes":42,"../collection/elders":47,"../view/elderListView":70,"../view/formInstanceView":72,"backbone":9,"jquery":40,"underscore":41}],57:[function(require,module,exports){
+},{"../../dependencies/backboneSubroutes/backboneSubroutes":43,"../collection/elders":49,"../controller/instanceController":54,"../view/elderListView":89,"backbone":10,"jquery":41,"underscore":42}],73:[function(require,module,exports){
 var Backbone        = require('backbone');
 var $               = require('jquery');
 var AuthUser        = require('../model/authUser');
@@ -27483,6 +31339,9 @@ var MenuUser        = require('../view/menuView');
 var HomeRouter      = require('./homeRouter');
 var ActivityRouter  = require('./activityRouter');
 var ElderRouter     = require('./elderRouter');
+var AdminRouter     = require('./adminRouter');
+var EmployeeRouter  = require('./employeeRouter');
+var AttendanceRouter = require('./attendanceRouter');
 
 var util  = require('../util/util');
 
@@ -27493,11 +31352,12 @@ module.exports = Backbone.Router.extend({
 		'logout':'logout',
 		
 		'home/*subroute': 'invokeHomeModule',
+		'admin/*subroute': 'invokeAdminModule',
 		'elder/*subroute': 'invokeElderModule',
+		'employee/*subroute': 'invokeEmployeeModule',
 		'activity/*subroute': 'invokeActiveModule',
-
+		'attendance/*subroute': 'invokeAttendanceModule'
 	},
-
 
 	initialize: function () {
 		this.userLogin = new AuthUser();
@@ -27560,7 +31420,7 @@ module.exports = Backbone.Router.extend({
 		if (group.name == 'User') {
 			this.navigate('home/', {trigger: true});
 		} else {
-			console.log('menu admin');
+			this.navigate('admin/', {trigger: true});
 		}
 	},
 
@@ -27640,6 +31500,12 @@ module.exports = Backbone.Router.extend({
 		}
 	},
 
+	invokeAdminModule: function (subroute) {
+		if (!Backbone.Main.Admin) {
+			Backbone.Main.Admin = new AdminRouter('admin/');
+		}
+	},
+
 	invokeActiveModule: function (subroute) {
 		if (!Backbone.Main.Activity) {
 			Backbone.Main.Activity = new ActivityRouter('activity/');
@@ -27650,35 +31516,168 @@ module.exports = Backbone.Router.extend({
 		if (!Backbone.Main.Elder) {
 			Backbone.Main.Elder = new ElderRouter('elder/');
 		}
+	},
+
+	invokeEmployeeModule: function (subroute) {
+		if (!Backbone.Main.Employee) {
+			Backbone.Main.Employee = new EmployeeRouter('employee/');
+		}
+	},
+
+	invokeAttendanceModule: function (subroute) {
+		if (!Backbone.Main.Attendance) {
+			Backbone.Main.Attendance = new AttendanceRouter('attendance/');
+		}
 	}
 	
 });
 
 
-},{"../collection/citations":46,"../model/authUser":50,"../util/util":61,"../view/citationNotifyView":65,"../view/loginView":75,"../view/menuView":77,"./activityRouter":54,"./elderRouter":55,"./homeRouter":56,"backbone":9,"jquery":40}],58:[function(require,module,exports){
+},{"../collection/citations":48,"../model/authUser":59,"../util/util":78,"../view/citationNotifyView":84,"../view/loginView":96,"../view/menuView":100,"./activityRouter":67,"./adminRouter":68,"./attendanceRouter":69,"./elderRouter":70,"./employeeRouter":71,"./homeRouter":72,"backbone":10,"jquery":41}],74:[function(require,module,exports){
 var Backbone   = require('backbone');
-var $          = require('jquery');
 var Subroute   = require('../../dependencies/backboneSubroutes/backboneSubroutes');
-var FormRecord = require('../view/formRecord');
+var PermitCtrl = require('../controller/permitController');
 
 module.exports = Subroute.extend({
   routes: {
-    'register' : 'register'
+    'register' : 'register',
+    'extend/register': 'registerExtend'
   },
 
-  register: function () {
-    var formRecord = new FormRecord();
-    appView.showElderView(formRecord);
+  initialize: function () {
+    this.permitCtrl = new PermitCtrl();
+  },
+
+  before: {
+    '*any' : 'checkParent'
+  },
+
+  checkParent: function (fragment, args, next) {
+    var parent = Backbone.Main.Employee;
+
+    parent.loadEmployee(fragment, null, function () {
+      next();
+    })
+  },
+  
+  register: function (employeeId) {
+    this.permitCtrl.showForm(employeeId);
+  },
+
+  registerExtend: function (employeeId) {
+    this.permitCtrl.showFormSpecial(employeeId);
+  }
+
+})
+},{"../../dependencies/backboneSubroutes/backboneSubroutes":43,"../controller/permitController":55,"backbone":10}],75:[function(require,module,exports){
+var Backbone   = require('backbone');
+var $          = require('jquery');
+var Subroute   = require('../../dependencies/backboneSubroutes/backboneSubroutes');
+var Record     = require('../model/record');
+var FormRecord = require('../view/formRecord');
+var RecordEdit = require('../view/recordEditView');
+var RecordData = require('../view/recordDataView');
+
+module.exports = Subroute.extend({
+  routes: {
+    'register' : 'register',
+    ':idRecod/edit': 'editRecord',
+    ':idRecod': 'show'
+  },
+
+  before: {
+    '*any': 'checkParent'
+  },
+
+  checkParent: function (fragment, args, next) {
+    var parent = Backbone.Main.Elder;
+  
+    parent.loadElder(fragment, null, function () {
+       next();
+    });
+  },
+
+  initialize: function () {
+    this.record = new Record;
+  },
+
+  register: function (id) {
+    var elder = Backbone.Main.Elder.elder;
+    $.get(Backend_url + 'state/record/' + id)
+      .done(function (res) {
+        if (res.status == 'success') {
+          elder.set({recordState: res.recordState});
+          var formRecord = new FormRecord({model: elder});
+          appView.showElderView(formRecord);
+        }
+      });
+  },
+
+  editRecord: function (idElder, idRecord) {
+    var recordEdit = new RecordEdit({model: this.record});
+    this.getRecord(idElder, idRecord)
+      .then(function (record) {
+        this.record.set(record);
+        appView.showElderView(recordEdit);
+      }.bind(this))
+      .catch(function (err) {
+        if (err.status == 404) {
+          this.record.clear({silent: true});
+          this.record.set({notFound: true}, {silent:true});
+          appView.showElderView(recordEdit);
+        }
+      }.bind(this))
+  },
+
+  show: function (idElder, idRecord) {
+    var recordData = new RecordData({model: this.record});
+    this.getRecord(idElder, idRecord)
+      .then(function (record) {
+        this.record.set(record);
+        appView.showElderView(recordData);
+      }.bind(this))
+      .catch(function (err) {
+        if (err.status == 404) {
+          this.record.clear({silent: true});
+          this.record.set({notFound: true}, {silent:true});
+          appView.showElderView(recordData);
+        }
+      }.bind(this))
+  },
+
+  getRecord: function (idElder, idRecord) {
+    return new Promise(function (resolve, reject) {
+       $.get(Backend_url + 'show/record/'+ idElder + '/' + idRecord)
+          .done(function (res) {
+            resolve(res);
+          })
+          .fail(function (err) {
+            reject(err);
+          })
+    })
   }
 
 });
-},{"../../dependencies/backboneSubroutes/backboneSubroutes":42,"../view/formRecord":73,"backbone":9,"jquery":40}],59:[function(require,module,exports){
+
+
+},{"../../dependencies/backboneSubroutes/backboneSubroutes":43,"../model/record":65,"../view/formRecord":94,"../view/recordDataView":104,"../view/recordEditView":105,"backbone":10,"jquery":41}],76:[function(require,module,exports){
 var $ = require('jquery');
 
 function appView () {
+   this.showAdminView = function (view) {
+     if (this.currentAdminView) {
+       this.currentAdminView.close();
+     }
+
+     this.currentAdminView = view;
+     this.currentAdminView.render();
+
+     $('#container-admin').html(this.currentAdminView.el);
+   }
+
 	 this.showUserView = function (view) {
 	 		if (this.currentUserView) {
-	 				this.currentUserView.close();
+	 			this.currentUserView.close();
 	 		}
 
 	 		this.currentUserView = view;
@@ -27688,20 +31687,31 @@ function appView () {
 	 },
 
    this.showElderView = function (view) {
-      if (this.currentElderView) {
-        this.currentElderView.close();
-      }
+     if (this.currentElderView) {
+       this.currentElderView.close();
+     }
 
-      this.currentElderView = view;
-      this.currentElderView.render();
-      
-      $('#content-elder').html(this.currentElderView.el);
+     this.currentElderView = view;
+     this.currentElderView.render();
+       
+     $('#content-elder').html(this.currentElderView.el);
+   },
+
+   this.showEmployeeView = function (view) {
+     if (this.currentEmployeeView) {
+       this.currentEmployeeView.close();
+     }
+
+     this.currentEmployeeView = view;
+     this.currentEmployeeView.render();
+
+     $('#content-employee').html(this.currentEmployeeView.el);
    }
 
 }
 
 module.exports = appView;
-},{"jquery":40}],60:[function(require,module,exports){
+},{"jquery":41}],77:[function(require,module,exports){
 var Handlebars = require('handlebars');
 var $          = require('jquery');
 
@@ -27753,10 +31763,9 @@ module.exports = function () {
  });
 
 }
-},{"handlebars":28,"jquery":40}],61:[function(require,module,exports){
+},{"handlebars":29,"jquery":41}],78:[function(require,module,exports){
 var _      = require('underscore');
 var toastr = require('../../dependencies/toastr/toastr');
-
 
 Task = {
 	showError: function (message) {
@@ -27805,13 +31814,81 @@ Task = {
 		var month = date.getMonth() + 1;
 		var day   = date.getDate();
 
-		return year + '-' + month  + '-' + day;
+    if(month < 10){
+      month = '0'+ month;
+    }
 
-	}
+    if (day < 10){
+      day ='0'+ day
+    }
+
+		return year + '-' + month  + '-' + day;
+	},
+
+	extractMime: function (source) {
+		var segment = source.split('/');
+    var path = segment[1].split(';');
+    var mime = path[0];
+
+    return mime;
+	},
+
+	getFragmentId: function (fragment) {
+		var segment = fragment.split('/');
+		var id = segment[1];
+
+		return id;
+	},
+
+	selectDays: function (days) {
+		var days = days.split(' ');
+		var slectDays = '';
+    
+		_.each(days, function (day) {
+			  var day = this.extractDay(day);
+			  if (_.isEmpty(slectDays)) {
+			  	slectDays = day;
+			  } else {
+			  	slectDays = slectDays + ' ' + day;
+			  }
+		}.bind(this))
+
+		return slectDays;
+	},
+  
+  extractDay: function (day) {
+  	var slectDay = '';
+  	switch(day) {
+  		case 'monday':
+  		 slectDay = 'Lunes'
+  		 break;
+  		case 'tuesday':
+  			slectDay = 'Martes'
+  			break;
+  		case 'wednesday':
+  			slectDay = 'Miercoles'
+  			break
+  		case 'thursday':
+  			slectDay = 'Jueves'
+  			break
+  		case 'friday':
+  			slectDay = 'Viernes'
+  			break
+  		case 'saturday':
+  			slectDay = 'Sabado'
+  			break
+  		case 'sunday':
+  			slectDay = 'Domingo'
+  			break
+  	}
+
+  	return slectDay;
+  }
+
 }
 
 module.exports = Task;
-},{"../../dependencies/toastr/toastr":43,"underscore":41}],62:[function(require,module,exports){
+},{"../../dependencies/toastr/toastr":44,"underscore":42}],79:[function(require,module,exports){
 var Backbone   = require('backbone');
 var $          = require('jquery');
 var Handlebars = require('handlebars');
@@ -27833,7 +31910,7 @@ module.exports = Backbone.View.extend({
 	},
 
 });
-},{"backbone":9,"handlebars":28,"jquery":40}],63:[function(require,module,exports){
+},{"backbone":10,"handlebars":29,"jquery":41}],80:[function(require,module,exports){
 var Backbone      = require('backbone');
 var $             = require('jquery');
 var Handlebars    = require('handlebars');
@@ -27862,7 +31939,148 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"./actionElementView":62,"backbone":9,"handlebars":28,"jquery":40}],64:[function(require,module,exports){
+},{"./actionElementView":79,"backbone":10,"handlebars":29,"jquery":41}],81:[function(require,module,exports){
+var Backbone   = require('backbone');
+var $          = require('jquery');
+var Handlebars = require('handlebars');
+var util       = require('../util/util');
+
+module.exports = Backbone.View.extend({
+  tagName: 'tr',
+  template: Handlebars.compile($('#assitance-elementIn').html()),
+  events: {
+    'click .Table-confirm': 'confirm'
+  },
+
+  render: function () {
+    var data = this.model.toJSON();
+    var html = this.template(data);
+
+    this.$el.html(html);
+
+    return this;
+  },
+
+  confirm: function (e) {
+    e.stopPropagation();
+
+    var id = this.model.get('id');
+
+    $.get(Backend_url + 'attendances/' + id + '/confirmed')
+     .done(function (res) {
+      if (res.status == 'success') {
+        util.showSuccess(res.message);
+        this.close();
+      }
+     }.bind(this))
+  },
+
+  close: function () {
+    this.model.destroy();
+    this.remove();
+  }
+});
+},{"../util/util":78,"backbone":10,"handlebars":29,"jquery":41}],82:[function(require,module,exports){
+var Backbone       = require('backbone');
+var $              = require('jquery');
+var _              = require('underscore');
+var PaginateView   = require('./paginationView');
+var AssistanceView = require('./attendanceElementInView');
+var util           = require('../util/util');
+
+module.exports = Backbone.View.extend({
+  template: $('#assistance-tableIn').html(),
+  events: {
+    'keyup .Search': 'serch'
+  },
+
+  initialize: function () {
+    var collectionData = {collection: this.collection};
+    this.paginateView = new PaginateView(collectionData);
+
+    this.collection.on('goTo', this.changePage, this);
+    this.collection.on('destroy', this.countAssitance, this);
+    this.updateUrl();
+  },
+
+  render: function () {
+    this.$el.html(this.template);
+    this.getPaginateView();
+
+    this.$tbody = this.$el.find('table').children('tbody');
+
+    this.addAll();
+  },
+
+  addAll: function () {
+    this.collection.forEach(this.addOne, this);
+  },
+
+  serch: function () {
+    var letters = $('.Search').val();
+    var filter = this.collection.search(letters);
+
+    if (_.isUndefined(filter)) {
+      this.firstPage();
+    } else {
+      this.emptyList();
+      this.getPaginateView();
+      filter.forEach(this.addOne, this);
+    }
+  },
+
+  firstPage: function () {
+    this.collection.getFirstPage(fetchData)
+    .done(function () {
+      this.paginateView.pagInit();
+      this.changePage();
+    }.bind(this))
+  },
+
+  addOne: function (assistance) {
+    var assistanceView = new AssistanceView({model: assistance});
+
+    this.$tbody.append(assistanceView.render().el);
+  },
+  
+  changePage: function () {
+    this.emptyList();
+    this.getPaginateView();
+    this.addAll();
+  },
+
+  getPaginateView: function () {
+    this.$el.prepend(this.paginateView.render().el);
+  },
+
+  countAssitance: function () {
+    var countAssitance = this.collection.length;
+
+    if (countAssitance == 0) {
+      var message = {message: 'No hay asistencias en este momento'};
+
+      this.emptyAssistance(message);
+    }
+  },
+
+  updateUrl: function () {
+    var date = util.currentDate();
+    var sooner = 0;
+    var url = Backend_url + 'attendances?date=' + date + '&sooner=' + sooner;
+
+    this.collection.updateUrl(url);
+  },
+
+  emptyList: function () {
+    this.$tbody.empty()
+  },
+
+  close: function () {
+    this.remove();
+  }
+
+})
+},{"../util/util":78,"./attendanceElementInView":81,"./paginationView":101,"backbone":10,"jquery":41,"underscore":42}],83:[function(require,module,exports){
 var Backbone   = require('backbone');
 var $          = require('jquery');
 var Handlebars = require('handlebars');
@@ -27883,7 +32101,7 @@ module.exports = Backbone.View.extend({
   },
 
 })
-},{"backbone":9,"handlebars":28,"jquery":40}],65:[function(require,module,exports){
+},{"backbone":10,"handlebars":29,"jquery":41}],84:[function(require,module,exports){
 var Backbone        = require('backbone');
 var $               = require('jquery');
 var _               = require('underscore');
@@ -27929,11 +32147,11 @@ module.exports = Backbone.View.extend({
   },
 
   getData: function (e) {
-     var target     = $(e.target);
-     var height     = target.height();
+     var target = $(e.target);
+     var height = target.height();
      var scrollSize = target[0].scrollHeight
-     var scrollTop  = target.scrollTop();
-
+     var scrollTop = target.scrollTop();
+     
      var sizeCurrent = scrollSize - scrollTop;
 
      if (sizeCurrent == height) {
@@ -27944,7 +32162,7 @@ module.exports = Backbone.View.extend({
   }
 
 });
-},{"./citationElementView":64,"backbone":9,"jquery":40,"underscore":41}],66:[function(require,module,exports){
+},{"./citationElementView":83,"backbone":10,"jquery":41,"underscore":42}],85:[function(require,module,exports){
 var Backbone    = require('backbone');
 var $           = require('jquery');
 var Handlebars  = require('handlebars');
@@ -28042,7 +32260,7 @@ module.exports = Backbone.View.extend({
 
 });
 
-},{"../collection/actions":45,"../collection/events":48,"../util/util":61,"./actionListView":63,"backbone":9,"handlebars":28,"jquery":40}],67:[function(require,module,exports){
+},{"../collection/actions":46,"../collection/events":50,"../util/util":78,"./actionListView":80,"backbone":10,"handlebars":29,"jquery":41}],86:[function(require,module,exports){
 var Backbone   = require('backbone');
 var $          = require('jquery');
 var Handlebars = require('handlebars');
@@ -28062,7 +32280,7 @@ module.exports = Backbone.View.extend({
   }
 
 });
-},{"backbone":9,"handlebars":28,"jquery":40}],68:[function(require,module,exports){
+},{"backbone":10,"handlebars":29,"jquery":41}],87:[function(require,module,exports){
 var Backbone   = require('backbone');
 var $          = require('jquery');
 var Handlebars = require('handlebars');
@@ -28072,7 +32290,7 @@ module.exports = Backbone.View.extend({
   template: Handlebars.compile($('#elderEdit-view').html()),
 
   events: {
-    'submit #formEdit-elder' : 'editElder',
+    'submit #formEdit-elder' : 'edit',
     'click .Modal-item' : 'redirect'
   },
 
@@ -28081,22 +32299,22 @@ module.exports = Backbone.View.extend({
     var gender = this.model.get('gender');
 
     this.$el.html(this.template(data));
+    this.$modal = this.$el.find('.Modal');
 
     var radio = this.$el.find('input[value=' + gender + ']:radio');
     radio.prop('checked', true);
   },
 
-  editElder: function (e) {
+  edit: function (e) {
     e.preventDefault();
     var data = $('#formEdit-elder').serialize();
-    var id   = this.model.get('id');
     
-    $.post(Backend_url + 'edit/elder/' + id + '?_method=PUT', data)
+    $.post(Backend_url + 'elder/edit/' + this.model.get('id') + '?_method=PUT', data)
       .done(function (data) {
         if (data.status == 'success') {
           if (data.record == 0) {
             this.message = data.message;
-            this.$el.find('#modal-elderEdit').show();
+            this.$modal.show();
           } else {
             this.clearElder();
             this.profileElder(id);
@@ -28120,19 +32338,14 @@ module.exports = Backbone.View.extend({
     var href = target.attr('href');
     var id = this.model.get('id');
 
-    this.clearElder();
-    this.closeModalElder();
     util.showSuccess(this.message);
 
     if (href == 'add') {
-      Backbone.Main.Elder.navigate('elder/'+ id + '/record/register', {trigger: true});
+      window.location.replace('#elder/' + id + '/record/register');
     } else {
+       this.clearElder();
        this.profileElder(id);
     }
-  },
-
-  closeModalElder: function () {
-    this.$el.find('#modal-elderEdit').hide();
   },
 
   clearElder: function () {
@@ -28148,7 +32361,7 @@ module.exports = Backbone.View.extend({
   }
 
 });
-},{"../util/util":61,"backbone":9,"handlebars":28,"jquery":40}],69:[function(require,module,exports){
+},{"../util/util":78,"backbone":10,"handlebars":29,"jquery":41}],88:[function(require,module,exports){
 var Backbone   = require('backbone');
 var $          = require('jquery');
 var Handlebars = require('handlebars');
@@ -28171,14 +32384,13 @@ module.exports = Backbone.View.extend({
 
 });
 
-},{"backbone":9,"handlebars":28,"jquery":40}],70:[function(require,module,exports){
+},{"backbone":10,"handlebars":29,"jquery":41}],89:[function(require,module,exports){
 var Backbone     = require('backbone');
 var $            = require('jquery');
 var _            = require('underscore');
 var ElderElement = require('./elderElementView');
 var PaginateView = require('./paginationView');
-
-var util = require('../util/util');
+var util         = require('../util/util');
 
 module.exports = Backbone.View.extend({
 	template: $('#elderTable-view').html(),
@@ -28194,14 +32406,15 @@ module.exports = Backbone.View.extend({
 		this.listenTo(this.collection, 'reset', this.addAll, this);
 		this.listenTo(this.collection, 'goTo', this.changePage, this);
 		this.listenTo(this.collection, 'notData', function (message) {
-		  this.notElder(message);
+			this.notElder(message);
 		});
-
 		this.addTable();
 	},
 
 	addTable: function() {
 	  this.$el.html(this.template);	
+
+	  this.$tbody = this.$el.find('table').children('tbody');
 	},
 
 	addAll: function () {
@@ -28210,23 +32423,26 @@ module.exports = Backbone.View.extend({
 
 	addOne: function (elder) {
 	  var element = new ElderElement({model: elder});
-	  this.$el.find('table').children('tbody').append(element.render().el);
+
+	  this.$tbody.append(element.render().el);
 	},
 
 	changePage: function () {
-	  this.$el.find('table').children('tbody').empty();
+	  this.$tbody.empty();
 	  this.render();
 	},
 
 	updateSortBy: function (e) {
 	  e.preventDefault();
+
 		var currentSort = $(e.target).attr('href');
 
 		if (currentSort != 'active' && currentSort != 'deactivate') {
-				 currentSort = 'active';
+			currentSort = 'active';
 		}
 
 		var state = this.collection.sortByState(currentSort);
+		
 		$('#sortByText').text(state);
 
 		var url = Backend_url + 'elders/' + currentSort;
@@ -28234,12 +32450,11 @@ module.exports = Backbone.View.extend({
 		this.collection.updateSort(url);
 		this.collection.trigger('goTo');
 		this.firstPage();
-		
 	},
 
 	search: function (e) {
 		var letters = $('#searchElder').val();
-		var filter  = this.collection.search(letters);
+		var filter = this.collection.search(letters);
 
 		if (_.isUndefined(filter)) {
 			this.changePage();
@@ -28251,15 +32466,15 @@ module.exports = Backbone.View.extend({
 	},
 
 	firstPage: function () {
-		this.collection.getFirstPage({ fetch: true })
-		 .done(function () {
-				 this.paginateView.pagInit();
-				 this.render();
-			}.bind(this))
-			.fail(function (err) {
-				 this.checkErr(err);
-			}.bind(util))
-		},
+		this.collection.getFirstPage({fetch: true})
+		.done(function () {
+			this.paginateView.pagInit();
+			this.render();
+		}.bind(this))
+		.fail(function (err) {
+			this.checkErr(err);
+		}.bind(util))
+	},
 
 	render: function () {
 		this.$el.append(this.paginateView.render().el);
@@ -28277,97 +32492,75 @@ module.exports = Backbone.View.extend({
 
 })
 
-},{"../util/util":61,"./elderElementView":69,"./paginationView":78,"backbone":9,"jquery":40,"underscore":41}],71:[function(require,module,exports){
+},{"../util/util":78,"./elderElementView":88,"./paginationView":101,"backbone":10,"jquery":41,"underscore":42}],90:[function(require,module,exports){
 var Backbone   = require('backbone');
 var $          = require('jquery');
 var Handlebars = require('handlebars');
 
 module.exports = Backbone.View.extend({
-  template: Handlebars.compile($('#error-view').html()),
-
-  addMessage: function (message) {
-    var message  = {message: message};
-    this.message = message;
-  },
+  template: Handlebars.compile($('#employee-data').html()),
 
   render: function () {
-    this.$el.html(this.template(this.message));
+    var data = this.model.toJSON();
+    var html = this.template(data);
+    
+    this.$el.html(html);
   },
 
   close: function () {
     this.remove();
   }
-
-  
 })
-},{"backbone":9,"handlebars":28,"jquery":40}],72:[function(require,module,exports){
-var Backbone = require('backbone');
-var $        = require('jquery');
-var util     = require('../util/util');
+},{"backbone":10,"handlebars":29,"jquery":41}],91:[function(require,module,exports){
+var Backbone   = require('backbone');
+var $          = require('jquery');
+var _          = require('underscore');
+var Hanblebars = require('handlebars');
+var util       = require('../util/util');
+
 
 module.exports = Backbone.View.extend({
-  template: $('#register-instance').html(),
+  template: Hanblebars.compile($('#employeeEdit-view').html()),
+
+  initialize: function () {
+    this.photoSource = '';
+  },
 
   events: {
-    'submit #form-instance' : 'register'
+    'click .Form-btnCamera' : 'showModal',
+    'click .Modal-snap': 'snapShot',
+    'click .Modal-repeat': 'repeat',
+    'click .Modal-btnPic': 'showPic',
+    'change .Form-file': 'uploadPic',
+    'submit #form-editEmployee': 'edit'
   },
 
   render: function () {
-    this.$el.html(this.template);
-  },
+    var data = this.model.toJSON();
+    var html = this.template(data);
+    var gender = this.model.get('gender');
 
-  register: function (e) {
-    e.preventDefault();
+    this.$el.html(html);
+    this.$modalPic = this.$el.find('.Modal');
+    this.$camera = this.$el.find('.Modal-camera');
+    this.$canvas = this.$el.find('.Modal-lienzo');
+    this.$confirmBtn = this.$el.find('.Modal-btnConf');
+    this.$snap = this.$el.find('.Modal-snap');
+    this.$canvasForm = this.$el.find('.Lienzo');
+    this.$containerBtn = this.$el.find('.Modal-btn');
+    this.$typeFile = this.$el.find('input[type="file"]');
 
-    var data = $('#form-instance').serialize();
+    var radio = this.$el.find('input[value=' + gender + ']:radio');
+    radio.prop('checked', true);
 
-    $.post(Backend_url + 'register/notifications', data)
-      .done(function (res) {
-        if (res.status == 'success') {
-          this.cleanForm();
-          util.showSuccess(res.message);
-        } else {
-          util.showError(res.message);
-        }
-      }.bind(this))
-  },
+    this.loadPic();
 
-  cleanForm: function () {
-    $('#form-instance').find('input').val('');
-  }
-
-});
-},{"../util/util":61,"backbone":9,"jquery":40}],73:[function(require,module,exports){
-var Backbone = require('backbone');
-var $        = require('jquery');
-var util     = require('../util/util');
-
-module.exports = Backbone.View.extend({
-  template: $('#register-record').html(),
-
-  events: {
-    'click .initCamera': 'showModal',
-    'click .pick': 'snapShot',
-    'click  #snap-repeat': 'showCamera',
-    'click #confirm-modalPick': 'showPick',
-    'change #file-record': 'uploadPick'
-  },
-
-
-  render: function () {
-    this.$el.html(this.template);
-
-    this.$modalPick = this.$el.find('#modal-pick');
-    this.$camera = this.$el.find('#camera-record');
-    this.$canvas = this.$el.find('#modal-pickContainer');
-    this.$contentBtn = this.$el.find('#container-btn');
-    this.$snapRecord = this.$el.find('#snap-record');
-    this.$canvasForm = this.$el.find('#form-recordContainer');
   },
 
   showModal: function () {
-     this.$modalPick.show();
-     this.showCamera();
+    this.$modalPic.show();
+    this.$containerBtn.hide();
+    this.showCamera();
   },
 
   showCamera: function () {
@@ -28382,7 +32575,6 @@ module.exports = Backbone.View.extend({
          'StreamVideo': null,
          'url': null
         }
-
         navigator.getUserMedia({
          'audio': false,
          'video': true
@@ -28390,17 +32582,18 @@ module.exports = Backbone.View.extend({
             dataVideo.StreamVideo = streamVideo;
             dataVideo.url = window.URL.createObjectURL(streamVideo);
             this.closeCanvas();
+            this.$containerBtn.show();
             this.showBtn();
             this.$camera.show();
             this.$camera.attr('src', dataVideo.url);
         }.bind(this), function() {
             var message = 'No fue posible obtener acceso a la cámara.';
-            util.showError(message);
-        });
+            util.showInfo(message);
+            this.closeModal();
+        }.bind(this));
 
       }
   },
-
 
   snapShot: function (e) {
     e.preventDefault();
@@ -28415,26 +32608,26 @@ module.exports = Backbone.View.extend({
       canvas.attr({'width': 150,'height': 150});
 
       var ctx = canvas[0].getContext('2d');
-
       ctx.drawImage(this.pickCam, 0 , 0, 150, 150);
+      this.photoSource = canvas[0].toDataURL('image/png')
       this.closeCamera();
       this.optBtn();
     }
    
   },
 
-  showPick: function () {
+  showPic: function () {
+    this.$typeFile.val('');
     var canvasForm = this.$canvasForm;
-
     canvasForm.attr({'width': 150, 'height': 150});
 
     var ctxForm = canvasForm[0].getContext('2d');
-
     ctxForm.drawImage(this.pickCam, 0, 0, 150, 150);
     this.closeModal();
   },
 
-  uploadPick: function (e) {
+  uploadPic: function (e) {
+    console.log('change');
     var file = e.target.files[0];
     var imageType = /image.*/;
 
@@ -28442,20 +32635,21 @@ module.exports = Backbone.View.extend({
       var reader = new FileReader();
 
       reader.onloadend = function (e) {
-        var imgFile = $('<img>', {src: e.target.result});
+        var source = e.target.result;
+        var imgFile = $('<img>', {src: source});
         var canvasFile = this.$canvasForm;
 
         canvasFile.attr({'width': 150, 'height': 150});
-
         var ctxFile = canvasFile[0].getContext('2d');
-
         imgFile.load(function () {
            ctxFile.drawImage(this, 0, 0, 150, 150);
         });
 
+        this.photoSource = source;
+
       }.bind(this)
     } else {
-      $('input[type="file"]').val('');
+      this.$typeFile.val('');
 
       var message = 'Ha ingresado un formato de archivo no valido';
       util.showInfo(message);
@@ -28477,22 +32671,82 @@ module.exports = Backbone.View.extend({
   },
 
   optBtn: function () {
-    this.$snapRecord.hide();
-    this.$contentBtn.show();
+    this.$snap.hide();
+    this.$confirmBtn.show();
   },
 
   showBtn: function () {
-    this.$snapRecord.show();
-    this.$contentBtn.hide();
+    this.$snap.show();
+    this.$confirmBtn.hide();
+  },
+
+  repeat: function () {
+    this.$containerBtn.hide();
+    this.closeReception();
+    this.showCamera();
+  },
+
+  loadPic: function () {
+    var imageUrl = this.model.get('image_url');
+
+    if (!_.isUndefined(imageUrl)) {
+      var defaultUrl = 'http://localhost/image/geriatric/profile_default_man.jpg';
+
+      if (imageUrl != defaultUrl) {
+        var image = new Image();
+        image.src = imageUrl;
+
+        var canvas = this.$canvasForm;
+        canvas.attr({'width': 150, 'height': 150});
+        var ctx = canvas[0].getContext('2d');
+
+        image.onload = function () {
+          ctx.drawImage(image, 0, 0);
+        }
+      }
+    }
   },
 
   closeModal: function () {
+    this.closeReception();
+    this.$modalPic.hide();
+  },
+
+  closeReception: function () {
     if (dataVideo.StreamVideo) {
       dataVideo.StreamVideo.stop();
       window.URL.revokeObjectURL(dataVideo.url);
     }
+  },
 
-    this.$modalPick.hide();
+  edit: function (e) {
+    e.preventDefault();
+    var id = this.model.get('id');
+    var formData = new FormData($('#form-editEmployee')[0]);
+
+    if (!_.isEmpty(this.photoSource)) {
+      var mime = util.extractMime(this.photoSource);
+
+      formData.append('photo', this.photoSource);
+      formData.append('mime', mime);
+    }
+      
+    $.ajax({
+      url: Backend_url + 'employee/' + id + '/edit?_method=PUT',
+      type: 'POST',
+      data: formData,
+      processData : false, 
+      contentType : false,
+    })
+    .done(function (res) {
+      if (res.status == 'success') {
+        this.model.clear({silent:true});
+        util.showSuccess(res.message);
+        Backbone.Main.navigate('employee/' + id, {trigger: true});
+      } else {
+        util.showError(res.message);
+      }
+    }.bind(this))
   },
 
   close: function () {
@@ -28500,21 +32754,282 @@ module.exports = Backbone.View.extend({
   }
 
 });
-},{"../util/util":61,"backbone":9,"jquery":40}],74:[function(require,module,exports){
+},{"../util/util":78,"backbone":10,"handlebars":29,"jquery":41,"underscore":42}],92:[function(require,module,exports){
+var Backbone = require('backbone');
+var $        = require('jquery');
+var _        = require('underscore');
+var util     = require('../util/util');
+
+module.exports = Backbone.View.extend({
+  template: $('#register-employee').html(),
+
+  initialize: function () {
+    this.photoSource = '';
+  },
+
+  events: {
+    'click .Form-btnCamera' : 'showModal',
+    'click .Modal-snap': 'snapShot',
+    'click .Modal-repeat': 'repeat',
+    'click .Modal-btnPic': 'showPic',
+    'change .Form-file': 'uploadPic',
+    'submit #form-employee': 'register'
+  },
+
+  render: function () {
+    this.$el.html(this.template);
+
+    this.$modalPic = this.$el.find('.Modal');
+    this.$camera = this.$el.find('.Modal-camera');
+    this.$canvas = this.$el.find('.Modal-lienzo');
+    this.$confirmBtn = this.$el.find('.Modal-btnConf');
+    this.$snap = this.$el.find('.Modal-snap');
+    this.$canvasForm = this.$el.find('.Lienzo');
+    this.$containerBtn = this.$el.find('.Modal-btn');
+    this.$typeFile = this.$el.find('input[type="file"]');
+
+  },
+
+  showModal: function () {
+    this.$modalPic.show();
+    this.$containerBtn.hide();
+    this.showCamera();
+  },
+
+  showCamera: function () {
+    window.URL = window.URL || window.webkitURL;
+    navigator.getUserMedia = navigator.getUserMedia    || navigator.webkitGetUserMedia || 
+                             navigator.mozGetUserMedia || navigator.msGetUserMedia  || false;
+
+    if (!navigator.getUserMedia) {
+       this.closeModal();
+    } else {
+        window.dataVideo = {
+         'StreamVideo': null,
+         'url': null
+        }
+        navigator.getUserMedia({
+         'audio': false,
+         'video': true
+        }, function(streamVideo) {
+            dataVideo.StreamVideo = streamVideo;
+            dataVideo.url = window.URL.createObjectURL(streamVideo);
+            this.closeCanvas();
+            this.$containerBtn.show();
+            this.showBtn();
+            this.$camera.show();
+            this.$camera.attr('src', dataVideo.url);
+        }.bind(this), function() {
+            var message = 'No fue posible obtener acceso a la cámara.';
+            util.showInfo(message);
+            this.closeModal();
+        }.bind(this));
+
+      }
+  },
+
+  snapShot: function (e) {
+    e.preventDefault();
+
+    if (dataVideo.StreamVideo) {
+      this.showCanvas();
+
+      var canvas = this.$canvas;
+      var camera = this.$camera;
+      this.pickCam = camera[0];
+
+      canvas.attr({'width': 150,'height': 150});
+
+      var ctx = canvas[0].getContext('2d');
+      ctx.drawImage(this.pickCam, 0 , 0, 150, 150);
+      this.photoSource = canvas[0].toDataURL('image/png')
+      this.closeCamera();
+      this.optBtn();
+    }
+   
+  },
+
+  showPic: function () {
+    this.$typeFile.val('');
+    var canvasForm = this.$canvasForm;
+    canvasForm.attr({'width': 150, 'height': 150});
+
+    var ctxForm = canvasForm[0].getContext('2d');
+    ctxForm.drawImage(this.pickCam, 0, 0, 150, 150);
+    this.closeModal();
+  },
+
+  uploadPic: function (e) {
+    var file = e.target.files[0];
+    var imageType = /image.*/;
+
+    if (file.type.match(imageType)) {
+      var reader = new FileReader();
+
+      reader.onloadend = function (e) {
+        var source = e.target.result;
+        var imgFile = $('<img>', {src: source});
+        var canvasFile = this.$canvasForm;
+
+        canvasFile.attr({'width': 150, 'height': 150});
+        var ctxFile = canvasFile[0].getContext('2d');
+        imgFile.load(function () {
+           ctxFile.drawImage(this, 0, 0, 150, 150);
+        });
+
+        this.photoSource = source;
+
+      }.bind(this)
+    } else {
+      this.$typeFile.val('');
+
+      var message = 'Ha ingresado un formato de archivo no valido';
+      util.showInfo(message);
+    }
+   
+    reader.readAsDataURL(file);
+  },
+
+  showCanvas: function () {
+    this.$canvas.show();
+  },
+
+  closeCanvas: function () {
+    this.$canvas.hide();
+  },
+
+  closeCamera: function () {
+    this.$camera.hide();
+  },
+
+  optBtn: function () {
+    this.$snap.hide();
+    this.$confirmBtn.show();
+  },
+
+  showBtn: function () {
+    this.$snap.show();
+    this.$confirmBtn.hide();
+  },
+
+  repeat: function () {
+    this.$containerBtn.hide();
+    this.closeReception();
+    this.showCamera();
+  },
+
+  closeModal: function () {
+    this.closeReception();
+    this.$modalPic.hide();
+  },
+
+  closeReception: function () {
+    if (dataVideo.StreamVideo) {
+      dataVideo.StreamVideo.stop();
+      window.URL.revokeObjectURL(dataVideo.url);
+    }
+  },
+
+  close: function () {
+    this.remove();
+  },
+
+  register: function (e) {
+    e.preventDefault();
+
+    var formData = new FormData($('#form-employee')[0]);
+
+    if (!_.isEmpty(this.photoSource)) {
+      var mime = util.extractMime(this.photoSource);
+
+      formData.append('photo', this.photoSource);
+      formData.append('mime', mime);
+    }
+
+    $.ajax({
+      url: Backend_url + 'employee/register',
+      type: 'POST',
+      data: formData,
+      processData : false, 
+      contentType : false,
+    })
+    .done(function(res) {
+      if (res.status == 'success') {
+        util.showSuccess(res.message);
+        Backbone.Main.navigate('employee/' + res.id + '/schedule/register', {trigger: true});
+      } else {
+        util.showError(res.message);
+      }
+    });
+
+  }
+
+
+  
+})
+},{"../util/util":78,"backbone":10,"jquery":41,"underscore":42}],93:[function(require,module,exports){
+var Backbone = require('backbone');
+var $        = require('jquery');
+var util     = require('../util/util');
+
+module.exports = Backbone.View.extend({
+  template: $('#register-instance').html(),
+
+  events: {
+    'submit #form-instance' : 'register'
+  },
+
+  render: function () {
+    this.$el.html(this.template);
+    this.$form = this.$el.find('#form-instance');
+  },
+
+  register: function (e) {
+    e.preventDefault();
+
+    var data = this.$form.serialize();
+
+    $.post(Backend_url + 'instance/register', data)
+      .done(function (res) {
+        if (res.status == 'success') {
+          this.cleanForm();
+          util.showSuccess(res.message);
+        } else {
+          util.showError(res.message);
+        }
+      }.bind(this))
+  },
+
+  cleanForm: function () {
+    this.$form.find('input').val('');
+  },
+
+  close: function () {
+    this.remove();
+  }
+
+});
+},{"../util/util":78,"backbone":10,"jquery":41}],94:[function(require,module,exports){
 var Backbone   = require('backbone');
 var $          = require('jquery');
+var _          = require('underscore');
 var Handlebars = require('handlebars');
 var util       = require('../util/util');
 
 module.exports = Backbone.View.extend({
-  template: Handlebars.compile($('#instance-data').html()),
+  template: Handlebars.compile($('#register-record').html()),
 
   events: {
-    'click #confirm-show'   : 'showConfirm',
-    'click #confirm-cancel' : 'closeConfirm',
-    'click #reject-show'    : 'showReject',
-    'click #reject-cancel'  : 'closeReject',
-    'click .Modal-item'     : 'confirmInstance',
+    'click .Form-btnCamera' : 'showModal',
+    'click .Modal-snap': 'snapShot',
+    'click .Modal-repeat': 'repeat',
+    'click .Modal-btnPic': 'showPic',
+    'change .Form-file': 'uploadPic',
+    'submit #form-record': 'register',
+  },
+
+  initialize: function () {
+    this.photoSource = '';
   },
 
   render: function () {
@@ -28522,52 +33037,279 @@ module.exports = Backbone.View.extend({
     var html = this.template(data);
 
     this.$el.html(html);
+
+    this.$modalPic = this.$el.find('.Modal');
+    this.$camera = this.$el.find('.Modal-camera');
+    this.$canvas = this.$el.find('.Modal-lienzo');
+    this.$confirmBtn = this.$el.find('.Modal-btnConf');
+    this.$snap = this.$el.find('.Modal-snap');
+    this.$canvasForm = this.$el.find('.Lienzo');
+    this.$containerBtn = this.$el.find('.Modal-btn');
+    this.$typeFile = this.$el.find('input[type="file"]');
+  },
+
+  showModal: function () {
+    this.$modalPic.show();
+    this.$containerBtn.hide();
+    this.showCamera();
+  },
+
+  showCamera: function () {
+    window.URL = window.URL || window.webkitURL;
+    navigator.getUserMedia = navigator.getUserMedia    || navigator.webkitGetUserMedia || 
+                             navigator.mozGetUserMedia || navigator.msGetUserMedia  || false;
+
+    if (!navigator.getUserMedia) {
+       this.closeModal();
+    } else {
+        window.dataVideo = {
+         'StreamVideo': null,
+         'url': null
+        }
+        navigator.getUserMedia({
+         'audio': false,
+         'video': true
+        }, function(streamVideo) {
+            dataVideo.StreamVideo = streamVideo;
+            dataVideo.url = window.URL.createObjectURL(streamVideo);
+            this.closeCanvas();
+            this.$containerBtn.show();
+            this.showBtn();
+            this.$camera.show();
+            this.$camera.attr('src', dataVideo.url);
+        }.bind(this), function() {
+            var message = 'No fue posible obtener acceso a la cámara.';
+            util.showInfo(message);
+            this.closeModal();
+        }.bind(this));
+
+      }
+  },
+
+  snapShot: function (e) {
+    e.preventDefault();
+
+    if (dataVideo.StreamVideo) {
+      this.showCanvas();
+
+      var canvas = this.$canvas;
+      var camera = this.$camera;
+      this.pickCam = camera[0];
+
+      canvas.attr({'width': 150,'height': 150});
+
+      var ctx = canvas[0].getContext('2d');
+      ctx.drawImage(this.pickCam, 0 , 0, 150, 150);
+      this.photoSource = canvas[0].toDataURL('image/png')
+      this.closeCamera();
+      this.optBtn();
+    }
+   
+  },
+
+  showPic: function () {
+    this.$typeFile.val('');
+    var canvasForm = this.$canvasForm;
+    canvasForm.attr({'width': 150, 'height': 150});
+
+    var ctxForm = canvasForm[0].getContext('2d');
+    ctxForm.drawImage(this.pickCam, 0, 0, 150, 150);
+    this.closeModal();
+  },
+
+  uploadPic: function (e) {
+    var file = e.target.files[0];
+    var imageType = /image.*/;
+
+    if (file.type.match(imageType)) {
+      var reader = new FileReader();
+
+      reader.onloadend = function (e) {
+        var source = e.target.result;
+        var imgFile = $('<img>', {src: source});
+        var canvasFile = this.$canvasForm;
+
+        canvasFile.attr({'width': 150, 'height': 150});
+        var ctxFile = canvasFile[0].getContext('2d');
+        imgFile.load(function () {
+           ctxFile.drawImage(this, 0, 0, 150, 150);
+        });
+
+        this.photoSource = source;
+
+      }.bind(this)
+    } else {
+      this.$typeFile.val('');
+
+      var message = 'Ha ingresado un formato de archivo no valido';
+      util.showInfo(message);
+    }
+   
+    reader.readAsDataURL(file);
+  },
+
+  showCanvas: function () {
+    this.$canvas.show();
+  },
+
+  closeCanvas: function () {
+    this.$canvas.hide();
+  },
+
+  closeCamera: function () {
+    this.$camera.hide();
+  },
+
+  optBtn: function () {
+    this.$snap.hide();
+    this.$confirmBtn.show();
+  },
+
+  showBtn: function () {
+    this.$snap.show();
+    this.$confirmBtn.hide();
+  },
+
+  repeat: function () {
+    this.$containerBtn.hide();
+    this.closeReception();
+    this.showCamera();
+  },
+
+  closeModal: function () {
+    this.closeReception();
+    this.$modalPic.hide();
+  },
+
+  closeReception: function () {
+    if (dataVideo.StreamVideo) {
+      dataVideo.StreamVideo.stop();
+      window.URL.revokeObjectURL(dataVideo.url);
+    }
+  },
+
+  close: function () {
+    this.remove();
+  },
+
+  register: function (e) {
+    e.preventDefault();
+
+    var formData = new FormData($('#form-record')[0]);
+
+    if (!_.isEmpty(this.photoSource)) {
+      var mime = util.extractMime(this.photoSource);
+
+      formData.append('photo', this.photoSource);
+      formData.append('mime', mime);
+    }
+
+    $('input[type="checkbox"]').each(function () {
+      var checkbox = $(this);
+
+      if (checkbox.is(':checked')) {
+        formData.append(checkbox.attr('name'), 1);
+      } else {
+        formData.append(checkbox.attr('name'), 0);
+      }
+    
+    });
+
+    var elderId = this.model.get('id');
+
+    $.ajax({
+       url: Backend_url + 'record/' + elderId +'/register',
+       type: 'POST',
+       data: formData,
+       processData : false, 
+       contentType : false,
+    })
+    .done(function (res) {
+      if (res.status == 'success') {
+        util.showSuccess(res.message);
+        this.model.clear();
+        window.location.replace('#elder/' + elderId);
+      } else {
+        util.showError(res.message);
+      }
+    }.bind(this));
+    
+  }
+
+});
+},{"../util/util":78,"backbone":10,"handlebars":29,"jquery":41,"underscore":42}],95:[function(require,module,exports){
+var Backbone   = require('backbone');
+var $          = require('jquery');
+var Handlebars = require('handlebars');
+var util       = require('../util/util');
+
+module.exports = Backbone.View.extend({
+  template: Handlebars.compile($('#instance-waiting').html()),
+  events: {
+    'click .Modal-config' : 'showConfirm',
+    'click .Modal-reject' : 'showReject',
+    'click .Modal-item' : 'selectState',
+  },
+
+  render: function () {
+    var data = this.model.toJSON();
+    var html = this.template(data);
+
+    this.$el.html(html);
+    
+    this.$confirmModal = this.$el.find('#modal-instanceConfirm');
+    this.$rejectModal = this.$el.find('#modal-instanceReject')
+    this.$modal = this.$el.find('.Modal');
   },
 
   showConfirm: function () {
-    this.$el.find('#modal-instanceConfirm').removeClass('u-disabled');
+   this.$confirmModal.show();
   },
 
   showReject: function () {
-    this.$el.find('#modal-instanceReject').removeClass('u-disabled');
-  },
-  
-  closeConfirm: function () {
-    this.$el.find('#modal-instanceConfirm').addClass('u-disabled');
+    this.$rejectModal.show();
   },
 
-  closeReject:function () {
-    this.$el.find('#modal-instanceReject').addClass('u-disabled');  
+  closeModal: function () {
+    this.$modal.hide();
   },
 
-  confirmInstance: function (e) {
+  selectState: function (e) {
     e.preventDefault();
-    e.stopPropagation();
 
-    var target = $(e.target);
-    var data   = target.attr('href');
+    var state = $(e.target).attr('href');
 
-    data = data.split('/');
+    if (state == 'cancel') {
+      this.closeModal();
+    } else {
+      this.confirmInst(state);
+    }
+  },
 
-    var id = data[0];
-    var state = data[1];
-    var url;
+  confirmInst: function (state) {
+    var id = this.model.get('id');
+    var elderId = this.model.get('elder_id');
+    var url = '';
 
-    $.get(Backend_url + 'confirmed/notifications/' +id + '?state=' + state)
-      .done(function (res) {
-        if (res.status == 'info') {
-            util.showSuccess(res.message);
-            this.closeReject();
-            url = '#elder/' + id;
+    $.get(Backend_url + 'instance/' + id + '/confirmed?state=' + state)
+     .done(function (res) {
+        if (res.status == 'success') {
+          url = '#elder/' + elderId + '/edit';
+
+          this.redirect(url, res.message);
         } else {
-          util.showSuccess(res.message);
-          this.closeConfirm();
-          url = '#elder/' + id + '/edit';
+          url = '#elder/' + elderId;
+          
+          this.redirect(url, res.message);
         }
-        
-        Backbone.Main.Elder.elder.clear();
-        window.location.replace(url);
-      }.bind(this))
+     }.bind(this))
+  },
+
+  redirect: function (url, message) {
+    this.closeModal();
+    util.showSuccess(message);
+    Backbone.Main.Elder.elder.clear();
+    window.location.replace(url);
   },
 
   close: function () {
@@ -28575,7 +33317,7 @@ module.exports = Backbone.View.extend({
   }
 
 });
-},{"../util/util":61,"backbone":9,"handlebars":28,"jquery":40}],75:[function(require,module,exports){
+},{"../util/util":78,"backbone":10,"handlebars":29,"jquery":41}],96:[function(require,module,exports){
 var Backbone        = require('backbone');
 var $               = require('jquery');
 var Handlebars      = require('handlebars');
@@ -28643,7 +33385,19 @@ module.exports = Backbone.View.extend({
 
 
 });
-},{"../util/util":61,"backbone":9,"handlebars":28,"jquery":40}],76:[function(require,module,exports){
+},{"../util/util":78,"backbone":10,"handlebars":29,"jquery":41}],97:[function(require,module,exports){
+var Backbone   = require('backbone');
+var $          = require('jquery');
+
+module.exports = Backbone.View.extend({
+   el: $('#main-content'),
+   template: $('#menu-adminView').html(),
+
+   render: function () {
+    this.$el.html(this.template);
+   }
+})
+},{"backbone":10,"jquery":41}],98:[function(require,module,exports){
 var Backbone   = require('backbone');
 var $          = require('jquery');
 var Handlebars = require('handlebars');
@@ -28660,7 +33414,24 @@ module.exports = Backbone.View.extend({
   }
 
 });
-},{"backbone":9,"handlebars":28,"jquery":40}],77:[function(require,module,exports){
+},{"backbone":10,"handlebars":29,"jquery":41}],99:[function(require,module,exports){
+var Backbone   = require('backbone');
+var $          = require('jquery');
+var Handlebars = require('handlebars');
+
+module.exports = Backbone.View.extend({
+  el: $('#main-content'),
+  template: Handlebars.compile($('#menu-employee').html()),
+
+  render: function () {
+    var data = this.model.toJSON();
+    var html = this.template(data);
+
+    this.$el.html(html);
+  }
+
+})
+},{"backbone":10,"handlebars":29,"jquery":41}],100:[function(require,module,exports){
 var Backbone   = require('backbone');
 var $          = require('jquery');
 var Handlebars = require('handlebars');
@@ -28710,7 +33481,7 @@ module.exports = Backbone.View.extend({
 	},
 
 });
-},{"../../../bower_components/typeahead.js/dist/bloodhound.js":5,"../../../bower_components/typeahead.js/dist/typeahead.jquery":6,"backbone":9,"handlebars":28,"jquery":40}],78:[function(require,module,exports){
+},{"../../../bower_components/typeahead.js/dist/bloodhound.js":5,"../../../bower_components/typeahead.js/dist/typeahead.jquery":6,"backbone":10,"handlebars":29,"jquery":41}],101:[function(require,module,exports){
 var Backbone   = require('backbone');
 var $          = require('jquery');
 var Handlebars = require('handlebars');
@@ -28726,44 +33497,45 @@ module.exports = Backbone.View.extend({
 	},
 
 	initialize: function () {
-		 	this.pagInit();
+		this.pagInit();
 	},
 
 	render: function () {
-		this.items   = this.collection.totalPage();
-
+		this.items = this.collection.totalPage();
 		var current = this.currentPage;
-		var data    = JSON.stringify({items: this.items, current: current});
-		var html    = this.template(JSON.parse(data));
+		var data = JSON.stringify({items: this.items, current: current});
+		var html = this.template(JSON.parse(data));
 
 		this.$el.html(html);
+
 		return this;
 	},
-
 
 	goToPage: function (e) {
 		e.preventDefault();
 		
-		var page  = $(e.target).text();
-		var page  = parseInt(page);
+		var page = $(e.target).text();
+		page = parseInt(page);
 		var total = this.items;
 
-		if (page <= 0 || page > total  || isNaN(page)) {
+		if (page <= 0 || page > total || isNaN(page)) {
 			page = 1;
 		}
 
 		this.currentPage = page;
+
 		this.collection.trigger('goTo');
 		this.collection.getPage(page);
 	},
 
 	goToNext: function () {
-		var total   = this.items;
+		var total = this.items;
 		var current = this.currentPage;
 
 		if (current < total) {
 			this.currentPage = current + 1;
 		}
+
 		this.collection.trigger('goTo');
 		this.collection.getNextPage();
 	},
@@ -28789,4 +33561,523 @@ module.exports = Backbone.View.extend({
 
 
 });
-},{"backbone":9,"handlebars":28,"jquery":40}]},{},[44]);
+},{"backbone":10,"handlebars":29,"jquery":41}],102:[function(require,module,exports){
+var Backbone = require('backbone');
+var $        = require('jquery');
+var alertify = require('alertifyjs');
+var util     = require('../util/util');
+
+module.exports = Backbone.View.extend({
+  template: $('#register-permitNormal').html(),
+  events: {
+    'submit #form-permitNormal': 'confirmed'
+  },
+
+  render: function () {
+    this.$el.html(this.template);
+  },
+
+  confirmed: function (e) {
+    e.preventDefault();
+    
+    var title = 'Registar Permiso';
+    var message = 'Asegurese de que los datos son correctos porque no podran ser editados en el futuro';
+
+    var callback = function () {
+      this.register();
+    }.bind(this);
+
+    alertify.confirm(message, callback)
+            .setting({
+              'title': title,
+              'labels': {
+                  'ok' : 'Registar',
+                  'cancel': 'Cancelar'
+               }
+            });
+  },
+
+
+  register: function () {
+    var data = $('#form-permitNormal').serialize();
+    var employeeId = this.model.get('employee_id');
+    
+    $.post(Backend_url + 'permit/register/' + employeeId, data)
+     .done(function (res) {
+        if (res.status == 'success') {
+          util.showSuccess(res.message);
+          Backbone.Main.Employee.navigate('employee/' + employeeId, triggerData);
+        } else {
+          util.showError(res.message);
+        }
+     })
+  },
+
+  close: function () {
+    this.remove();
+  }
+});
+},{"../util/util":78,"alertifyjs":7,"backbone":10,"jquery":41}],103:[function(require,module,exports){
+var Backbone = require('backbone');
+var $        = require('jquery');
+var alertify = require('alertifyjs');
+var util     = require('../util/util');
+
+module.exports = Backbone.View.extend({
+  template: $('#register-permitSpecial').html(),
+  events: {
+    'submit #form-permitSpecial' : 'confirmed'
+  },
+
+  render: function () {
+    this.$el.html(this.template);
+  },
+
+  confirmed: function (e) {
+    e.preventDefault();
+
+    var title = 'Registar Permiso';
+    var message = 'Asegurese de que los datos son correctos porque no podran ser editados en el futuro';
+
+    var callback = function () {
+      this.register();
+    }.bind(this);
+
+    alertify.confirm(message, callback)
+            .setting({
+              'title': title,
+              'labels': {
+                  'ok' : 'Registar',
+                  'cancel': 'Cancelar'
+               }
+            });
+
+  },
+
+  register: function () {
+    var data = $('#form-permitSpecial').serialize();
+    var employeeId = this.model.get('employee_id');
+
+    $.post(Backend_url + 'permit/register/' + employeeId, data)
+     .done(function (res) {
+        if (res.status == 'success') {
+          util.showSuccess(res.message);
+          Backbone.Main.Employee.navigate('employee/' + employeeId, triggerData);
+        } else {
+          util.showError(res.message);
+        }
+     })
+  },
+
+  close: function () {
+    this.remove();
+  }
+});
+},{"../util/util":78,"alertifyjs":7,"backbone":10,"jquery":41}],104:[function(require,module,exports){
+var Backbone   = require('backbone');
+var $          = require('jquery');
+var Handlebars = require('handlebars');
+
+module.exports = Backbone.View.extend({
+  template: Handlebars.compile($('#record-data').html()),
+
+  render: function () {
+    var data = this.model.toJSON();
+    var html = this.template(data);
+
+    this.$el.html(html);
+  },
+  close: function () {
+    this.remove();
+  }
+});
+},{"backbone":10,"handlebars":29,"jquery":41}],105:[function(require,module,exports){
+var Backbone   = require('backbone');
+var $          = require('jquery');
+var _          = require('underscore');
+var Handlebars = require('handlebars');
+var util       = require('../util/util');
+
+module.exports = Backbone.View.extend({
+  template: Handlebars.compile($('#recordEdit-view').html()),
+
+  events: {
+    'click .Form-btnCamera' : 'showModal',
+    'click .Modal-snap': 'snapShot',
+    'click .Modal-repeat': 'repeat',
+    'click .Modal-btnPic': 'showPic',
+    'change .Form-file': 'uploadPic',
+    'submit #form-editRecord'  : 'edit',
+  },
+
+  initialize: function () {
+    this.photoSource = '';
+  },
+
+  render: function () {
+    var data = this.model.toJSON();
+    var html = this.template(data);
+
+    this.$el.html(html);
+
+    this.$modalPic = this.$el.find('.Modal');
+    this.$camera = this.$el.find('.Modal-camera');
+    this.$canvas = this.$el.find('.Modal-lienzo');
+    this.$confirmBtn = this.$el.find('.Modal-btnConf');
+    this.$snap = this.$el.find('.Modal-snap');
+    this.$canvasForm = this.$el.find('.Lienzo');
+    this.$containerBtn = this.$el.find('.Modal-btn');
+    this.$typeFile = this.$el.find('input[type="file"]');
+
+    this.loadPic();
+
+  },
+
+  showModal: function () {
+    this.$modalPic.show();
+    this.$containerBtn.hide();
+    this.showCamera();
+  },
+
+  showCamera: function () {
+    window.URL = window.URL || window.webkitURL;
+    navigator.getUserMedia = navigator.getUserMedia    || navigator.webkitGetUserMedia || 
+                             navigator.mozGetUserMedia || navigator.msGetUserMedia  || false;
+
+    if (!navigator.getUserMedia) {
+       this.closeModal();
+    } else {
+        window.dataVideo = {
+         'StreamVideo': null,
+         'url': null
+        }
+
+        navigator.getUserMedia({
+         'audio': false,
+         'video': true
+        }, function(streamVideo) {
+            dataVideo.StreamVideo = streamVideo;
+            dataVideo.url = window.URL.createObjectURL(streamVideo);
+
+            this.closeCanvas();
+            this.$containerBtn.show();
+            this.showBtn();
+            this.$camera.show();
+            this.$camera.attr('src', dataVideo.url);
+        }.bind(this), function() {
+            var message = 'No fue posible obtener acceso a la cámara.';
+
+            util.showInfo(message);
+            this.closeModal();
+        }.bind(this));
+
+      }
+  },
+
+  snapShot: function (e) {
+    e.preventDefault();
+
+    if (dataVideo.StreamVideo) {
+      this.showCanvas();
+
+      var canvas = this.$canvas;
+      var camera = this.$camera;
+      this.pickCam = camera[0];
+
+      canvas.attr({'width': 150,'height': 150});
+
+      var ctx = canvas[0].getContext('2d');
+
+      ctx.drawImage(this.pickCam, 0 , 0, 150, 150);
+
+      this.photoSource = canvas[0].toDataURL('image/png')
+
+      this.closeCamera();
+      this.optBtn();
+    }
+   
+  },
+
+  showPic: function () {
+    this.$typeFile.val('');
+
+    var canvasForm = this.$canvasForm;
+
+    canvasForm.attr({'width': 150, 'height': 150});
+
+    var ctxForm = canvasForm[0].getContext('2d');
+
+    ctxForm.drawImage(this.pickCam, 0, 0, 150, 150);
+    this.closeModal();
+  },
+
+  uploadPic: function (e) {
+    var file = e.target.files[0];
+    var imageType = /image.*/;
+
+    if (file.type.match(imageType)) {
+      var reader = new FileReader();
+
+      reader.onloadend = function (e) {
+        var source = e.target.result;
+        var imgFile = $('<img>', {src: source});
+        var canvasFile = this.$canvasForm;
+
+        canvasFile.attr({'width': 150, 'height': 150});
+
+        var ctxFile = canvasFile[0].getContext('2d');
+
+        imgFile.load(function () {
+           ctxFile.drawImage(this, 0, 0, 150, 150);
+        });
+
+        this.photoSource = source;
+
+      }.bind(this)
+    } else {
+      this.$typeFile.val('');
+
+      var message = 'Ha ingresado un formato de archivo no valido';
+
+      util.showInfo(message);
+    }
+   
+    reader.readAsDataURL(file);
+  },
+
+  loadPic: function () {
+    var imageUrl = this.model.get('image_url');
+
+    if (!_.isUndefined(imageUrl)) {
+      var defaultUrl = 'http://localhost/image/geriatric/profile_default_man.jpg';
+    
+      if (imageUrl != defaultUrl) {
+        var image = new Image();
+        image.src = imageUrl;
+
+        var canvas = this.$canvasForm;
+
+        canvas.attr({'width': 150, 'height': 150});
+        
+        var ctx = canvas[0].getContext('2d');
+
+        image.onload = function () {
+          ctx.drawImage(image, 0, 0);
+        }
+      }
+    }
+  },
+
+  showCanvas: function () {
+    this.$canvas.show();
+  },
+
+  closeCanvas: function () {
+    this.$canvas.hide();
+  },
+
+  closeCamera: function () {
+    this.$camera.hide();
+  },
+
+  optBtn: function () {
+   this.$snap.hide();
+   this.$confirmBtn.show();
+  },
+
+  showBtn: function () {
+    this.$snap.show();
+    this.$confirmBtn.hide();
+  },
+
+  repeat: function () {
+    this.$containerBtn.hide();
+    this.closeReception();
+    this.showCamera();
+  },
+
+  closeModal: function () {
+    this.closeReception();
+    this.$modalPic.hide();
+  },
+
+  closeReception: function () {
+    if (dataVideo.StreamVideo) {
+      dataVideo.StreamVideo.stop();
+      window.URL.revokeObjectURL(dataVideo.url);
+    }
+  },
+
+  edit: function (e) {
+    e.preventDefault();
+    var id = this.model.get('id');
+    var elderId = this.model.get('elder_id');
+    var formData = new FormData($('#form-editRecord')[0]);
+
+     if (!_.isEmpty(this.photoSource)) {
+      var mime = util.extractMime(this.photoSource);
+
+      formData.append('photo', this.photoSource);
+      formData.append('mime', mime);
+    }
+
+    $('input[type="checkbox"]').each(function () {
+       var checkbox = $(this);
+
+       if (checkbox.is(':checked')) {
+        formData.append(checkbox.attr('name'), 1);
+       } else {
+        formData.append(checkbox.attr('name'), 0);
+       }
+    
+    });
+
+    $.ajax({
+      url: Backend_url + 'edit/record/' + id + '?_method=PUT',
+      type: 'POST',
+      data: formData,
+      processData : false, 
+      contentType : false,
+    })
+    .done(function (res) {
+      if (res.status == 'success') {
+        util.showSuccess(res.message);
+        Backbone.Main.Elder.elder.clear();
+        window.location.replace('#elder/' + elderId + '/record/' + id);
+      } else {
+        util.showError(res.message);
+      }
+    })
+  },
+
+  close: function () {
+    this.remove();
+  }
+})
+},{"../util/util":78,"backbone":10,"handlebars":29,"jquery":41,"underscore":42}],106:[function(require,module,exports){
+var Backbone   = require('backbone');
+var $          = require('jquery');
+var Handlebars = require('handlebars');
+var util       = require('../util/util');
+
+module.exports = Backbone.View.extend({
+  template: Handlebars.compile($('#schedule-editEmpView').html()),
+
+  events: {
+    'submit #form-editEmpSchedule' : 'edit'
+  },
+
+  render: function () {
+    var data = this.model.toJSON();
+    var html = this.template(data);
+
+    this.$el.html(html);
+  },
+
+  edit: function (e) {
+    e.preventDefault();
+
+    var data = $('#form-editEmpSchedule').serialize();
+    var employeeId = this.model.get('employee_id');
+    var scheduleId = this.model.get('id');
+
+    $.post(Backend_url + 'schedule/' + scheduleId + '/employee/' + employeeId +'/remove', data)
+     .done(function (res) {
+        if (res.status == 'success') {
+          util.showSuccess(res.message);
+          window.location.replace('#employee/'+ employeeId);
+        } else {
+          util.showError(res.message)
+        }
+    })
+  },
+
+  close: function () {
+    this.remove();
+  }
+
+})
+},{"../util/util":78,"backbone":10,"handlebars":29,"jquery":41}],107:[function(require,module,exports){
+var Backbone   = require('backbone');
+var $          = require('jquery');
+var Handlebars = require('handlebars');
+var util       = require('../util/util');
+
+module.exports = Backbone.View.extend({
+  template: Handlebars.compile($('#scheduleEmp-data').html()),
+
+  render: function () {
+    var notFound = this.model.get('notFound');
+ 
+    if (!notFound) {
+      var days = this.model.get('days');
+      days = util.selectDays(days);
+
+      this.model.set({days: days}, {silent: true});
+    }
+    
+    var data = this.model.toJSON();
+    var html = this.template(data);
+
+    this.$el.html(html);
+  },
+
+  close: function () {
+    this.remove();
+  }
+})
+},{"../util/util":78,"backbone":10,"handlebars":29,"jquery":41}],108:[function(require,module,exports){
+var Backbone   = require('backbone');
+var $          = require('jquery');
+var Handlebars = require('handlebars');
+var util       = require('../util/util');
+
+module.exports = Backbone.View.extend({
+  template: Handlebars.compile($('#register-empSchedule').html()),
+  events: {
+    'submit #formEmp-schedule' : 'register',
+    'click .Modal-itemConf' : 'addSchedule'
+  },
+
+  render: function () {
+    var data = this.model.toJSON();
+    var html = this.template(data);
+
+    this.$el.html(html);
+    this.$modal = this.$el.find('.Modal');
+    this.$form = this.$el.find('#formEmp-schedule');
+  },
+
+  addSchedule: function (e) {
+    e.preventDefault();
+    this.$modal.hide();
+    this.$form.find('input[type="time"]').val('');
+
+    $('input:checked').each(function () {
+       $(this).attr({checked: false});
+    })
+  },
+
+  register: function (e) {
+    e.preventDefault();
+
+    var data = this.$form.serialize();
+    var id = this.model.get('id');
+
+    $.post(Backend_url + 'register/employee/schedule/' + id, data)
+     .done(function (res) {
+      if (res.status == 'success') {
+        util.showSuccess(res.message);
+        this.$modal.show();
+      } else {
+          util.showError(res.message);
+        }
+      }.bind(this));
+  },
+
+  close: function () {
+    this.remove();
+  }
+
+})
+},{"../util/util":78,"backbone":10,"handlebars":29,"jquery":41}]},{},[45]);

@@ -1,11 +1,14 @@
-var Backbone   = require('backbone');
-var $          = require('jquery');
-var _          = require('underscore');
-var Handlebars = require('handlebars');
-var util       = require('../util/util');
+var Backbone = require('backbone');
+var $        = require('jquery');
+var _        = require('underscore');
+var util     = require('../util/util');
 
 module.exports = Backbone.View.extend({
-  template: Handlebars.compile($('#register-record').html()),
+  template: $('#register-employee').html(),
+
+  initialize: function () {
+    this.photoSource = '';
+  },
 
   events: {
     'click .Form-btnCamera' : 'showModal',
@@ -13,18 +16,11 @@ module.exports = Backbone.View.extend({
     'click .Modal-repeat': 'repeat',
     'click .Modal-btnPic': 'showPic',
     'change .Form-file': 'uploadPic',
-    'submit #form-record': 'register',
-  },
-
-  initialize: function () {
-    this.photoSource = '';
+    'submit #form-employee': 'register'
   },
 
   render: function () {
-    var data = this.model.toJSON();
-    var html = this.template(data);
-
-    this.$el.html(html);
+    this.$el.html(this.template);
 
     this.$modalPic = this.$el.find('.Modal');
     this.$camera = this.$el.find('.Modal-camera');
@@ -34,6 +30,7 @@ module.exports = Backbone.View.extend({
     this.$canvasForm = this.$el.find('.Lienzo');
     this.$containerBtn = this.$el.find('.Modal-btn');
     this.$typeFile = this.$el.find('input[type="file"]');
+
   },
 
   showModal: function () {
@@ -183,7 +180,7 @@ module.exports = Backbone.View.extend({
   register: function (e) {
     e.preventDefault();
 
-    var formData = new FormData($('#form-record')[0]);
+    var formData = new FormData($('#form-employee')[0]);
 
     if (!_.isEmpty(this.photoSource)) {
       var mime = util.extractMime(this.photoSource);
@@ -192,36 +189,24 @@ module.exports = Backbone.View.extend({
       formData.append('mime', mime);
     }
 
-    $('input[type="checkbox"]').each(function () {
-      var checkbox = $(this);
-
-      if (checkbox.is(':checked')) {
-        formData.append(checkbox.attr('name'), 1);
-      } else {
-        formData.append(checkbox.attr('name'), 0);
-      }
-    
-    });
-
-    var elderId = this.model.get('id');
-
     $.ajax({
-       url: Backend_url + 'record/' + elderId +'/register',
-       type: 'POST',
-       data: formData,
-       processData : false, 
-       contentType : false,
+      url: Backend_url + 'employee/register',
+      type: 'POST',
+      data: formData,
+      processData : false, 
+      contentType : false,
     })
-    .done(function (res) {
+    .done(function(res) {
       if (res.status == 'success') {
         util.showSuccess(res.message);
-        this.model.clear();
-        window.location.replace('#elder/' + elderId);
+        Backbone.Main.navigate('employee/' + res.id + '/schedule/register', {trigger: true});
       } else {
         util.showError(res.message);
       }
-    }.bind(this));
-    
+    });
+
   }
 
-});
+
+  
+})
