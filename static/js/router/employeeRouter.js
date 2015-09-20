@@ -1,12 +1,13 @@
-var Backbone     = require('backbone');
-var $            = require('jquery');
-var Subroute     = require('../../dependencies/backboneSubroutes/backboneSubroutes');
-var Employee     = require('../model/employee');
-var EmployeeMenu = require('../view/menuEmployeeView');
-var EmployeeCtrl = require('../controller/employeeController');
-var ScheduleCtrl = require('../controller/scheduleController');
-var PermitRouter = require('./permitRouter');
-var util         = require('../util/util');
+var Backbone       = require('backbone');
+var $              = require('jquery');
+var Subroute       = require('../../dependencies/backboneSubroutes/backboneSubroutes');
+var Employee       = require('../model/employee');
+var EmployeeMenu   = require('../view/menuEmployeeView');
+var EmployeeCtrl   = require('../controller/employeeController');
+var AttendanceCtrl = require('../controller/attendanceController');
+var ScheduleCtrl   = require('../controller/scheduleController');
+var PermitRouter   = require('./permitRouter');
+var util           = require('../util/util');
 
 
 module.exports = Subroute.extend({
@@ -14,16 +15,18 @@ module.exports = Subroute.extend({
     ':id' : 'show',
     ':id/schedule/register' : 'formSchedule',
     ':id/edit' : 'edit',
+    ':id/attendances': 'showAttendances',
     ':id/schedule/:scheduleId' : 'showSchedule',
     ':id/schedule/:scheduleId/change' : 'changeSchedule',
     ':id/permit/*subroute' : 'invokePermit'
   },
 
   initialize: function () {
-    this.employee     = new Employee();
-    this.employeeMenu = new EmployeeMenu({model: this.employee});
-    this.employeeCtrl = new EmployeeCtrl();
-    this.scheduleCtrl = new ScheduleCtrl();
+    this.employee       = new Employee();
+    this.employeeMenu   = new EmployeeMenu({model: this.employee});
+    this.employeeCtrl   = new EmployeeCtrl();
+    this.attendanceCtrl = new AttendanceCtrl();
+    this.scheduleCtrl   = new ScheduleCtrl();
   },
 
   before: {
@@ -74,6 +77,10 @@ module.exports = Subroute.extend({
 
   showSchedule: function (employeeId, scheduleId) {
     this.scheduleCtrl.showEmp(employeeId, scheduleId);
+  },
+
+  showAttendances: function (employeeId) {
+    this.attendanceCtrl.employeeAttendance(employeeId);
   },
 
   changeSchedule: function (employeeId, scheduleId) {

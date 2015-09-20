@@ -18,19 +18,18 @@ module.exports = Backbone.View.extend({
     
     var title = 'Registar Permiso';
     var message = 'Asegurese de que los datos son correctos porque no podran ser editados en el futuro';
-
     var callback = function () {
       this.register();
     }.bind(this);
 
     alertify.confirm(message, callback)
-            .setting({
-              'title': title,
-              'labels': {
-                  'ok' : 'Registar',
-                  'cancel': 'Cancelar'
-               }
-            });
+    .setting({
+      'title': title,
+      'labels': {
+        'ok': 'Registar',
+        'cancel': 'Cancelar'
+      }
+    });
   },
 
 

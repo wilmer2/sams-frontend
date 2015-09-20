@@ -6,6 +6,37 @@ TaskHour = {
     var currentHour = hour + ':' + min;
 
     return currentHour
+  },
+
+  hourFormat: function (hour) {
+    var segment = hour.split(':');
+
+    if (segment.length == 3) {
+      segment.splice(2, 1);
+    }
+
+    var hour = segment[0];
+    var min = segment[1];
+    var hourFormat = hour + ':' + min;
+
+    return hourFormat;
+  },
+
+  hourStandar: function (hour) {
+    var standar = hour.split(':');
+    var hourStand = standar[0];
+    var meridian;
+
+    if (hourStand < 12) {
+      hourStand = hourStand + ':' + standar[1] + 'am';
+    } else {
+      if (hourStand >= 13) {
+        hourStand = hourStand - 12;
+      }
+      hourStand = hourStand + ':' + standar[1] + 'pm';
+    }
+   
+   return hourStand;
   }
 }
 

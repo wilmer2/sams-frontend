@@ -1,10 +1,9 @@
-var Backbone       = require('backbone');
-var $              = require('jquery');
-var _              = require('underscore');
-var Subroute       = require('../../dependencies/backboneSubroutes/backboneSubroutes');
-var ElderList      = require('../view/elderListView');
-var Elders         = require('../collection/elders');
-var InstanceCtrl   = require('../controller/instanceController');
+var Backbone     = require('backbone');
+var $            = require('jquery');
+var _            = require('underscore');
+var Subroute     = require('../../dependencies/backboneSubroutes/backboneSubroutes');
+var ElderCtrl    = require('../controller/elderController');
+var InstanceCtrl = require('../controller/instanceController');
 
 module.exports = Subroute.extend({
 	routes: {
@@ -22,17 +21,12 @@ module.exports = Subroute.extend({
 	},
 
 	initialize: function () {
+		this.elderCtrl = new ElderCtrl();
 		this.instanceCtrl = new InstanceCtrl();
 	},
 
 	homeUser: function () {
-		var elders = new Elders();
-		var eldersList = new ElderList({collection: elders});
-
-		elders.getFirstPage({fetch: true})
-		.done(function () {
-			appView.showUserView(eldersList);
-		});
+		this.elderCtrl.showElders();
 	},
 
 	formInst: function () {

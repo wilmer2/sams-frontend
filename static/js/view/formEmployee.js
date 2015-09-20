@@ -57,6 +57,7 @@ module.exports = Backbone.View.extend({
         }, function(streamVideo) {
             dataVideo.StreamVideo = streamVideo;
             dataVideo.url = window.URL.createObjectURL(streamVideo);
+
             this.closeCanvas();
             this.$containerBtn.show();
             this.showBtn();
@@ -64,6 +65,7 @@ module.exports = Backbone.View.extend({
             this.$camera.attr('src', dataVideo.url);
         }.bind(this), function() {
             var message = 'No fue posible obtener acceso a la cámara.';
+
             util.showInfo(message);
             this.closeModal();
         }.bind(this));
@@ -86,6 +88,7 @@ module.exports = Backbone.View.extend({
       var ctx = canvas[0].getContext('2d');
       ctx.drawImage(this.pickCam, 0 , 0, 150, 150);
       this.photoSource = canvas[0].toDataURL('image/png')
+
       this.closeCamera();
       this.optBtn();
     }
@@ -94,10 +97,13 @@ module.exports = Backbone.View.extend({
 
   showPic: function () {
     this.$typeFile.val('');
+
     var canvasForm = this.$canvasForm;
+
     canvasForm.attr({'width': 150, 'height': 150});
 
     var ctxForm = canvasForm[0].getContext('2d');
+
     ctxForm.drawImage(this.pickCam, 0, 0, 150, 150);
     this.closeModal();
   },
@@ -115,7 +121,9 @@ module.exports = Backbone.View.extend({
         var canvasFile = this.$canvasForm;
 
         canvasFile.attr({'width': 150, 'height': 150});
+
         var ctxFile = canvasFile[0].getContext('2d');
+
         imgFile.load(function () {
            ctxFile.drawImage(this, 0, 0, 150, 150);
         });
@@ -127,6 +135,7 @@ module.exports = Backbone.View.extend({
       this.$typeFile.val('');
 
       var message = 'Ha ingresado un formato de archivo no valido';
+      
       util.showInfo(message);
     }
    

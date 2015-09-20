@@ -1,20 +1,35 @@
-var $         = require('jquery');
-var ElderData = require('../view/elderDataView');
-var ElderEdit = require('../view/elderEditView');
+var $          = require('jquery');
+var Elders     = require('../collection/elders');
+var ElderTable = require('../view/elderTableView');
+var ElderData  = require('../view/elderDataView');
+var ElderEdit  = require('../view/elderEditView');
 
-function elderCtrl () {
+function ElderCtrl () {
   this.showElder = function (elder) {
     var instance = elder.get('instance');  
+
     if (instance > 0) {
       window.location.replace('#elder/' + elder.get('id') + '/instance-waiting');
     } else {
       var elderView = new ElderData({model:elder});
+
       appView.showElderView(elderView);
     }
   },
 
+  this.showElders = function () {
+    var elders = new Elders();
+    var eldersTable = new ElderTable({collection: elders});
+
+    elders.getFirstPage(fetchData)
+    .done(function () {
+      appView.showUserView(eldersTable);
+    })
+  },
+
   this.showEdit = function (elder) {
     var editView = new ElderEdit({model: elder});
+
     appView.showElderView(editView);
   },
 
@@ -23,12 +38,12 @@ function elderCtrl () {
       $.get(Backend_url + 'elder/' + id)
        .done(function (data) {
         resolve(data);
-      })
+       })
        .fail(function (err) {
         reject(err);
-      })
-     });
+       })
+    });
   }
 }
 
-module.exports = elderCtrl;
+module.exports = ElderCtrl;

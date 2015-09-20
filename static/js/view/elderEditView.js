@@ -16,14 +16,16 @@ module.exports = Backbone.View.extend({
     var gender = this.model.get('gender');
 
     this.$el.html(this.template(data));
-    this.$modal = this.$el.find('.Modal');
 
+    this.$modal = this.$el.find('.Modal');
     var radio = this.$el.find('input[value=' + gender + ']:radio');
+
     radio.prop('checked', true);
   },
 
   edit: function (e) {
     e.preventDefault();
+    
     var data = $('#formEdit-elder').serialize();
     
     $.post(Backend_url + 'elder/edit/' + this.model.get('id') + '?_method=PUT', data)

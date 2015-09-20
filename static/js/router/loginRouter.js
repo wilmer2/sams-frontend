@@ -1,16 +1,23 @@
-var Backbone        = require('backbone');
-var $               = require('jquery');
-var AuthUser        = require('../model/authUser');
-var Citations       = require('../collection/citations');
-var CitationsNotify = require('../view/citationNotifyView');
-var LoginView       = require('../view/loginView');
-var MenuUser        = require('../view/menuView');
-var HomeRouter      = require('./homeRouter');
-var ActivityRouter  = require('./activityRouter');
-var ElderRouter     = require('./elderRouter');
-var AdminRouter     = require('./adminRouter');
-var EmployeeRouter  = require('./employeeRouter');
+var Backbone = require('backbone');
+var $ = require('jquery');
+var AuthUser = require('../model/authUser');
+var Config = require('../model/config');
+var LoginView = require('../view/login/loginView');
+var LoginCtrl = require('../controller/loginController');
+// var Citations       = require('../collection/citations');
+// var CitationsNotify = require('../view/citationNotifyView');
+// var LoginView       = require('../view/loginView');
+// var MenuUser        = require('../view/menuView');
+// var MenuAdmin       = require('../view/menuAdminView');
+// var HomeRouter      = require('./homeRouter');
+// var ElderRouter     = require('./elderRouter');
+// var AdminRouter     = require('./adminRouter');
+// var EmployeeRouter  = require('./employeeRouter');
+var ActionRouter = require('./actionRouter');
+var EventRouter = require('./eventRouter');
+var OutputRouter = require('./outputRouter');
 var AttendanceRouter = require('./attendanceRouter');
+var ProductRouter = require('./productRouter');
 
 var util  = require('../util/util');
 
@@ -18,22 +25,32 @@ module.exports = Backbone.Router.extend({
 	routes: {
 		'' :     'selectMenu',
 		'login': 'login',
-		'logout':'logout',
+		'elders': 'elders',
+		// 'logout':'logout',
 		
-		'home/*subroute': 'invokeHomeModule',
-		'admin/*subroute': 'invokeAdminModule',
-		'elder/*subroute': 'invokeElderModule',
-		'employee/*subroute': 'invokeEmployeeModule',
-		'activity/*subroute': 'invokeActiveModule',
-		'attendance/*subroute': 'invokeAttendanceModule'
+		// 'home/*subroute': 'invokeHomeModule',
+		// 'admin/*subroute': 'invokeAdminModule',
+		// 'elder/*subroute': 'invokeElderModule',
+		// 'employee/*subroute': 'invokeEmployeeModule',
+		'action/*subroute': 'invokeActionModule',
+		'attendance/*subroute': 'invokeAttendanceModule',
+		'product/*subroute': 'invokeProductModule',
+		'event/*subroute': 'invokeEventModule',
+		'output/*subroute': 'invokeOutputModule'
 	},
 
 	initialize: function () {
 		this.userLogin = new AuthUser();
-		this.loginView = new LoginView({model: this.userLogin});
-		this.menuView  = new MenuUser({model: this.userLogin});
+		this.config = new Config();
+		this.loginCtrl = new LoginCtrl();
+
+		var loginData = {model: this.userLogin, config: this.config};
+
+		this.loginView = new LoginView(loginData);
+		/*this.menuView  = new MenuUser({model: this.userLogin});
+		this.menuAdmin = new MenuAdmin({model: this.userLogin});
 		this.citations = new Citations();
-		this.citNotify = new CitationsNotify({collection: this.citations});
+		this.citNotify = new CitationsNotify({collection: this.citations});*/
 
 		Backbone.history.start();
 	},
@@ -43,42 +60,72 @@ module.exports = Backbone.Router.extend({
 	},
 
 	checkUser: function (fragment, args, next) {
-		$.ajaxSetup({
-				xhrFields : {
-      		withCredentials : true
-    	},
-			statusCode: {
-				401: function () {
-					var hash = window.location.hash;
-					Backbone.Main.unSetUser();
+		var user = this.userLogin;
 
-					if (hash != Hash_login) {
-							window.location.replace('/#login');
-					} else {
-						next();
-					}
-				}
-			}
-		});
+		$.ajaxSetup({
+			xhrFields: {
+      	withCredentials: true
+    	},
+    	statusCode: {
+    		401: function () {
+     			var hash = window.location.hash;
+        	
+        	if (hash != Hash_login) {
+          		window.location.replace('/#login');
+          } else {
+            return next();
+          }
+      	}
+    	}
+    });
+
+    if (user.has('role')) {
+    	next();
+    } else {
+    	this.loginCtrl.loadUser(user, next);
+    }
 		
-		if (this.userLogin.has('group')) {
-			next();
+	},
+
+	login: function () {
+		if (this.userLogin.has('role')) {
+			this.selectMenu();
 		} else {
-			this.getUser()
+			if (!this.config.has('name_institution')) {
+				this.loginCtrl.loadConfig()
 				.then(function (data) {
-					this.userLogin.set(data);
-					return this.getConfiguration();
+					this.config.set(data);
+					this.login();
 				}.bind(this))
-				.then(function (config) {
-					this.userLogin.set(config, {silent: true});
-					next();
-				}.bind(this))
-				.catch(function (err) {
-					this.interceptor(err);
-				}.bind(util));
+			} else {
+				this.loginView.render();
+			}
 		}
 	},
 
+	selectMenu: function () {
+		var role = this.userLogin.get('role');
+
+		// if (role == 'User') {
+			this.navigate('elders', triggerData);
+		// } else {
+		// 	console.log('test');
+		// }
+	},
+
+	renderHeader: function () {
+		this.loginView.renderHeader();
+	},
+
+	renderMenuUser: function () {
+		this.renderHeader();
+		this.loginCtrl.menuUserRender(this.userLogin);
+	},
+
+	elders: function () {
+		this.renderMenuUser();
+	},
+/*
 	closeNotify: function () {
 		this.citNotify.hideList();
 	},
@@ -157,6 +204,11 @@ module.exports = Backbone.Router.extend({
 		this.loginView.renderHeader();
 	},
 
+	renderAdmin: function () {
+		this.renderHeader();
+		this.menuAdmin.render();
+	},
+
 	renderMenu: function () {
 		this.renderHeader();
 		this.menuView.render();
@@ -191,11 +243,46 @@ module.exports = Backbone.Router.extend({
 		if (!Backbone.Main.Employee) {
 			Backbone.Main.Employee = new EmployeeRouter('employee/');
 		}
+	},*/
+
+
+	invokeActionModule: function (subroute) {
+		this.renderMenuUser();
+
+		if (!Backbone.Main.Action) {
+			Backbone.Main.Action = new ActionRouter('action/');
+		}
+	},
+
+	invokeOutputModule: function (subroute) {
+		this.renderMenuUser();
+
+		if (!Backbone.Main.Output) {
+			Backbone.Main.Output = new OutputRouter('output/');
+		}
 	},
 
 	invokeAttendanceModule: function (subroute) {
+		this.renderMenuUser();
+
 		if (!Backbone.Main.Attendance) {
 			Backbone.Main.Attendance = new AttendanceRouter('attendance/');
+		}
+	},
+
+	invokeEventModule: function (subroute) {
+		this.renderMenuUser();
+
+		if (!Backbone.Main.Event) {
+			Backbone.Main.Event = new EventRouter('event/');
+		}
+	},
+
+	invokeProductModule: function (subroute) {
+		this.renderMenuUser();
+
+		if (!Backbone.Main.Product) {
+			Backbone.Main.Product = new ProductRouter('product/');
 		}
 	}
 	

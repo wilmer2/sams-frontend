@@ -18,6 +18,10 @@ module.exports = PageableCollection.extend({
       var data = res.data;
 
       return data;
+    } else {
+      var message = res.message;
+
+      this.trigger('notAttendance', message);
     }
   },
 
@@ -35,7 +39,7 @@ module.exports = PageableCollection.extend({
 
   search: function (letters) {
     var letters = letters.trim();
-    var searchFor = ['identitfy_card','first_name', 'last_name'];
+    var searchFor = ['identity_card','first_name', 'last_name', 'date_day'];
 
     if (letters != '') {
       return this.fullCollection.filter(function (model) {

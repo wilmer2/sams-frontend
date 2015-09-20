@@ -1,49 +1,65 @@
 var $ = require('jquery');
 
 function appView () {
-   this.showAdminView = function (view) {
-     if (this.currentAdminView) {
+  this.showMenuView = function (view) {
+    if (this.currentMenuView) {
+      this.currentMenuView.close();
+    }
+
+    this.currentMenuView = view;
+
+    this.currentMenuView.render();
+
+    $('#main-content').html(this.currentMenuView.el);
+  }
+
+  this.showAdminView = function (view) {
+    if (this.currentAdminView) {
        this.currentAdminView.close();
-     }
+    }
 
-     this.currentAdminView = view;
-     this.currentAdminView.render();
+    this.currentAdminView = view;
 
-     $('#container-admin').html(this.currentAdminView.el);
-   }
+    this.currentAdminView.render();
 
-	 this.showUserView = function (view) {
-	 		if (this.currentUserView) {
-	 			this.currentUserView.close();
-	 		}
+    $('#container-admin').html(this.currentAdminView.el);
+  }
 
-	 		this.currentUserView = view;
-	 		this.currentUserView.render();
+	this.showUserView = function (view) {
+	 if (this.currentUserView) {
+	   this.currentUserView.close();
+	 }
 
-	 		$('#container-user').html(this.currentUserView.el);
-	 },
+	 this.currentUserView = view;
 
-   this.showElderView = function (view) {
-     if (this.currentElderView) {
-       this.currentElderView.close();
-     }
+	 this.currentUserView.render();
 
-     this.currentElderView = view;
-     this.currentElderView.render();
+	 $('#container-user').html(this.currentUserView.el);
+	},
+
+  this.showElderView = function (view) {
+    if (this.currentElderView) {
+      this.currentElderView.close();
+    }
+
+    this.currentElderView = view;
+     
+    this.currentElderView.render();
        
-     $('#content-elder').html(this.currentElderView.el);
-   },
+    $('#content-elder').html(this.currentElderView.el);
+  },
 
-   this.showEmployeeView = function (view) {
-     if (this.currentEmployeeView) {
-       this.currentEmployeeView.close();
-     }
+  this.showEmployeeView = function (view) {
+    if (this.currentEmployeeView) {
+      this.currentEmployeeView.close();
+    }
 
-     this.currentEmployeeView = view;
-     this.currentEmployeeView.render();
+    this.currentEmployeeView = view;
+
+    this.currentEmployeeView.render();
 
      $('#content-employee').html(this.currentEmployeeView.el);
-   }
+  }
 
 }
 

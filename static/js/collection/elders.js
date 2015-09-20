@@ -13,19 +13,6 @@ module.exports = PageableCollection.extend({
 		sortKey: 'full_name'
 	},
 
-	search: function (letters) {
-		var letters = letters.trim();
-		var searchFor = ['full_name', 'identity_card'];
-
-		if (letters != '')  {
-			return this.fullCollection.filter(function (model) {
-			  return _.some(_.values(model.pick(searchFor)), function (value) {
-			 		 return ~value.toLowerCase().indexOf(letters);
-			  });
-			});
-		} 
-	},
-
 	parseRecords: function (res) {
 		if (res.status == 'success') {
 		  this.totalRecords = res.data.length;
@@ -60,7 +47,20 @@ module.exports = PageableCollection.extend({
   	 }
 
   	 return stateText;
-  }
+  },
+
+  search: function (letters) {
+    var letters = letters.trim();
+    var searchFor = ['full_name', 'identity_card'];
+
+    if (letters != '')  {
+      return this.fullCollection.filter(function (model) {
+        return _.some(_.values(model.pick(searchFor)), function (value) {
+           return ~value.toLowerCase().indexOf(letters);
+        });
+      });
+    } 
+  },
 
 
 });
