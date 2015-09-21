@@ -4,6 +4,7 @@ var AuthUser = require('../model/authUser');
 var Config = require('../model/config');
 var LoginView = require('../view/login/loginView');
 var LoginCtrl = require('../controller/loginController');
+var ElderCtrl = require('../controller/elderController');
 // var Citations       = require('../collection/citations');
 // var CitationsNotify = require('../view/citationNotifyView');
 // var LoginView       = require('../view/loginView');
@@ -13,6 +14,7 @@ var LoginCtrl = require('../controller/loginController');
 // var ElderRouter     = require('./elderRouter');
 // var AdminRouter     = require('./adminRouter');
 // var EmployeeRouter  = require('./employeeRouter');
+var InstanceRouter = require('./instanceRouter');
 var ActionRouter = require('./actionRouter');
 var EventRouter = require('./eventRouter');
 var OutputRouter = require('./outputRouter');
@@ -26,6 +28,7 @@ module.exports = Backbone.Router.extend({
 		'' :     'selectMenu',
 		'login': 'login',
 		'elders': 'elders',
+		'elders/notResident': 'eldersNotResident',
 		// 'logout':'logout',
 		
 		// 'home/*subroute': 'invokeHomeModule',
@@ -33,6 +36,7 @@ module.exports = Backbone.Router.extend({
 		// 'elder/*subroute': 'invokeElderModule',
 		// 'employee/*subroute': 'invokeEmployeeModule',
 		'action/*subroute': 'invokeActionModule',
+		'instance/*subroute': 'invokeInstanceModule',
 		'attendance/*subroute': 'invokeAttendanceModule',
 		'product/*subroute': 'invokeProductModule',
 		'event/*subroute': 'invokeEventModule',
@@ -43,9 +47,10 @@ module.exports = Backbone.Router.extend({
 		this.userLogin = new AuthUser();
 		this.config = new Config();
 		this.loginCtrl = new LoginCtrl();
+		this.elderCtrl = new ElderCtrl();
 
 		var loginData = {model: this.userLogin, config: this.config};
-
+		
 		this.loginView = new LoginView(loginData);
 		/*this.menuView  = new MenuUser({model: this.userLogin});
 		this.menuAdmin = new MenuAdmin({model: this.userLogin});
@@ -61,6 +66,7 @@ module.exports = Backbone.Router.extend({
 
 	checkUser: function (fragment, args, next) {
 		var user = this.userLogin;
+		var config = this.config;
 
 		$.ajaxSetup({
 			xhrFields: {
@@ -82,7 +88,7 @@ module.exports = Backbone.Router.extend({
     if (user.has('role')) {
     	next();
     } else {
-    	this.loginCtrl.loadUser(user, next);
+    	this.loginCtrl.loadUser(user, config, next);
     }
 		
 	},
@@ -124,6 +130,12 @@ module.exports = Backbone.Router.extend({
 
 	elders: function () {
 		this.renderMenuUser();
+		this.elderCtrl.list();
+	},
+
+	eldersNotResident: function () {
+		this.renderMenuUser();
+		this.elderCtrl.listNotResident();
 	},
 /*
 	closeNotify: function () {
@@ -245,6 +257,13 @@ module.exports = Backbone.Router.extend({
 		}
 	},*/
 
+  invokeInstanceModule: function (subroute) {
+  	this.renderMenuUser();
+
+  	if (!Backbone.Main.Instance) {
+  		Backbone.Main.Instance = new InstanceRouter('instance/')
+  	}
+  },
 
 	invokeActionModule: function (subroute) {
 		this.renderMenuUser();

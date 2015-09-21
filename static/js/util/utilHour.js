@@ -37,6 +37,16 @@ TaskHour = {
     }
    
    return hourStand;
+  },
+
+  dateFormat: function (date) {
+    var segmentDate = date.split('-');
+    var day = segmentDate[2];
+    var month = segmentDate[1];
+    var year = segmentDate[0];
+    var dateFormat = day + '/' + month + '/' + year;
+
+    return dateFormat;
   }
 }
 

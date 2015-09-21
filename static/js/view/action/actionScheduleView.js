@@ -4,13 +4,9 @@ var Handlebars = require('handlebars');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: Handlebars.compile($('#actionHour-element').html()),
+  template: Handlebars.compile($('#register-actionSchedule').html()),
   events: {
-    'click .btn-remove': 'removeHour'
-  },
-
-  initialize: function (opt) {
-    this.action = opt.action;
+    'submit #form-actionSchedule': 'addHour'
   },
 
   render: function () {
@@ -18,27 +14,30 @@ module.exports = Backbone.View.extend({
     var html = this.template(data);
 
     this.$el.html(html);
-
-    return this;
   },
 
-  removeHour: function () {
-    var actionId = this.action.get('id');
-    var scheduleId = this.model.get('id');
+  addHour: function (e) {
+    e.preventDefault();
 
-    $.get(Backend_url + 'action/' + actionId + '/schedule/' + scheduleId + '/remove')
+    var actionId = this.model.get('id');
+    var data = $('#form-actionSchedule').serialize();
+
+    $.post(Backend_url + 'action/' + actionId + '/schedule', data)
      .done(function (res) {
       if (res.status == 'success') {
         var successMessage = res.message;
 
         util.showSuccess(successMessage);
-        this.close();
+        Backbone.Main.navigate('action/' + actionId, triggerData);
+      } else {
+        var errorMessage = res.message;
+
+        util.showError(errorMessage);
       }
-     }.bind(this))
+     })
   },
 
   close: function () {
-    this.model.trigger('destroy', this.model);
     this.remove();
   }
 })

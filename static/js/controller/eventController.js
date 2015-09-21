@@ -46,6 +46,7 @@ function EventCtrl () {
 
   this.list = function () {
     var eventAll = new EventAll()
+    
     appView.showUserView(eventAll);
   },
 

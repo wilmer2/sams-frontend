@@ -1,51 +1,33 @@
-var $               = require('jquery');
-var Instance        = require('../model/instance');
-var InstaceForm     = require('../view/formInstanceView');
-var InstanceWaiting = require('../view/instanceWaitingView');
+var $ = require('jquery');
+var Elder = require('../model/elder');
+var InstanceForm = require('../view/instance/instanceNewView');
+var Instances = require('../collection/instances');
+var InstancesWaiting = require('../view/instance/instanceWatingTableView');
+var InstanceDate = require('../view/instance/instanceContentView');
 
-function instanceCtrl () {
-  this.formInstance = function () {
-    var instaceForm = new InstaceForm();
+function InstanceCtrl () {
+  this.showForm = function () {
+    var elder = new Elder();
+    var instanceForm = new InstanceForm({model: elder});
 
-    appView.showUserView(instaceForm);
+    appView.showUserView(instanceForm);
   },
 
-  this.showWaiting = function (elderId) {
-    var instance = this.getInstance();
-    var instWaiting = new InstanceWaiting({model: instance});
+  this.listWaiting = function () {
+    var instances = new Instances();
+    var instancesWaiting = new InstancesWaiting({collection : instances});
 
-    this.getWaiting(elderId)
-    .then(function (res) {
-      if (res.status == 'success') {
-        var instanceData = res.instance;
-
-        instance.set(instanceData);
-        appView.showElderView(instWaiting);
-      }
-    })
-    .catch(function (err) {
-      if (err.status == 404) {
-        instance.set(notFound, silentData);
-        appView.showElderView(instWaiting);
-      }
+    instances.fetch(fetchData)
+    .done(function () {
+      appView.showUserView(instancesWaiting);
     })
   },
 
-  this.getWaiting = function (elderId) {
-    return new Promise(function (resolve, reject) {
-      $.get(Backend_url + 'waiting/notifications/' + elderId)
-       .done(function (res) {
-          resolve(res);
-       })
-       .fail(function (err) {
-          reject(err);
-       })
-    });
-  },
+  this.listForDate = function () {
+    var instanceDate = new InstanceDate();
 
-  this.getInstance = function () {
-    return new Instance();
+    appView.showUserView(instanceDate);
   }
 }
 
-module.exports = instanceCtrl;
+module.exports = InstanceCtrl;

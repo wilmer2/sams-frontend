@@ -3,24 +3,24 @@ var $ = require('jquery');
 var _ = require('underscore');
 var Handlebars = require('handlebars');
 var PaginateView = require('../paginate/paginationView');
-var AssistanceView = require('./attendanceEntryRowView');
+var ElderView = require('./elderRowView');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: $('#assistance-tableIn').html(),
-  boxError: Handlebars.compile($('#error-assistance').html()),
+  template: $('#elderDeactive-table').html(),
+  boxError: Handlebars.compile($('#error-elderDeactive').html()),
+
   events: {
-    'keyup .Search': 'serch'
+    'keyup .Search': 'search',
   },
 
   initialize: function () {
-    var collectionData = {collection: this.collection};
+     var collectionData = {collection: this.collection};
     this.paginateView = new PaginateView(collectionData);
 
     this.collection.on('goTo', this.changePage, this);
-    this.collection.on('destroy', this.countAssitance, this);
     
-    this.listenTo(this.collection, 'notAttendance', function (message) {
+    this.listenTo(this.collection, 'notElder', function (message) {
       this.message = message;
     });
 
@@ -36,22 +36,40 @@ module.exports = Backbone.View.extend({
 
       this.addAll();
     } else {
-      this.emptyAssistance(this.message);
+      this.emptyElder(this.message);
     }
   },
 
   addAll: function () {
+    this.message = '';
+
     this.collection.forEach(this.addOne, this);
   },
 
-  addOne: function (assistance) {
-    var assistanceView = new AssistanceView({model: assistance});
+  addOne: function (elder) {
+    var elderView = new ElderView({model: elder});
 
-    this.$tbody.append(assistanceView.render().el);
+    this.$tbody.append(elderView.render().el);
   },
-  
-  serch: function () {
-    var letters = $('.Search').val();
+
+  changePage: function () {
+    this.emptyList();
+    this.getPaginateView();
+    this.addAll();
+  },
+
+  getPaginateView: function () {
+    this.$el.prepend(this.paginateView.render().el);
+  },
+
+  updateUrl: function (e) {
+    var url = Backend_url + 'elders/' + 'deactive';
+    
+    this.collection.updateUrl(url);
+  },
+
+  search: function (e) {
+    var letters = $('#searchElder').val();
     var filter = this.collection.search(letters);
 
     if (_.isUndefined(filter)) {
@@ -59,7 +77,6 @@ module.exports = Backbone.View.extend({
     } else {
       this.emptyList();
       this.getPaginateView();
-
       filter.forEach(this.addOne, this);
     }
   },
@@ -72,41 +89,13 @@ module.exports = Backbone.View.extend({
     }.bind(this))
   },
 
-  changePage: function () {
-    this.emptyList();
-    this.getPaginateView();
-    this.addAll();
-  },
-
-  getPaginateView: function () {
-    this.$el.append(this.paginateView.render().el);
-  },
-
-  countAssitance: function () {
-    var countAssitance = this.collection.length;
-
-    if (countAssitance == 0) {
-      var message = 'No hay asistencias en este momento';
-
-      this.emptyAssistance(message);
-    }
-  },
-
-  updateUrl: function () {
-    var date = util.currentDate();
-    var sooner = 0;
-    var url = Backend_url + 'attendances?date=' + date + '&sooner=' + sooner;
-
-    this.collection.updateUrl(url);
-  },
-
   emptyList: function () {
     this.$tbody.empty()
   },
 
-  emptyAssistance: function (message) {
-    var erroMessage = {message: message};
-    var boxError = this.boxError(erroMessage);
+  emptyElder: function (message) {
+    var errorMessage = {message: message};
+    var boxError = this.boxError(errorMessage);
 
     this.$el.html(boxError);
   },
@@ -115,5 +104,6 @@ module.exports = Backbone.View.extend({
     this.paginateView.close();
     this.remove();
   }
+
 
 })

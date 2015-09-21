@@ -1,11 +1,29 @@
-var $          = require('jquery');
-var Elders     = require('../collection/elders');
-var ElderTable = require('../view/elderTableView');
-var ElderData  = require('../view/elderDataView');
-var ElderEdit  = require('../view/elderEditView');
+var $ = require('jquery');
+var Elders = require('../collection/elders');
+var ElderList = require('../view/elder/elderTableView');
+var ElderNotResident = require('../view/elder/elderNotResidentTableView');
 
 function ElderCtrl () {
-  this.showElder = function (elder) {
+  this.list = function () {
+    var elders = new Elders();
+    var elderList = new ElderList({collection: elders});
+
+    elders.getFirstPage(fetchData)
+    .done(function () {
+      appView.showUserView(elderList);
+    })
+  },
+
+  this.listNotResident = function () {
+    var elders = new Elders();
+    var elderNotResident = new ElderNotResident({collection: elders});
+
+    elders.getFirstPage(fetchData)
+    .done(function () {
+      appView.showUserView(elderNotResident);
+    })
+  }
+/*  this.showElder = function (elder) {
     var instance = elder.get('instance');  
 
     if (instance > 0) {
@@ -43,7 +61,7 @@ function ElderCtrl () {
         reject(err);
        })
     });
-  }
+  }*/
 }
 
 module.exports = ElderCtrl;

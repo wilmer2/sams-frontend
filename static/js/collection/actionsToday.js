@@ -1,9 +1,10 @@
 var Backbone = require('backbone');
-var Schedule = require('../model/schedule');
+var Action = require('../model/action');
 
 module.exports = Backbone.Collection.extend({
-  model: Schedule,
-
+  model: Action,
+  url: 'http://localhost/actions/today',
+  
   parse: function (res) {
     if (res.status == 'success') {
       var data = res.data;
@@ -12,12 +13,7 @@ module.exports = Backbone.Collection.extend({
     } else {
       var message = res.message;
 
-      this.trigger('notSchedule', message);
+      this.trigger('notAction', message);
     }
-  },
-  
-  updateUrl: function (url) {
-    this.url = url;
   }
-  
-})
+});

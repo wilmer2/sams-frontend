@@ -1,6 +1,6 @@
 var PageableCollection = require('backbone.paginator');
-var _                  = require('underscore');
-var Attendance         = require('../model/attendance');
+var _ = require('underscore');
+var Attendance = require('../model/attendance');
 
 module.exports = PageableCollection.extend({
   model: Attendance,

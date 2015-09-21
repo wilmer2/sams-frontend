@@ -3,13 +3,18 @@ var MenuUser = require('../view/menu/menuUserView');
 var util = require('../util/util');
 
 function LoginCtrl () {
-  this.loadUser = function (user, next) {
+  this.loadUser = function (user, config, next) {
     this.loggedUser()
     .then(function (data) {
       user.set(data);
 
+      return this.loadConfig();
+    }.bind(this))
+    .then(function (dataConfig) {
+      config.set(dataConfig);
+
       return next();
-    });
+    })
   },
 
   this.loggedUser = function () {

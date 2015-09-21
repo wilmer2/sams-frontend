@@ -2,15 +2,15 @@ var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('underscore');
 var Handlbars = require('handlebars');
-var EventView = require('./eventRowView');
+var InstanceDate = require('./instanceDateRowView');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: $('#event-table').html(),
-  boxError: Handlbars.compile($('#error-event').html()),
+  template: $('#instanceDate-table').html(),
+  boxError: Handlbars.compile($('#error-instance').html()),
 
   initialize: function () {
-    this.listenTo(this.collection, 'notEvent', function (message) {
+    this.listenTo(this.collection, 'notInstance', function (message) {
       this.message = message;
     });
   },
@@ -24,12 +24,12 @@ module.exports = Backbone.View.extend({
       this.addAll();
     } else {
       if (_.isObject(this.message)) {
-        var error = 'No es posible encontra eventos';
+        var error = 'No es posible encontrar Visitas';
 
         util.showError(this.message);
-        this.emptyEvents(error);
+        this.emptyInstance(error);
       } else {
-        this.emptyEvents(this.message);
+        this.emptyInstance(this.message);
       }
 
     }
@@ -39,15 +39,17 @@ module.exports = Backbone.View.extend({
     this.collection.forEach(this.addOne, this);
   },
 
-  addOne: function (eventModel) {
-    eventModel.hourStandar();
-    
-    var eventView = new EventView({model: eventModel});
+  addOne: function (instance) {
+    instance.referenceFormat();
+    instance.dateFormat();
+    instance.stateFormat();
 
-    this.$tbody.append(eventView.render().el);
+    var instanceDate = new InstanceDate({model: instance});
+
+    this.$tbody.append(instanceDate.render().el);
   },
 
-  emptyEvents: function (message) {
+  emptyInstance: function (message) {
     var errorMessage = {message: message};
     var boxError = this.boxError(errorMessage);
 
@@ -60,3 +62,20 @@ module.exports = Backbone.View.extend({
 
 
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

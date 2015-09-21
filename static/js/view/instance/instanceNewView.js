@@ -3,33 +3,36 @@ var $ = require('jquery');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: $('#register-action').html(),
-  events : {
-    'submit #form-action': 'register'
+  template: $('#register-instance').html(),
+  events: {
+    'submit #form-instance': 'register'
   },
 
   render: function () {
+    console.log('render');
     this.$el.html(this.template);
   },
 
   register: function (e) {
     e.preventDefault();
 
-    var data = $('#form-action').serialize();
+    var data = $('#form-instance').serialize();
 
-    $.post(Backend_url + 'action', data)
+    $.post(Backend_url + 'elder/instance', data)
      .done(function (res) {
       if (res.status == 'success') {
-        this.model.set(res.data);
-
+        var data = res.data;
         var successMessage = res.message;
-        var actionId = this.model.get('id');
 
+        this.model.set(data);
         util.showSuccess(successMessage);
-        Backbone.Main.navigate('action/' + actionId, triggerData);
+
+        var elderId = this.get('id');
+
+        window.location.href = '#elder/' + elderId;
       } else {
         var errorMessage = res.message;
-
+        
         util.showError(errorMessage);
       }
      }.bind(this))
@@ -38,5 +41,4 @@ module.exports = Backbone.View.extend({
   close: function () {
     this.remove();
   }
-
 });

@@ -1,9 +1,8 @@
-var Elder              = require('../model/elder');
+var Elder = require('../model/elder');
 var PageableCollection = require('backbone.paginator');
-var _                  = require('underscore');
+var _ = require('underscore');
 
 module.exports = PageableCollection.extend({
-	url: 'http://localhost/elders/active',
 	model: Elder,
 	mode: 'client',
 	state: {
@@ -21,7 +20,7 @@ module.exports = PageableCollection.extend({
 		} else {
       this.totalRecords = 0;
 
-			this.trigger('notData', res.message);
+			this.trigger('notElder', res.message);
 		}
 	},
   
@@ -33,22 +32,10 @@ module.exports = PageableCollection.extend({
   	return totalPage;
   },
 
-  updateSort: function (currentSort) {
-  	this.url = currentSort;
+  updateUrl: function (url) {
+  	this.url = url;
   },
-
-  sortByState: function (state) {
-  	 var stateText;
-
-  	 if (state == 'active') {
-  	   stateText = 'Residente';
-  	 } else {
-  	   stateText = 'Fuera de lista';
-  	 }
-
-  	 return stateText;
-  },
-
+  
   search: function (letters) {
     var letters = letters.trim();
     var searchFor = ['full_name', 'identity_card'];

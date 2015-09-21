@@ -1,6 +1,5 @@
 var Backbone = require('backbone');
 var Event = require('../model/event');
-var util = require('../util/util');
 
 module.exports = Backbone.Collection.extend({
   model:Event,

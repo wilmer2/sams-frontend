@@ -3,12 +3,12 @@ var $ = require('jquery');
 var _ = require('underscore');
 var Handlebars = require('handlebars');
 var PaginateView = require('../paginate/paginationView');
-var AssistanceView = require('./attendanceEntryRowView');
+var ActionView = require('./actionRowView');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: $('#assistance-tableIn').html(),
-  boxError: Handlebars.compile($('#error-assistance').html()),
+  template: $('#action-table').html(),
+  boxError: Handlebars.compile($('#error-action').html()),
   events: {
     'keyup .Search': 'serch'
   },
@@ -18,25 +18,22 @@ module.exports = Backbone.View.extend({
     this.paginateView = new PaginateView(collectionData);
 
     this.collection.on('goTo', this.changePage, this);
-    this.collection.on('destroy', this.countAssitance, this);
     
-    this.listenTo(this.collection, 'notAttendance', function (message) {
+    this.listenTo(this.collection, 'notAction', function (message) {
       this.message = message;
     });
 
-    this.updateUrl();
   },
 
   render: function () {
     if (_.isEmpty(this.message)) {
       this.$el.html(this.template);
       this.getPaginateView();
-
       this.$tbody = this.$el.find('table').children('tbody');
 
       this.addAll();
     } else {
-      this.emptyAssistance(this.message);
+      this.emptyAction(this.message);
     }
   },
 
@@ -44,10 +41,10 @@ module.exports = Backbone.View.extend({
     this.collection.forEach(this.addOne, this);
   },
 
-  addOne: function (assistance) {
-    var assistanceView = new AssistanceView({model: assistance});
+  addOne: function (action) {
+   var actionView = new ActionView({model: action});
 
-    this.$tbody.append(assistanceView.render().el);
+    this.$tbody.append(actionView.render().el);
   },
   
   serch: function () {
@@ -82,29 +79,11 @@ module.exports = Backbone.View.extend({
     this.$el.append(this.paginateView.render().el);
   },
 
-  countAssitance: function () {
-    var countAssitance = this.collection.length;
-
-    if (countAssitance == 0) {
-      var message = 'No hay asistencias en este momento';
-
-      this.emptyAssistance(message);
-    }
-  },
-
-  updateUrl: function () {
-    var date = util.currentDate();
-    var sooner = 0;
-    var url = Backend_url + 'attendances?date=' + date + '&sooner=' + sooner;
-
-    this.collection.updateUrl(url);
-  },
-
   emptyList: function () {
     this.$tbody.empty()
   },
 
-  emptyAssistance: function (message) {
+  emptyAction: function (message) {
     var erroMessage = {message: message};
     var boxError = this.boxError(erroMessage);
 
@@ -116,4 +95,4 @@ module.exports = Backbone.View.extend({
     this.remove();
   }
 
-})
+});

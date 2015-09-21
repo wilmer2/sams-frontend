@@ -30496,10 +30496,85 @@ $(function () {
 
 });
 
-},{"../../bower_components/bootstrap/dist/js/bootstrap":4,"../../node_modules/backbone-async-route-filters/backbone-async-route-filter":8,"./router/loginRouter":66,"./util/appView":69,"./util/helper":70,"alertifyjs":7,"backbone":10,"handlebars":29,"jquery":41}],46:[function(require,module,exports){
+},{"../../bower_components/bootstrap/dist/js/bootstrap":4,"../../node_modules/backbone-async-route-filters/backbone-async-route-filter":8,"./router/loginRouter":77,"./util/appView":80,"./util/helper":81,"alertifyjs":7,"backbone":10,"handlebars":29,"jquery":41}],46:[function(require,module,exports){
 var PageableCollection = require('backbone.paginator');
-var _                  = require('underscore');
-var Attendance         = require('../model/attendance');
+var _ = require('underscore');
+var Action = require('../model/action');
+
+module.exports = PageableCollection.extend({
+  model: Action,
+  url: 'http://localhost/actions',
+  mode: 'client',
+  state: {
+    firstPage: 1,
+    currentPage: 1,
+    pageSize: 20,
+    sortKey: 'name'
+  },
+
+  parseRecords: function (res) {
+    if (res.status == 'success') {
+      this.totalRecords = res.data.length;
+      var data = res.data;
+
+      return data;
+    } else {
+      var message = res.message;
+
+      this.trigger('notAction', message);
+    }
+  },
+
+  totalPage: function () {
+    var perPage = 20;
+    var records = this.totalRecords;
+    var totalPage = Math.ceil(records / perPage);
+
+    return totalPage;
+  },
+
+  search: function (letters) {
+    var letters = letters.trim();
+    var searchFor = ['name'];
+
+    if (letters != '') {
+      return this.fullCollection.filter(function (model) {
+        return _.some(_.values(model.pick(searchFor)), function (value) {
+          return ~value.toLowerCase().indexOf(letters);
+        });
+      });
+    }
+  },
+
+  updateUrl: function (url) {
+    this.url = url;
+  }
+
+})
+},{"../model/action":63,"backbone.paginator":9,"underscore":42}],47:[function(require,module,exports){
+var Backbone = require('backbone');
+var Action = require('../model/action');
+
+module.exports = Backbone.Collection.extend({
+  model: Action,
+  url: 'http://localhost/actions/today',
+  
+  parse: function (res) {
+    if (res.status == 'success') {
+      var data = res.data;
+
+      return data;
+    } else {
+      var message = res.message;
+
+      this.trigger('notAction', message);
+    }
+  }
+});
+},{"../model/action":63,"backbone":10}],48:[function(require,module,exports){
+var PageableCollection = require('backbone.paginator');
+var _ = require('underscore');
+var Attendance = require('../model/attendance');
 
 module.exports = PageableCollection.extend({
   model: Attendance,
@@ -30554,10 +30629,66 @@ module.exports = PageableCollection.extend({
 
 
 
-},{"../model/attendance":57,"backbone.paginator":9,"underscore":42}],47:[function(require,module,exports){
+},{"../model/attendance":64,"backbone.paginator":9,"underscore":42}],49:[function(require,module,exports){
+var Elder = require('../model/elder');
+var PageableCollection = require('backbone.paginator');
+var _ = require('underscore');
+
+module.exports = PageableCollection.extend({
+	model: Elder,
+	mode: 'client',
+	state: {
+		firstPage: 1,
+		currentPage: 1,
+		pageSize: 20,
+		sortKey: 'full_name'
+	},
+
+	parseRecords: function (res) {
+		if (res.status == 'success') {
+		  this.totalRecords = res.data.length;
+
+			return res.data;
+		} else {
+      this.totalRecords = 0;
+
+			this.trigger('notElder', res.message);
+		}
+	},
+  
+  totalPage: function () {
+  	var perPage = 20;
+  	var records = this.totalRecords;
+  	var totalPage = Math.ceil( records / perPage);
+
+  	return totalPage;
+  },
+
+  updateUrl: function (url) {
+  	this.url = url;
+  },
+  
+  search: function (letters) {
+    var letters = letters.trim();
+    var searchFor = ['full_name', 'identity_card'];
+
+    if (letters != '')  {
+      return this.fullCollection.filter(function (model) {
+        return _.some(_.values(model.pick(searchFor)), function (value) {
+           return ~value.toLowerCase().indexOf(letters);
+        });
+      });
+    } 
+  },
+
+
+});
+
+
+
+},{"../model/elder":67,"backbone.paginator":9,"underscore":42}],50:[function(require,module,exports){
 var Backbone = require('backbone');
 var Event = require('../model/event');
-var util = require('../util/util');
 
 module.exports = Backbone.Collection.extend({
   model:Event,
@@ -30579,7 +30710,45 @@ module.exports = Backbone.Collection.extend({
   }
 
 })
-},{"../model/event":60,"../util/util":71,"backbone":10}],48:[function(require,module,exports){
+},{"../model/event":68,"backbone":10}],51:[function(require,module,exports){
+var Backbone = require('backbone');
+var _ = require('underscore');
+var Instance = require('../model/instance');
+
+module.exports = Backbone.Collection.extend({
+  model: Instance,
+
+  parse: function (res) {
+    if (res.status == 'success') {
+      var instanceData = res.data;
+
+      return instanceData;
+    } else {
+      var message = res.message;
+
+      this.trigger('notInstance', message);
+    }
+  },
+
+  updateUrl: function (url) {
+    this.url = url;
+  },
+
+  search: function (letters) {
+    var letters = letters.trim();
+    var searchFor = ['identity_card'];
+
+    if (letters != '') {
+      return this.filter(function (model) {
+        return _.some(_.values(model.pick(searchFor)), function (value) {
+          return ~value.toLowerCase().indexOf(letters);
+        });
+      });
+    }
+  }
+
+});
+},{"../model/instance":69,"backbone":10,"underscore":42}],52:[function(require,module,exports){
 var PageableCollection = require('backbone.paginator');
 var _ = require('underscore');
 var Output = require('../model/output');
@@ -30634,7 +30803,7 @@ module.exports = PageableCollection.extend({
 
 
 })
-},{"../model/output":61,"backbone.paginator":9,"underscore":42}],49:[function(require,module,exports){
+},{"../model/output":70,"backbone.paginator":9,"underscore":42}],53:[function(require,module,exports){
 var PageableCollection = require('backbone.paginator');
 var _ = require('underscore');
 var Product = require('../model/product');
@@ -30685,9 +30854,41 @@ module.exports = PageableCollection.extend({
     }
   }
 })
-},{"../model/product":62,"backbone.paginator":9,"underscore":42}],50:[function(require,module,exports){
+},{"../model/product":71,"backbone.paginator":9,"underscore":42}],54:[function(require,module,exports){
+var Backbone = require('backbone');
+var Schedule = require('../model/schedule');
+
+module.exports = Backbone.Collection.extend({
+  model: Schedule,
+
+  parse: function (res) {
+    if (res.status == 'success') {
+      var data = res.data;
+
+      return data;
+    } else {
+      var message = res.message;
+
+      this.trigger('notSchedule', message);
+    }
+  },
+  
+  updateUrl: function (url) {
+    this.url = url;
+  }
+  
+})
+},{"../model/schedule":72,"backbone":10}],55:[function(require,module,exports){
+var $ = require('jquery');
 var Action = require('../model/action');
+var Actions = require('../collection/actions');
+var ActionsToday = require('../collection/actionsToday');
 var ActionForm = require('../view/action/actionNewView');
+var ActionShow = require('../view/action/actionShowView');
+var ActionEdit = require('../view/action/actionEditView');
+var ActionSchedule = require('../view/action/actionScheduleView');
+var ActionList = require('../view/action/actionTableView');
+var ActionTodayList = require('../view/action/actionTodayTableView');
 
 function ActionCtrl () {
   this.showForm = function () {
@@ -30695,11 +30896,94 @@ function ActionCtrl () {
     var actionForm = new ActionForm({model: action});
 
     appView.showUserView(actionForm);
+  },
+
+  this.show = function (actionId) {
+    var action = new Action();
+    var actionShow = new ActionShow({model: action});
+
+    this.getAction(actionId)
+    .then(function (data) {
+      action.set(data);
+      appView.showUserView(actionShow);
+    })
+    .catch(function (err) {
+      action.set(notFound, silentData);
+      appView.showUserView(actionShow);
+    })
+  },
+
+  this.edit = function (actionId) {
+    var action = new Action();
+    var actionEdit = new ActionEdit({model: action});
+
+    this.getAction(actionId)
+    .then(function (data) {
+      action.set(data);
+      appView.showUserView(actionEdit);
+    })
+    .catch(function (err) {
+      action.set(notFound, silentData);
+      appView.showUserView(actionEdit);
+    })
+  },
+
+  this.list = function () {
+    var actions = new Actions();
+    var actionList = new ActionList({collection: actions});
+
+    actions.getFirstPage(fetchData)
+    .done(function () {
+      appView.showUserView(actionList);
+    })
+  },
+
+  this.today = function () {
+    var actionsToday = new ActionsToday();
+    var actionsTodayList = new ActionTodayList({collection: actionsToday});
+
+    actionsToday.fetch(fetchData)
+    .done(function () {
+      appView.showUserView(actionsTodayList);
+    })
+  },
+
+  this.showSchedule = function (actionId) {
+    var action = new Action();
+    var actionSchedule = new ActionSchedule({model: action});
+
+    this.getAction(actionId)
+    .then(function (data) {
+      action.set(data);
+      appView.showUserView(actionSchedule);
+    })
+    .catch(function (err) {
+      action.set(notFound, silentData);
+      appView.showUserView(actionSchedule);
+    })
+  },
+
+  this.getAction = function (actionId) {
+    return new Promise(function (resolve, reject) {
+      $.get(Backend_url + 'action/' + actionId)
+       .done(function (res) {
+        if (res.status == 'success') {
+          var data = res.data;
+
+          resolve(data);
+        }
+       })
+       .fail(function (err) {
+        if (err.status == 404) {
+          reject(err);
+        }
+       })
+    })
   }
 }
 
 module.exports = ActionCtrl;
-},{"../model/action":56,"../view/action/actionNewView":73}],51:[function(require,module,exports){
+},{"../collection/actions":46,"../collection/actionsToday":47,"../model/action":63,"../view/action/actionEditView":84,"../view/action/actionNewView":86,"../view/action/actionScheduleView":88,"../view/action/actionShowView":89,"../view/action/actionTableView":90,"../view/action/actionTodayTableView":92,"jquery":41}],56:[function(require,module,exports){
 var $ = require('jquery');
 var Attendances = require('../collection/attendances');
 var AttendanceEntryTable = require('../view/attendances/attendanceEntryTableView');
@@ -30753,7 +31037,75 @@ function AttendanceCtrl () {
 
 module.exports = AttendanceCtrl;
 
-},{"../collection/attendances":46,"../view/attendances/attendanceEntryTableView":75,"../view/attendances/attendanceOutTableView":77,"jquery":41}],52:[function(require,module,exports){
+},{"../collection/attendances":48,"../view/attendances/attendanceEntryTableView":94,"../view/attendances/attendanceOutTableView":96,"jquery":41}],57:[function(require,module,exports){
+var $ = require('jquery');
+var Elders = require('../collection/elders');
+var ElderList = require('../view/elder/elderTableView');
+var ElderNotResident = require('../view/elder/elderNotResidentTableView');
+
+function ElderCtrl () {
+  this.list = function () {
+    var elders = new Elders();
+    var elderList = new ElderList({collection: elders});
+
+    elders.getFirstPage(fetchData)
+    .done(function () {
+      appView.showUserView(elderList);
+    })
+  },
+
+  this.listNotResident = function () {
+    var elders = new Elders();
+    var elderNotResident = new ElderNotResident({collection: elders});
+
+    elders.getFirstPage(fetchData)
+    .done(function () {
+      appView.showUserView(elderNotResident);
+    })
+  }
+/*  this.showElder = function (elder) {
+    var instance = elder.get('instance');  
+
+    if (instance > 0) {
+      window.location.replace('#elder/' + elder.get('id') + '/instance-waiting');
+    } else {
+      var elderView = new ElderData({model:elder});
+
+      appView.showElderView(elderView);
+    }
+  },
+
+  this.showElders = function () {
+    var elders = new Elders();
+    var eldersTable = new ElderTable({collection: elders});
+
+    elders.getFirstPage(fetchData)
+    .done(function () {
+      appView.showUserView(eldersTable);
+    })
+  },
+
+  this.showEdit = function (elder) {
+    var editView = new ElderEdit({model: elder});
+
+    appView.showElderView(editView);
+  },
+
+  this.getElder = function (id) {
+    return new Promise(function (resolve, reject) {
+      $.get(Backend_url + 'elder/' + id)
+       .done(function (data) {
+        resolve(data);
+       })
+       .fail(function (err) {
+        reject(err);
+       })
+    });
+  }*/
+}
+
+module.exports = ElderCtrl;
+},{"../collection/elders":49,"../view/elder/elderNotResidentTableView":97,"../view/elder/elderTableView":99,"jquery":41}],58:[function(require,module,exports){
 var $ = require('jquery');
 var Event = require('../model/event');
 var EventForm = require('../view/event/eventNewView');
@@ -30802,6 +31154,7 @@ function EventCtrl () {
 
   this.list = function () {
     var eventAll = new EventAll()
+    
     appView.showUserView(eventAll);
   },
 
@@ -30823,19 +31176,58 @@ function EventCtrl () {
 }
 
 module.exports = EventCtrl;
-},{"../model/event":60,"../view/event/eventContentView":78,"../view/event/eventEditView":79,"../view/event/eventNewView":80,"../view/event/eventShowView":82,"jquery":41}],53:[function(require,module,exports){
+},{"../model/event":68,"../view/event/eventContentView":100,"../view/event/eventEditView":101,"../view/event/eventNewView":102,"../view/event/eventShowView":104,"jquery":41}],59:[function(require,module,exports){
+var $ = require('jquery');
+var Elder = require('../model/elder');
+var InstanceForm = require('../view/instance/instanceNewView');
+var Instances = require('../collection/instances');
+var InstancesWaiting = require('../view/instance/instanceWatingTableView');
+var InstanceDate = require('../view/instance/instanceContentView');
+
+function InstanceCtrl () {
+  this.showForm = function () {
+    var elder = new Elder();
+    var instanceForm = new InstanceForm({model: elder});
+
+    appView.showUserView(instanceForm);
+  },
+
+  this.listWaiting = function () {
+    var instances = new Instances();
+    var instancesWaiting = new InstancesWaiting({collection : instances});
+
+    instances.fetch(fetchData)
+    .done(function () {
+      appView.showUserView(instancesWaiting);
+    })
+  },
+
+  this.listForDate = function () {
+    var instanceDate = new InstanceDate();
+
+    appView.showUserView(instanceDate);
+  }
+}
+
+module.exports = InstanceCtrl;
+},{"../collection/instances":51,"../model/elder":67,"../view/instance/instanceContentView":106,"../view/instance/instanceNewView":109,"../view/instance/instanceWatingTableView":111,"jquery":41}],60:[function(require,module,exports){
 var $ = require('jquery');
 var MenuUser = require('../view/menu/menuUserView');
 var util = require('../util/util');
 
 function LoginCtrl () {
-  this.loadUser = function (user, next) {
+  this.loadUser = function (user, config, next) {
     this.loggedUser()
     .then(function (data) {
       user.set(data);
 
+      return this.loadConfig();
+    }.bind(this))
+    .then(function (dataConfig) {
+      config.set(dataConfig);
+
       return next();
-    });
+    })
   },
 
   this.loggedUser = function () {
@@ -30873,7 +31265,7 @@ function LoginCtrl () {
 }
 
 module.exports = LoginCtrl;
-},{"../util/util":71,"../view/menu/menuUserView":85,"jquery":41}],54:[function(require,module,exports){
+},{"../util/util":82,"../view/menu/menuUserView":113,"jquery":41}],61:[function(require,module,exports){
 var $ = require('jquery');
 var Output = require('../model/output');
 var Outputs = require('../collection/outputs');
@@ -30946,7 +31338,7 @@ function OutputCtrl () {
 }
 
 module.exports = OutputCtrl;
-},{"../collection/outputs":48,"../model/output":61,"../view/output/OutputWaitingTableView":86,"../view/output/outputConfirmView":87,"../view/output/outputPernotTableView":89,"../view/output/outputTableView":91,"jquery":41}],55:[function(require,module,exports){
+},{"../collection/outputs":52,"../model/output":70,"../view/output/OutputWaitingTableView":114,"../view/output/outputConfirmView":115,"../view/output/outputPernotTableView":117,"../view/output/outputTableView":119,"jquery":41}],62:[function(require,module,exports){
 var $ = require('jquery');
 var Products = require('../collection/products');
 var ProductForm = require('../view/product/productNewView');
@@ -30972,13 +31364,39 @@ function ProductCtrl () {
 }
 
 module.exports = ProductCtrl;
-},{"../collection/products":49,"../view/product/productNewView":93,"../view/product/productTableView":95,"jquery":41}],56:[function(require,module,exports){
+},{"../collection/products":53,"../view/product/productNewView":121,"../view/product/productTableView":123,"jquery":41}],63:[function(require,module,exports){
+var Backbone = require('backbone');
+var _ = require('underscore');
+var utilHour = require('../util/utilHour');
+
+module.exports = Backbone.Model.extend({
+  initialize: function () {
+    this.on('change', function (model) {
+      var notFoundFalse = {notFound: false};
+      
+      model.set(notFoundFalse, silentData);
+    })
+  },
+
+  hourStandar: function () {
+    var data = this.toJSON();
+    var times = _.pick(data, 'hour_in', 'hour_out');
+    
+    _.mapObject(times, function (val, key) {
+      if (!_.isNull(val)) {
+        var newHour = utilHour.hourStandar(val);
+
+        this.set(key, newHour);
+      }
+    }.bind(this))
+
+  }
+});
+},{"../util/utilHour":83,"backbone":10,"underscore":42}],64:[function(require,module,exports){
 var Backbone = require('backbone');
 
 module.exports = Backbone.Model.extend({});
-},{"backbone":10}],57:[function(require,module,exports){
-arguments[4][56][0].apply(exports,arguments)
-},{"backbone":10,"dup":56}],58:[function(require,module,exports){
+},{"backbone":10}],65:[function(require,module,exports){
 var Backbone = require('backbone');
 
 module.exports = Backbone.Model.extend({
@@ -31002,9 +31420,19 @@ module.exports = Backbone.Model.extend({
 
 
 });
-},{"backbone":10}],59:[function(require,module,exports){
-arguments[4][56][0].apply(exports,arguments)
-},{"backbone":10,"dup":56}],60:[function(require,module,exports){
+},{"backbone":10}],66:[function(require,module,exports){
+arguments[4][64][0].apply(exports,arguments)
+},{"backbone":10,"dup":64}],67:[function(require,module,exports){
+var Backbone = require('backbone');
+
+module.exports = Backbone.Model.extend({
+  initialize: function () {
+    this.on('change', function (model) {
+      model.set({notFound: false}, {silent: true});
+    });
+  }
+});
+},{"backbone":10}],68:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('underscore');
 var utilHour = require('../util/utilHour');
@@ -31032,7 +31460,77 @@ module.exports = Backbone.Model.extend({
 
   }
 });
-},{"../util/utilHour":72,"backbone":10,"underscore":42}],61:[function(require,module,exports){
+},{"../util/utilHour":83,"backbone":10,"underscore":42}],69:[function(require,module,exports){
+var Backbone = require('backbone');
+var _ = require('underscore');
+var utilHour = require('../util/utilHour');
+
+module.exports = Backbone.Model.extend({
+  initialize: function () {
+    this.on('change', function (model) {
+      model.set({notFound: false}, {silent: true});
+    })
+  },
+
+  referenceFormat: function () {
+    var referred = this.get('referred');
+    var referredFormat = '';
+
+    switch(referred) {
+      case 'presidency_inass':
+        referredFormat = 'Presidencia de INASS'
+      break;
+      case 'social_welfare':
+        referredFormat = 'Gerencia de Bienestar Social '
+      break;
+      case 'health':
+        referredFormat = 'Gerencia de Salud '
+      break;
+      case 'crr':
+        referredFormat = 'Director del C.S.S.R';
+      break;
+      default:
+        referredFormat = 'otros';
+    }
+
+    this.set('referred', referredFormat);
+  },
+
+  dateFormat: function () {
+    var date = this.get('visit_date');
+
+    var letter = _.indexOf(date, '/');
+     
+    letter = date[letter];
+
+    if (_.isUndefined(letter)) {
+      var dateFormat = utilHour.dateFormat(date);
+
+      this.set('visit_date', dateFormat);
+    }
+  
+  },
+
+  stateFormat: function () {
+    var state = this.get('state');
+    var stateFormat = '';
+
+    switch(state) {
+      case 'waiting':
+        stateFormat = 'En espera'
+      break;
+      case 'reject':
+        stateFormat = 'Rechazada'
+      break;
+      case 'confirmed':
+        stateFormat = 'Confirmada'
+      break;
+    }
+
+    this.set('state', stateFormat);
+  }
+});
+},{"../util/utilHour":83,"backbone":10,"underscore":42}],70:[function(require,module,exports){
 var Backbone = require('backbone');
 
 module.exports = Backbone.Model.extend({
@@ -31044,16 +31542,49 @@ module.exports = Backbone.Model.extend({
     })
   }
 });
-},{"backbone":10}],62:[function(require,module,exports){
-arguments[4][56][0].apply(exports,arguments)
-},{"backbone":10,"dup":56}],63:[function(require,module,exports){
+},{"backbone":10}],71:[function(require,module,exports){
+arguments[4][64][0].apply(exports,arguments)
+},{"backbone":10,"dup":64}],72:[function(require,module,exports){
+var Backbone = require('backbone');
+var _ = require('underscore');
+var util = require('../util/util');
+var utilHour = require('../util/utilHour');
+
+module.exports = Backbone.Model.extend({
+  formatDays: function () {
+    var days = this.get('days');
+    var daysFormat = util.selectDays(days);
+
+    this.set('days', daysFormat, silentData);
+  },
+
+  hourStandar: function () {
+    var data = this.toJSON();
+    var times = _.pick(data, 'entry_time', 'departure_time');
+    
+    _.mapObject(times, function (val, key) {
+      if (!_.isNull(val)) {
+        var newHour = utilHour.hourStandar(val);
+
+        this.set(key, newHour , silentData);
+      }
+    }.bind(this))
+
+  }
+});
+},{"../util/util":82,"../util/utilHour":83,"backbone":10,"underscore":42}],73:[function(require,module,exports){
 var Backbone = require('backbone');
 var Subroute = require('../../dependencies/backboneSubroutes/backboneSubroutes');
 var ActionCtrl = require('../controller/actionController');
 
 module.exports = Subroute.extend({
   routes: {
-    'register': 'register'
+    'register': 'register',
+    'list': 'list',
+    'today': 'listToday',
+    ':id': 'show',
+    ':id/edit': 'edit',
+    ':id/schedule': 'addSchedule',
   },
 
   initialize: function () {
@@ -31062,9 +31593,29 @@ module.exports = Subroute.extend({
 
   register: function () {
     this.actionCtrl.showForm();
+  },
+
+  show: function (actionId) {
+    this.actionCtrl.show(actionId);
+  },
+
+  edit: function (actionId) {
+    this.actionCtrl.edit(actionId);
+  },
+
+  addSchedule: function (actionId) {
+    this.actionCtrl.showSchedule(actionId);
+  },
+
+  list: function () {
+    this.actionCtrl.list();
+  },
+
+  listToday: function () {
+    this.actionCtrl.today();
   }
 })
-},{"../../dependencies/backboneSubroutes/backboneSubroutes":43,"../controller/actionController":50,"backbone":10}],64:[function(require,module,exports){
+},{"../../dependencies/backboneSubroutes/backboneSubroutes":43,"../controller/actionController":55,"backbone":10}],74:[function(require,module,exports){
 var Backbone = require('backbone');
 var Subroute = require('../../dependencies/backboneSubroutes/backboneSubroutes');
 var AttendanceCtrl = require('../controller/attendanceController');
@@ -31117,7 +31668,7 @@ module.exports = Subroute.extend({
   },
 */
 })
-},{"../../dependencies/backboneSubroutes/backboneSubroutes":43,"../controller/attendanceController":51,"backbone":10}],65:[function(require,module,exports){
+},{"../../dependencies/backboneSubroutes/backboneSubroutes":43,"../controller/attendanceController":56,"backbone":10}],75:[function(require,module,exports){
 var Backbone = require('backbone');
 var Subroute = require('../../dependencies/backboneSubroutes/backboneSubroutes');
 var EventCtrl = require('../controller/eventController');
@@ -31151,13 +31702,42 @@ module.exports = Subroute.extend({
   }
 })
 
-},{"../../dependencies/backboneSubroutes/backboneSubroutes":43,"../controller/eventController":52,"backbone":10}],66:[function(require,module,exports){
+},{"../../dependencies/backboneSubroutes/backboneSubroutes":43,"../controller/eventController":58,"backbone":10}],76:[function(require,module,exports){
+var Backbone = require('backbone');
+var Subroute = require('../../dependencies/backboneSubroutes/backboneSubroutes');
+var InstanceCtrl = require('../controller/instanceController');
+
+module.exports = Subroute.extend({
+  routes: {
+    'register': 'register',
+    '': 'listForDate',
+    'waiting' : 'listWaiting',
+  },
+
+  initialize: function () {
+    this.instanceCtrl = new InstanceCtrl();
+  },
+
+  register: function () {
+    this.instanceCtrl.showForm();
+  },
+
+  listForDate: function () {
+    this.instanceCtrl.listForDate();
+  },
+
+  listWaiting: function () {
+    this.instanceCtrl.listWaiting();
+  }
+})
+},{"../../dependencies/backboneSubroutes/backboneSubroutes":43,"../controller/instanceController":59,"backbone":10}],77:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var AuthUser = require('../model/authUser');
 var Config = require('../model/config');
 var LoginView = require('../view/login/loginView');
 var LoginCtrl = require('../controller/loginController');
+var ElderCtrl = require('../controller/elderController');
 // var Citations       = require('../collection/citations');
 // var CitationsNotify = require('../view/citationNotifyView');
 // var LoginView       = require('../view/loginView');
@@ -31167,6 +31747,7 @@ var LoginCtrl = require('../controller/loginController');
 // var ElderRouter     = require('./elderRouter');
 // var AdminRouter     = require('./adminRouter');
 // var EmployeeRouter  = require('./employeeRouter');
+var InstanceRouter = require('./instanceRouter');
 var ActionRouter = require('./actionRouter');
 var EventRouter = require('./eventRouter');
 var OutputRouter = require('./outputRouter');
@@ -31180,6 +31761,7 @@ module.exports = Backbone.Router.extend({
 		'' :     'selectMenu',
 		'login': 'login',
 		'elders': 'elders',
+		'elders/notResident': 'eldersNotResident',
 		// 'logout':'logout',
 		
 		// 'home/*subroute': 'invokeHomeModule',
@@ -31187,6 +31769,7 @@ module.exports = Backbone.Router.extend({
 		// 'elder/*subroute': 'invokeElderModule',
 		// 'employee/*subroute': 'invokeEmployeeModule',
 		'action/*subroute': 'invokeActionModule',
+		'instance/*subroute': 'invokeInstanceModule',
 		'attendance/*subroute': 'invokeAttendanceModule',
 		'product/*subroute': 'invokeProductModule',
 		'event/*subroute': 'invokeEventModule',
@@ -31197,9 +31780,10 @@ module.exports = Backbone.Router.extend({
 		this.userLogin = new AuthUser();
 		this.config = new Config();
 		this.loginCtrl = new LoginCtrl();
+		this.elderCtrl = new ElderCtrl();
 
 		var loginData = {model: this.userLogin, config: this.config};
-
+		
 		this.loginView = new LoginView(loginData);
 		/*this.menuView  = new MenuUser({model: this.userLogin});
 		this.menuAdmin = new MenuAdmin({model: this.userLogin});
@@ -31215,6 +31799,7 @@ module.exports = Backbone.Router.extend({
 
 	checkUser: function (fragment, args, next) {
 		var user = this.userLogin;
+		var config = this.config;
 
 		$.ajaxSetup({
 			xhrFields: {
@@ -31236,7 +31821,7 @@ module.exports = Backbone.Router.extend({
     if (user.has('role')) {
     	next();
     } else {
-    	this.loginCtrl.loadUser(user, next);
+    	this.loginCtrl.loadUser(user, config, next);
     }
 		
 	},
@@ -31278,6 +31863,12 @@ module.exports = Backbone.Router.extend({
 
 	elders: function () {
 		this.renderMenuUser();
+		this.elderCtrl.list();
+	},
+
+	eldersNotResident: function () {
+		this.renderMenuUser();
+		this.elderCtrl.listNotResident();
 	},
 /*
 	closeNotify: function () {
@@ -31399,6 +31990,13 @@ module.exports = Backbone.Router.extend({
 		}
 	},*/
 
+  invokeInstanceModule: function (subroute) {
+  	this.renderMenuUser();
+
+  	if (!Backbone.Main.Instance) {
+  		Backbone.Main.Instance = new InstanceRouter('instance/')
+  	}
+  },
 
 	invokeActionModule: function (subroute) {
 		this.renderMenuUser();
@@ -31443,7 +32041,7 @@ module.exports = Backbone.Router.extend({
 });
 
 
-},{"../controller/loginController":53,"../model/authUser":58,"../model/config":59,"../util/util":71,"../view/login/loginView":84,"./actionRouter":63,"./attendanceRouter":64,"./eventRouter":65,"./outputRouter":67,"./productRouter":68,"backbone":10,"jquery":41}],67:[function(require,module,exports){
+},{"../controller/elderController":57,"../controller/loginController":60,"../model/authUser":65,"../model/config":66,"../util/util":82,"../view/login/loginView":112,"./actionRouter":73,"./attendanceRouter":74,"./eventRouter":75,"./instanceRouter":76,"./outputRouter":78,"./productRouter":79,"backbone":10,"jquery":41}],78:[function(require,module,exports){
 var Backbone = require('backbone');
 var Subroute = require('../../dependencies/backboneSubroutes/backboneSubroutes');
 var OutputCtrl = require('../controller/outputController');
@@ -31480,7 +32078,7 @@ module.exports = Subroute.extend({
 
 
 })
-},{"../../dependencies/backboneSubroutes/backboneSubroutes":43,"../controller/outputController":54,"backbone":10}],68:[function(require,module,exports){
+},{"../../dependencies/backboneSubroutes/backboneSubroutes":43,"../controller/outputController":61,"backbone":10}],79:[function(require,module,exports){
 var Backbone = require('backbone');
 var Subroute = require('../../dependencies/backboneSubroutes/backboneSubroutes');
 var ProductCtrl = require('../controller/productController');
@@ -31505,7 +32103,7 @@ module.exports = Subroute.extend({
 
 })
 
-},{"../../dependencies/backboneSubroutes/backboneSubroutes":43,"../controller/productController":55,"backbone":10}],69:[function(require,module,exports){
+},{"../../dependencies/backboneSubroutes/backboneSubroutes":43,"../controller/productController":62,"backbone":10}],80:[function(require,module,exports){
 var $ = require('jquery');
 
 function appView () {
@@ -31572,7 +32170,7 @@ function appView () {
 }
 
 module.exports = appView;
-},{"jquery":41}],70:[function(require,module,exports){
+},{"jquery":41}],81:[function(require,module,exports){
 var Handlebars = require('handlebars');
 var $          = require('jquery');
 
@@ -31624,7 +32222,7 @@ module.exports = function () {
  });
 
 }
-},{"handlebars":29,"jquery":41}],71:[function(require,module,exports){
+},{"handlebars":29,"jquery":41}],82:[function(require,module,exports){
 var _      = require('underscore');
 var toastr = require('../../dependencies/toastr/toastr');
 
@@ -31749,7 +32347,7 @@ Task = {
 }
 
 module.exports = Task;
-},{"../../dependencies/toastr/toastr":44,"underscore":42}],72:[function(require,module,exports){
+},{"../../dependencies/toastr/toastr":44,"underscore":42}],83:[function(require,module,exports){
 TaskHour = {
   getCurrentHour: function () {
     var time = new Date();
@@ -31789,24 +32387,509 @@ TaskHour = {
     }
    
    return hourStand;
+  },
+
+  dateFormat: function (date) {
+    var segmentDate = date.split('-');
+    var day = segmentDate[2];
+    var month = segmentDate[1];
+    var year = segmentDate[0];
+    var dateFormat = day + '/' + month + '/' + year;
+
+    return dateFormat;
   }
 }
 
 module.exports = TaskHour;
-},{}],73:[function(require,module,exports){
+},{}],84:[function(require,module,exports){
+var Backbone = require('backbone');
+var $ = require('jquery');
+var Handlebars = require('handlebars');
+var util = require('../../util/util');
+
+module.exports = Backbone.View.extend({
+  template: Handlebars.compile($('#edit-action').html()),
+  events: {
+    'submit #form-actionEdit': 'edit'
+  },
+
+  render: function () {
+    var data = this.model.toJSON();
+    var html = this.template(data);
+
+    this.$el.html(html);
+
+    return this;
+  },
+
+  edit: function (e) {
+    e.preventDefault();
+
+    var data = $('#form-actionEdit').serialize();
+    var actionId = this.model.get('id');
+
+    $.post(Backend_url + 'action/' + actionId + '/edit?_method=PUT', data)
+     .done(function (res) {
+      if (res.status == 'success') {
+        this.model.set(res.data)
+
+        var successMessage = res.message;
+        var actionId = this.model.get('id');
+
+        util.showSuccess(successMessage);
+        window.location.replace('#action/' + actionId);
+      } else {
+        var errorMessage = res.message;
+
+        util.showError(errorMessage);
+      }
+     }.bind(this))
+  },
+
+  close: function () {
+    this.remove();
+  }
+})
+},{"../../util/util":82,"backbone":10,"handlebars":29,"jquery":41}],85:[function(require,module,exports){
+var Backbone = require('backbone');
+var $ = require('jquery');
+var Handlebars = require('handlebars');
+var util = require('../../util/util');
+
+module.exports = Backbone.View.extend({
+  template: Handlebars.compile($('#actionHour-element').html()),
+  events: {
+    'click .btn-remove': 'removeHour'
+  },
+
+  initialize: function (opt) {
+    this.action = opt.action;
+  },
+
+  render: function () {
+    var data = this.model.toJSON();
+    var html = this.template(data);
+
+    this.$el.html(html);
+
+    return this;
+  },
+
+  removeHour: function () {
+    var actionId = this.action.get('id');
+    var scheduleId = this.model.get('id');
+
+    $.get(Backend_url + 'action/' + actionId + '/schedule/' + scheduleId + '/remove')
+     .done(function (res) {
+      if (res.status == 'success') {
+        var successMessage = res.message;
+
+        util.showSuccess(successMessage);
+        this.close();
+      }
+     }.bind(this))
+  },
+
+  close: function () {
+    this.model.trigger('destroy', this.model);
+    this.remove();
+  }
+})
+},{"../../util/util":82,"backbone":10,"handlebars":29,"jquery":41}],86:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
   template: $('#register-action').html(),
+  events : {
+    'submit #form-action': 'register'
+  },
 
   render: function () {
     this.$el.html(this.template);
+  },
+
+  register: function (e) {
+    e.preventDefault();
+
+    var data = $('#form-action').serialize();
+
+    $.post(Backend_url + 'action', data)
+     .done(function (res) {
+      if (res.status == 'success') {
+        this.model.set(res.data);
+
+        var successMessage = res.message;
+        var actionId = this.model.get('id');
+
+        util.showSuccess(successMessage);
+        Backbone.Main.navigate('action/' + actionId, triggerData);
+      } else {
+        var errorMessage = res.message;
+
+        util.showError(errorMessage);
+      }
+     }.bind(this))
+  },
+
+  close: function () {
+    this.remove();
   }
 
 });
-},{"../../util/util":71,"backbone":10,"jquery":41}],74:[function(require,module,exports){
+},{"../../util/util":82,"backbone":10,"jquery":41}],87:[function(require,module,exports){
+var Backbone = require('backbone');
+var $ = require('jquery');
+var Handlebars = require('handlebars');
+
+module.exports = Backbone.View.extend({
+  tagName: 'tr',
+  template: Handlebars.compile($('#action-element').html()),
+  events: {
+    'click .btn-show': 'show'
+  },
+
+  render: function () {
+    var data = this.model.toJSON();
+    var html = this.template(data);
+
+    this.$el.html(html);
+
+    return this;
+  },
+
+  show: function () {
+    var actionId = this.model.get('id');
+
+    Backbone.Main.navigate('action/' + actionId, triggerData);
+  }
+})
+},{"backbone":10,"handlebars":29,"jquery":41}],88:[function(require,module,exports){
+var Backbone = require('backbone');
+var $ = require('jquery');
+var Handlebars = require('handlebars');
+var util = require('../../util/util');
+
+module.exports = Backbone.View.extend({
+  template: Handlebars.compile($('#register-actionSchedule').html()),
+  events: {
+    'submit #form-actionSchedule': 'addHour'
+  },
+
+  render: function () {
+    var data = this.model.toJSON();
+    var html = this.template(data);
+
+    this.$el.html(html);
+  },
+
+  addHour: function (e) {
+    e.preventDefault();
+
+    var actionId = this.model.get('id');
+    var data = $('#form-actionSchedule').serialize();
+
+    $.post(Backend_url + 'action/' + actionId + '/schedule', data)
+     .done(function (res) {
+      if (res.status == 'success') {
+        var successMessage = res.message;
+
+        util.showSuccess(successMessage);
+        Backbone.Main.navigate('action/' + actionId, triggerData);
+      } else {
+        var errorMessage = res.message;
+
+        util.showError(errorMessage);
+      }
+     })
+  },
+
+  close: function () {
+    this.remove();
+  }
+})
+},{"../../util/util":82,"backbone":10,"handlebars":29,"jquery":41}],89:[function(require,module,exports){
+var Backbone = require('backbone');
+var $ = require('jquery');
+var Handlebars = require('handlebars');
+var Schedules = require('../../collection/schedules');
+var ActionItemHour = require('./actionItemHourView');
+
+module.exports = Backbone.View.extend({
+  template: Handlebars.compile($('#data-action').html()),
+  boxError: Handlebars.compile($('#error-actionHour').html()),
+  events: {
+    'click .btn-edit': 'redirectEdit',
+    'click .btn-addHour': 'redirectAddHour'
+  },
+
+  initialize: function () {
+    this.schedules = new Schedules();
+
+    this.schedules.on('destroy', this.countSchedule, this);
+
+    this.listenTo(this.schedules, 'notSchedule', function (message) {
+      this.message = message;
+    });
+
+  },
+
+  render: function () {
+    var data = this.model.toJSON();
+    var html = this.template(data);
+
+    this.$el.html(html);
+
+    this.$contentHours = this.$el.find('#action-content');
+
+    this.showHours();
+  },
+
+  showHours: function () {
+    var actionId = this.model.get('id');
+    var schedules = this.schedules;
+    var url = Backend_url + 'action/' + actionId +'/schedules';
+
+    schedules.updateUrl(url);
+    schedules.fetch(triggerData)
+    .done(function () {
+      this.addAll();
+    }.bind(this));
+  },
+
+  addAll: function () {
+    var count = this.schedules.length;
+
+    if (count > 0) {
+      this.schedules.forEach(this.addOne, this);
+    } else {
+      this.emptySchedule(this.message);
+    }
+  },
+
+  addOne: function (schedule) {
+    schedule.formatDays();
+    schedule.hourStandar();
+
+    var action = this.model;
+    var itemData = {model:schedule, action: action}
+    var actionItemHour = new ActionItemHour(itemData);
+
+    this.$contentHours
+    .children('#action-listHour')
+    .append(actionItemHour.render().el);
+  },
+
+  countSchedule: function () {
+    console.log('test');
+    var countSchedule = this.schedules.length;
+
+    if (countSchedule == 0) {
+      var message = 'Actividad no posee horarios';
+
+      this.emptySchedule(message);
+    }
+  },
+
+  emptySchedule: function (message) {
+    var errorMessage = {message: message};
+    var boxError = this.boxError(errorMessage);
+
+    this.$contentHours.html(boxError);
+  },
+
+  redirectEdit: function () {
+    var actionId = this.model.get('id');
+
+    Backbone.Main.navigate('action/' + actionId + '/edit', triggerData);
+  },
+
+  redirectAddHour: function () {
+    var actionId = this.model.get('id');
+
+    Backbone.Main.navigate('action/' + actionId + '/schedule', triggerData);
+  },
+
+  close: function () {
+    this.remove();
+  }
+})
+},{"../../collection/schedules":54,"./actionItemHourView":85,"backbone":10,"handlebars":29,"jquery":41}],90:[function(require,module,exports){
+var Backbone = require('backbone');
+var $ = require('jquery');
+var _ = require('underscore');
+var Handlebars = require('handlebars');
+var PaginateView = require('../paginate/paginationView');
+var ActionView = require('./actionRowView');
+var util = require('../../util/util');
+
+module.exports = Backbone.View.extend({
+  template: $('#action-table').html(),
+  boxError: Handlebars.compile($('#error-action').html()),
+  events: {
+    'keyup .Search': 'serch'
+  },
+
+  initialize: function () {
+    var collectionData = {collection: this.collection};
+    this.paginateView = new PaginateView(collectionData);
+
+    this.collection.on('goTo', this.changePage, this);
+    
+    this.listenTo(this.collection, 'notAction', function (message) {
+      this.message = message;
+    });
+
+  },
+
+  render: function () {
+    if (_.isEmpty(this.message)) {
+      this.$el.html(this.template);
+      this.getPaginateView();
+      this.$tbody = this.$el.find('table').children('tbody');
+
+      this.addAll();
+    } else {
+      this.emptyAction(this.message);
+    }
+  },
+
+  addAll: function () {
+    this.collection.forEach(this.addOne, this);
+  },
+
+  addOne: function (action) {
+   var actionView = new ActionView({model: action});
+
+    this.$tbody.append(actionView.render().el);
+  },
+  
+  serch: function () {
+    var letters = $('.Search').val();
+    var filter = this.collection.search(letters);
+
+    if (_.isUndefined(filter)) {
+      this.firstPage();
+    } else {
+      this.emptyList();
+      this.getPaginateView();
+
+      filter.forEach(this.addOne, this);
+    }
+  },
+
+  firstPage: function () {
+    this.collection.getFirstPage(fetchData)
+    .done(function () {
+      this.paginateView.pagInit();
+      this.changePage();
+    }.bind(this))
+  },
+
+  changePage: function () {
+    this.emptyList();
+    this.getPaginateView();
+    this.addAll();
+  },
+
+  getPaginateView: function () {
+    this.$el.append(this.paginateView.render().el);
+  },
+
+  emptyList: function () {
+    this.$tbody.empty()
+  },
+
+  emptyAction: function (message) {
+    var erroMessage = {message: message};
+    var boxError = this.boxError(erroMessage);
+
+    this.$el.html(boxError);
+  },
+
+  close: function () {
+    this.paginateView.close();
+    this.remove();
+  }
+
+});
+},{"../../util/util":82,"../paginate/paginationView":120,"./actionRowView":87,"backbone":10,"handlebars":29,"jquery":41,"underscore":42}],91:[function(require,module,exports){
+var Backbone = require('backbone');
+var $ = require('jquery');
+var Handlebars = require('handlebars');
+
+module.exports = Backbone.View.extend({
+  tagName: 'tr',
+  template: Handlebars.compile($('#actionToday-element').html()),
+
+  render: function () {
+    var data = this.model.toJSON();
+    var html = this.template(data);
+
+    this.$el.html(html);
+
+    return this;
+  }
+})
+},{"backbone":10,"handlebars":29,"jquery":41}],92:[function(require,module,exports){
+var Backbone = require('backbone');
+var $ = require('jquery');
+var _ = require('underscore');
+var Handlebars = require('handlebars');
+var ActionToday = require('./actionTodayRowView');
+
+module.exports = Backbone.View.extend({
+  template: $('#actionToday-table').html(),
+  boxError: Handlebars.compile($('#error-action').html()),
+
+  initialize: function () {  
+    this.listenTo(this.collection, 'notAction', function (message) {
+      this.message = message;
+    });
+  },
+
+  render: function () {
+    if (_.isEmpty(this.message)) {
+      this.$el.html(this.template);
+      this.$tbody = this.$el.find('table').children('tbody');
+
+      this.addAll();
+    } else {
+      this.emptyAction(this.message);
+    }
+  },
+
+  addAll: function () {
+    var sortByActions = this.collection.sortBy(function (action) {
+      return action.get('hour_in');
+    });
+
+    sortByActions.forEach(this.addOne, this);
+  },
+
+  addOne: function (action) {
+    action.hourStandar();
+
+   var actionToday = new ActionToday({model: action});
+
+    this.$tbody.append(actionToday.render().el);
+  },
+
+  emptyAction: function (message) {
+    var erroMessage = {message: message};
+    var boxError = this.boxError(erroMessage);
+
+    this.$el.html(boxError);
+  },
+
+  close: function () {
+    this.remove();
+  }
+
+
+});
+},{"./actionTodayRowView":91,"backbone":10,"handlebars":29,"jquery":41,"underscore":42}],93:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var Handlebars = require('handlebars');
@@ -31855,7 +32938,7 @@ module.exports = Backbone.View.extend({
     this.remove();
   }
 });
-},{"../../util/util":71,"backbone":10,"handlebars":29,"jquery":41}],75:[function(require,module,exports){
+},{"../../util/util":82,"backbone":10,"handlebars":29,"jquery":41}],94:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('underscore');
@@ -31890,8 +32973,7 @@ module.exports = Backbone.View.extend({
       this.$el.html(this.template);
       this.getPaginateView();
 
-      this.$tbody = this.$el.find('table')
-                    .children('tbody');
+      this.$tbody = this.$el.find('table').children('tbody');
 
       this.addAll();
     } else {
@@ -31976,7 +33058,7 @@ module.exports = Backbone.View.extend({
   }
 
 })
-},{"../../util/util":71,"../paginate/paginationView":92,"./attendanceEntryRowView":74,"backbone":10,"handlebars":29,"jquery":41,"underscore":42}],76:[function(require,module,exports){
+},{"../../util/util":82,"../paginate/paginationView":120,"./attendanceEntryRowView":93,"backbone":10,"handlebars":29,"jquery":41,"underscore":42}],95:[function(require,module,exports){
 var Backbone   = require('backbone');
 var $          = require('jquery');
 var Handlebars = require('handlebars');
@@ -32020,7 +33102,7 @@ module.exports = Backbone.View.extend({
     this.remove();
   }
 });
-},{"../../util/util":71,"backbone":10,"handlebars":29,"jquery":41}],77:[function(require,module,exports){
+},{"../../util/util":82,"backbone":10,"handlebars":29,"jquery":41}],96:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('underscore');
@@ -32143,7 +33225,258 @@ module.exports = Backbone.View.extend({
 
 
 })
-},{"../../util/util":71,"../paginate/paginationView":92,"./attendanceOutRowView":76,"backbone":10,"handlebars":29,"jquery":41,"underscore":42}],78:[function(require,module,exports){
+},{"../../util/util":82,"../paginate/paginationView":120,"./attendanceOutRowView":95,"backbone":10,"handlebars":29,"jquery":41,"underscore":42}],97:[function(require,module,exports){
+var Backbone = require('backbone');
+var $ = require('jquery');
+var _ = require('underscore');
+var Handlebars = require('handlebars');
+var PaginateView = require('../paginate/paginationView');
+var ElderView = require('./elderRowView');
+var util = require('../../util/util');
+
+module.exports = Backbone.View.extend({
+  template: $('#elderDeactive-table').html(),
+  boxError: Handlebars.compile($('#error-elderDeactive').html()),
+
+  events: {
+    'keyup .Search': 'search',
+  },
+
+  initialize: function () {
+     var collectionData = {collection: this.collection};
+    this.paginateView = new PaginateView(collectionData);
+
+    this.collection.on('goTo', this.changePage, this);
+    
+    this.listenTo(this.collection, 'notElder', function (message) {
+      this.message = message;
+    });
+
+    this.updateUrl();
+  },
+
+  render: function () {
+    if (_.isEmpty(this.message)) {
+      this.$el.html(this.template);
+      this.getPaginateView();
+
+      this.$tbody = this.$el.find('table').children('tbody');
+
+      this.addAll();
+    } else {
+      this.emptyElder(this.message);
+    }
+  },
+
+  addAll: function () {
+    this.message = '';
+
+    this.collection.forEach(this.addOne, this);
+  },
+
+  addOne: function (elder) {
+    var elderView = new ElderView({model: elder});
+
+    this.$tbody.append(elderView.render().el);
+  },
+
+  changePage: function () {
+    this.emptyList();
+    this.getPaginateView();
+    this.addAll();
+  },
+
+  getPaginateView: function () {
+    this.$el.prepend(this.paginateView.render().el);
+  },
+
+  updateUrl: function (e) {
+    var url = Backend_url + 'elders/' + 'deactive';
+    
+    this.collection.updateUrl(url);
+  },
+
+  search: function (e) {
+    var letters = $('#searchElder').val();
+    var filter = this.collection.search(letters);
+
+    if (_.isUndefined(filter)) {
+      this.firstPage();
+    } else {
+      this.emptyList();
+      this.getPaginateView();
+      filter.forEach(this.addOne, this);
+    }
+  },
+
+  firstPage: function () {
+    this.collection.getFirstPage(fetchData)
+    .done(function () {
+      this.paginateView.pagInit();
+      this.changePage();
+    }.bind(this))
+  },
+
+  emptyList: function () {
+    this.$tbody.empty()
+  },
+
+  emptyElder: function (message) {
+    var errorMessage = {message: message};
+    var boxError = this.boxError(errorMessage);
+
+    this.$el.html(boxError);
+  },
+
+  close: function () {
+    this.paginateView.close();
+    this.remove();
+  }
+
+
+})
+
+},{"../../util/util":82,"../paginate/paginationView":120,"./elderRowView":98,"backbone":10,"handlebars":29,"jquery":41,"underscore":42}],98:[function(require,module,exports){
+var Backbone = require('backbone');
+var $ = require('jquery');
+var Handlebars = require('handlebars');
+
+module.exports = Backbone.View.extend({
+	tagName: 'tr',
+	template: Handlebars.compile($('#elder-element').html()),
+  events: {
+    'click .btn-show': 'redirectShow'
+  },
+
+  render: function () {
+  	var data = this.model.toJSON();
+  	var html = this.template(data);
+
+  	this.$el.html(html);
+
+  	return this;
+  },
+
+  redirectShow: function () {
+    var elderId = this.model.get('id');
+
+    Backbone.Main.navigate('elder/' + elderId, triggerData);
+  }
+
+});
+
+},{"backbone":10,"handlebars":29,"jquery":41}],99:[function(require,module,exports){
+var Backbone = require('backbone');
+var $ = require('jquery');
+var _ = require('underscore');
+var Handlebars = require('handlebars');
+var PaginateView = require('../paginate/paginationView');
+var ElderView = require('./elderRowView');
+var util = require('../../util/util');
+
+module.exports = Backbone.View.extend({
+	template: $('#elder-table').html(),
+	boxError: Handlebars.compile($('#error-elder').html()),
+
+	events: {
+		'keyup .Search': 'search',
+	},
+
+	initialize: function () {
+		 var collectionData = {collection: this.collection};
+    this.paginateView = new PaginateView(collectionData);
+
+    this.collection.on('goTo', this.changePage, this);
+    
+    this.listenTo(this.collection, 'notElder', function (message) {
+      this.message = message;
+    });
+
+    this.updateUrl();
+	},
+
+	render: function () {
+		if (_.isEmpty(this.message)) {
+      this.$el.html(this.template);
+      this.getPaginateView();
+
+      this.$tbody = this.$el.find('table').children('tbody');
+
+      this.addAll();
+    } else {
+      this.emptyElder(this.message);
+    }
+	},
+
+	addAll: function () {
+		this.message = '';
+
+	  this.collection.forEach(this.addOne, this);
+	},
+
+	addOne: function (elder) {
+		var elderView = new ElderView({model: elder});
+
+	  this.$tbody.append(elderView.render().el);
+	},
+
+	changePage: function () {
+		this.emptyList();
+    this.getPaginateView();
+    this.addAll();
+	},
+
+	getPaginateView: function () {
+		this.$el.prepend(this.paginateView.render().el);
+	},
+
+	updateUrl: function (e) {
+		var url = Backend_url + 'elders/' + 'active';
+		
+		this.collection.updateUrl(url);
+	},
+
+	search: function (e) {
+		var letters = $('#searchElder').val();
+		var filter = this.collection.search(letters);
+
+		if (_.isUndefined(filter)) {
+			this.firstPage();
+		} else {
+			this.emptyList();
+      this.getPaginateView();
+      filter.forEach(this.addOne, this);
+		}
+	},
+
+	firstPage: function () {
+		this.collection.getFirstPage(fetchData)
+		.done(function () {
+			this.paginateView.pagInit();
+			this.changePage();
+		}.bind(this))
+	},
+
+	emptyList: function () {
+    this.$tbody.empty()
+  },
+
+  emptyElder: function (message) {
+  	var errorMessage = {message: message};
+  	var boxError = this.boxError(errorMessage);
+
+  	this.$el.html(boxError);
+  },
+
+	close: function () {
+		this.paginateView.close();
+		this.remove();
+	}
+
+
+})
+
+},{"../../util/util":82,"../paginate/paginationView":120,"./elderRowView":98,"backbone":10,"handlebars":29,"jquery":41,"underscore":42}],100:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var Events = require('../../collection/events');
@@ -32201,7 +33534,7 @@ module.exports = Backbone.View.extend({
     this.remove();
   }
 })
-},{"../../collection/events":47,"../../util/util":71,"./eventTableView":83,"backbone":10,"jquery":41}],79:[function(require,module,exports){
+},{"../../collection/events":50,"../../util/util":82,"./eventTableView":105,"backbone":10,"jquery":41}],101:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('underscore');
@@ -32277,7 +33610,7 @@ module.exports = Backbone.View.extend({
   }
 
 })
-},{"../../util/util":71,"../../util/utilHour":72,"backbone":10,"handlebars":29,"jquery":41,"underscore":42}],80:[function(require,module,exports){
+},{"../../util/util":82,"../../util/utilHour":83,"backbone":10,"handlebars":29,"jquery":41,"underscore":42}],102:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var util = require('../../util/util');
@@ -32326,7 +33659,7 @@ module.exports = Backbone.View.extend({
   }
 
 });
-},{"../../util/util":71,"backbone":10,"jquery":41}],81:[function(require,module,exports){
+},{"../../util/util":82,"backbone":10,"jquery":41}],103:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var Handlebars = require('handlebars');
@@ -32354,7 +33687,7 @@ module.exports = Backbone.View.extend({
   }
 
 })
-},{"backbone":10,"handlebars":29,"jquery":41}],82:[function(require,module,exports){
+},{"backbone":10,"handlebars":29,"jquery":41}],104:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var Handlebars = require('handlebars');
@@ -32418,7 +33751,7 @@ module.exports = Backbone.View.extend({
     this.remove();
   }
 })
-},{"../../util/util":71,"alertifyjs":7,"backbone":10,"handlebars":29,"jquery":41}],83:[function(require,module,exports){
+},{"../../util/util":82,"alertifyjs":7,"backbone":10,"handlebars":29,"jquery":41}],105:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('underscore');
@@ -32440,8 +33773,7 @@ module.exports = Backbone.View.extend({
     if (_.isEmpty(this.message)) {
       this.$el.html(this.template);
 
-      this.$tbody = this.$el.find('table')
-                    .children('tbody');
+      this.$tbody = this.$el.find('table').children('tbody');
 
       this.addAll();
     } else {
@@ -32482,7 +33814,338 @@ module.exports = Backbone.View.extend({
 
 
 });
-},{"../../util/util":71,"./eventRowView":81,"backbone":10,"handlebars":29,"jquery":41,"underscore":42}],84:[function(require,module,exports){
+},{"../../util/util":82,"./eventRowView":103,"backbone":10,"handlebars":29,"jquery":41,"underscore":42}],106:[function(require,module,exports){
+var Backbone = require('backbone');
+var $ = require('jquery');
+var Instances = require('../../collection/instances');
+var InstaceList = require('./instanceDateTableView');
+var util = require('../../util/util');
+
+module.exports = Backbone.View.extend({
+  template: $('#instance-contentView').html(),
+  events: {
+    'submit #date-instance': 'getInstances'
+  },
+
+  render: function () {
+    var currentDate = util.currentDate();
+
+    this.$el.html(this.template);
+
+    this.$contentInstance = this.$el.find('#content-instance');
+
+    this.showInstance(currentDate);
+  },
+
+  getInstances: function (e) {
+    e.preventDefault();
+
+    var date = $('.Search-date').val();
+    
+    this.showInstance(date);
+  },
+
+  showInstance: function (date) {
+    var url = Backend_url + 'instances?date=' + date;
+    var instances = new Instances();
+    var instanceList = new InstaceList({collection: instances});
+
+    instances.updateUrl(url);
+    instances.fetch(fetchData)
+    .done(function () {
+      this.renderInstances(instanceList);
+     }.bind(this))
+  },
+
+  renderInstances: function (instanceList) {
+    if (this.currentList) {
+      this.currentList.close();
+    }
+
+    this.currentList = instanceList;
+
+    this.currentList.render();
+    this.$contentInstance.html(this.currentList.el);
+  },
+
+  close: function () {
+    this.remove();
+  }
+})
+},{"../../collection/instances":51,"../../util/util":82,"./instanceDateTableView":108,"backbone":10,"jquery":41}],107:[function(require,module,exports){
+var Backbone = require('backbone');
+var $ = require('jquery');
+var Handlebars = require('handlebars');
+
+module.exports = Backbone.View.extend({
+  tagName: 'tr',
+  template: Handlebars.compile($('#instanceDate-element').html()),
+  events: {
+    'click .btn-info': 'redirectShow'
+  },
+
+  render: function () {
+    var data = this.model.toJSON();
+    var html = this.template(data);
+
+    this.$el.html(html);
+
+    return this;
+  },
+
+  redirectShow: function () {
+    var elderId = this.model.get('elder_id');
+    var instanceId = this.model.get('id');
+
+    window.location.href = '#elder/' + elderId + '/instance/' + instanceId;
+  }
+
+})
+},{"backbone":10,"handlebars":29,"jquery":41}],108:[function(require,module,exports){
+var Backbone = require('backbone');
+var $ = require('jquery');
+var _ = require('underscore');
+var Handlbars = require('handlebars');
+var InstanceDate = require('./instanceDateRowView');
+var util = require('../../util/util');
+
+module.exports = Backbone.View.extend({
+  template: $('#instanceDate-table').html(),
+  boxError: Handlbars.compile($('#error-instance').html()),
+
+  initialize: function () {
+    this.listenTo(this.collection, 'notInstance', function (message) {
+      this.message = message;
+    });
+  },
+
+  render: function () {
+    if (_.isEmpty(this.message)) {
+      this.$el.html(this.template);
+
+      this.$tbody = this.$el.find('table').children('tbody');
+
+      this.addAll();
+    } else {
+      if (_.isObject(this.message)) {
+        var error = 'No es posible encontrar Visitas';
+
+        util.showError(this.message);
+        this.emptyInstance(error);
+      } else {
+        this.emptyInstance(this.message);
+      }
+
+    }
+  },
+
+  addAll: function () {
+    this.collection.forEach(this.addOne, this);
+  },
+
+  addOne: function (instance) {
+    instance.referenceFormat();
+    instance.dateFormat();
+    instance.stateFormat();
+
+    var instanceDate = new InstanceDate({model: instance});
+
+    this.$tbody.append(instanceDate.render().el);
+  },
+
+  emptyInstance: function (message) {
+    var errorMessage = {message: message};
+    var boxError = this.boxError(errorMessage);
+
+    this.$el.html(boxError);
+  },
+
+  close: function () {
+    this.remove();
+  }
+
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+},{"../../util/util":82,"./instanceDateRowView":107,"backbone":10,"handlebars":29,"jquery":41,"underscore":42}],109:[function(require,module,exports){
+var Backbone = require('backbone');
+var $ = require('jquery');
+var util = require('../../util/util');
+
+module.exports = Backbone.View.extend({
+  template: $('#register-instance').html(),
+  events: {
+    'submit #form-instance': 'register'
+  },
+
+  render: function () {
+    console.log('render');
+    this.$el.html(this.template);
+  },
+
+  register: function (e) {
+    e.preventDefault();
+
+    var data = $('#form-instance').serialize();
+
+    $.post(Backend_url + 'elder/instance', data)
+     .done(function (res) {
+      if (res.status == 'success') {
+        var data = res.data;
+        var successMessage = res.message;
+
+        this.model.set(data);
+        util.showSuccess(successMessage);
+
+        var elderId = this.get('id');
+
+        window.location.href = '#elder/' + elderId;
+      } else {
+        var errorMessage = res.message;
+        
+        util.showError(errorMessage);
+      }
+     }.bind(this))
+  },
+
+  close: function () {
+    this.remove();
+  }
+});
+},{"../../util/util":82,"backbone":10,"jquery":41}],110:[function(require,module,exports){
+var Backbone = require('backbone');
+var $ = require('jquery');
+var Handlebars = require('handlebars');
+
+module.exports = Backbone.View.extend({
+  tagName: 'tr',
+  template: Handlebars.compile( $('#instanceWaiting-element').html()),
+  events: {
+    'click .btn-show': 'redirectShow'
+  },
+
+  render: function () {
+    var data = this.model.toJSON();
+    var html = this.template(data);
+
+    this.$el.html(html);
+
+    return this;
+  },
+
+  redirectShow: function () {
+    var elderId = this.model.get('elder_id');
+    window.location.href = '#elder/' + elderId + '/instanceWaiting';
+  }
+})
+},{"backbone":10,"handlebars":29,"jquery":41}],111:[function(require,module,exports){
+var Backbone = require('backbone');
+var $ = require('jquery');
+var _ = require('underscore');
+var Handlebars = require('handlebars');
+var InstanceWaiting = require('./instanceWaitingRowView');
+
+module.exports = Backbone.View.extend({
+  template: $('#instanceWaiting-table').html(),
+  boxError: Handlebars.compile($('#error-instance').html()),
+   events: {
+    'keyup .Search': 'serch'
+  },
+
+  initialize: function () {
+    this.listenTo(this.collection, 'notInstance', function (message) {
+      this.message = message;
+    });
+
+    this.updateUrl();
+  },
+
+  render: function () {
+    if (_.isEmpty(this.message)) {
+      this.$el.html(this.template);
+
+      this.$tbody = this.$el.find('table').children('tbody');
+
+      this.addAll();
+    } else {
+      this.emptyInstance(this.message);
+    }
+  },
+
+  addAll: function () {
+    this.collection.forEach(this.addOne, this);
+  },
+
+  addOne: function (instance) {
+    instance.referenceFormat();
+    instance.dateFormat();
+    
+    var instanceView = new InstanceWaiting({model: instance});
+
+    this.$tbody.append(instanceView.render().el);
+  },
+
+  updateUrl: function () {
+    var url = Backend_url + 'instances/waiting';
+
+    this.collection.updateUrl(url);
+  },
+
+  serch: function () {
+    var letters = $('.Search').val();
+    var filter = this.collection.search(letters);
+
+    if (_.isUndefined(filter)) {
+      this.firstPage();
+    } else {
+      this.emptyList();
+
+      filter.forEach(this.addOne, this);
+    }
+  },
+
+  firstPage: function () {
+    this.collection.fetch(fetchData)
+    .done(function () {
+      this.emptyList();
+      this.addAll();
+    }.bind(this))
+  },
+
+  emptyList: function () {
+    this.$tbody.empty()
+  },
+
+  emptyInstance: function (message) {
+    var errorMessage = {message: message};
+    var boxError = this.boxError(errorMessage);
+
+    this.$el.html(boxError);
+  },
+
+  close: function () {
+    this.remove();
+  }
+
+})
+},{"./instanceWaitingRowView":110,"backbone":10,"handlebars":29,"jquery":41,"underscore":42}],112:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var Handlebars = require('handlebars');
@@ -32544,7 +34207,7 @@ module.exports = Backbone.View.extend({
 	}
 
 });
-},{"../../util/util":71,"backbone":10,"handlebars":29,"jquery":41}],85:[function(require,module,exports){
+},{"../../util/util":82,"backbone":10,"handlebars":29,"jquery":41}],113:[function(require,module,exports){
 var Backbone   = require('backbone');
 var $          = require('jquery');
 var Handlebars = require('handlebars');
@@ -32595,7 +34258,7 @@ module.exports = Backbone.View.extend({
 	},
 
 });
-},{"../../../../bower_components/typeahead.js/dist/bloodhound.js":5,"../../../../bower_components/typeahead.js/dist/typeahead.jquery":6,"backbone":10,"handlebars":29,"jquery":41}],86:[function(require,module,exports){
+},{"../../../../bower_components/typeahead.js/dist/bloodhound.js":5,"../../../../bower_components/typeahead.js/dist/typeahead.jquery":6,"backbone":10,"handlebars":29,"jquery":41}],114:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('underscore');
@@ -32713,7 +34376,7 @@ module.exports = Backbone.View.extend({
   }
 
 });
-},{"../../util/util":71,"../paginate/paginationView":92,"./outputRowView":90,"backbone":10,"handlebars":29,"jquery":41,"underscore":42}],87:[function(require,module,exports){
+},{"../../util/util":82,"../paginate/paginationView":120,"./outputRowView":118,"backbone":10,"handlebars":29,"jquery":41,"underscore":42}],115:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var Handlebars = require('handlebars');
@@ -32772,7 +34435,7 @@ module.exports = Backbone.View.extend({
     this.remove();
   }
 });
-},{"../../util/util":71,"backbone":10,"handlebars":29,"jquery":41}],88:[function(require,module,exports){
+},{"../../util/util":82,"backbone":10,"handlebars":29,"jquery":41}],116:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var Handlebars = require('handlebars');
@@ -32794,7 +34457,7 @@ module.exports = Backbone.View.extend({
     return this;
   }
 })
-},{"../../util/util":71,"backbone":10,"handlebars":29,"jquery":41}],89:[function(require,module,exports){
+},{"../../util/util":82,"backbone":10,"handlebars":29,"jquery":41}],117:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('underscore');
@@ -32906,7 +34569,7 @@ module.exports = Backbone.View.extend({
     this.remove();
   }
 })
-},{"../../util/util":71,"../paginate/paginationView":92,"./outputPernotRowView":88,"backbone":10,"handlebars":29,"jquery":41,"underscore":42}],90:[function(require,module,exports){
+},{"../../util/util":82,"../paginate/paginationView":120,"./outputPernotRowView":116,"backbone":10,"handlebars":29,"jquery":41,"underscore":42}],118:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var Handlebars = require('handlebars');
@@ -32945,7 +34608,7 @@ module.exports = Backbone.View.extend({
   }
 
 })
-},{"../../util/util":71,"backbone":10,"handlebars":29,"jquery":41}],91:[function(require,module,exports){
+},{"../../util/util":82,"backbone":10,"handlebars":29,"jquery":41}],119:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('underscore');
@@ -33063,7 +34726,7 @@ module.exports = Backbone.View.extend({
   }
 
 });
-},{"../../util/util":71,"../paginate/paginationView":92,"./outputRowView":90,"backbone":10,"handlebars":29,"jquery":41,"underscore":42}],92:[function(require,module,exports){
+},{"../../util/util":82,"../paginate/paginationView":120,"./outputRowView":118,"backbone":10,"handlebars":29,"jquery":41,"underscore":42}],120:[function(require,module,exports){
 var Backbone   = require('backbone');
 var $          = require('jquery');
 var Handlebars = require('handlebars');
@@ -33143,7 +34806,7 @@ module.exports = Backbone.View.extend({
 
 
 });
-},{"backbone":10,"handlebars":29,"jquery":41}],93:[function(require,module,exports){
+},{"backbone":10,"handlebars":29,"jquery":41}],121:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var util = require('../../util/util');
@@ -33192,7 +34855,7 @@ module.exports = Backbone.View.extend({
   }
 
 });
-},{"../../util/util":71,"backbone":10,"jquery":41}],94:[function(require,module,exports){
+},{"../../util/util":82,"backbone":10,"jquery":41}],122:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var Handlebars = require('handlebars');
@@ -33321,7 +34984,7 @@ module.exports = Backbone.View.extend({
   }
 
 });
-},{"../../util/util":71,"alertifyjs":7,"backbone":10,"handlebars":29,"jquery":41}],95:[function(require,module,exports){
+},{"../../util/util":82,"alertifyjs":7,"backbone":10,"handlebars":29,"jquery":41}],123:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('underscore');
@@ -33429,4 +35092,4 @@ module.exports = Backbone.View.extend({
     this.remove();
   }
 })
-},{"../paginate/paginationView":92,"./productRowView":94,"backbone":10,"handlebars":29,"jquery":41,"underscore":42}]},{},[45]);
+},{"../paginate/paginationView":120,"./productRowView":122,"backbone":10,"handlebars":29,"jquery":41,"underscore":42}]},{},[45]);
