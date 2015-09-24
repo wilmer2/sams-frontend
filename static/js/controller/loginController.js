@@ -45,6 +45,7 @@ function LoginCtrl () {
   },
 
   this.menuUserRender = function (user) {
+    console.log('sdfsdfsdf');
     var menuUser = new MenuUser({model:user});
 
     appView.showMenuView(menuUser);

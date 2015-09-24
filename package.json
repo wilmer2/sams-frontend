@@ -4,8 +4,29 @@
   "description": "aplicacion del lado del frotend",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install": "bower install && npm install"
   },
-  "author": "wilmer maldonadoo y alberto pedron",
-  "license": "mit"
+  "author": "wilmer maldonadoo and @pedronalbert",
+  "license": "mit",
+  "dependencies": {
+    "alertifyjs": "^1.4.1",
+    "babelify": "^6.3.0",
+    "backbone": "^1.2.3",
+    "backbone-async-route-filters": "^0.1.1",
+    "backbone.paginator": "^2.0.2",
+    "bootstrap": "^3.3.5",
+    "browser-sync": "^2.9.6",
+    "browserify": "^11.1.0",
+    "exorcist": "^0.4.0",
+    "gulp": "^3.9.0",
+    "gulp-concat": "^2.6.0",
+    "gulp-util": "^3.0.6",
+    "handlebars": "^4.0.2",
+    "jquery": "^2.1.4",
+    "toastr": "^2.1.2",
+    "underscore": "^1.8.3",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.4.0"
+  }
 }

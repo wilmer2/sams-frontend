@@ -1,4 +1,4 @@
-TaskHour = {
+var TaskHour = {
   getCurrentHour: function () {
     var time = new Date();
     var hour = time.getHours();

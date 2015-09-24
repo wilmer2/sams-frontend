@@ -10,7 +10,7 @@ var OutputPernotForm = require('../view/output/outputPernotNewView');
 var OutputList = require('../view/output/outputTableView');
 var OutputListPernot = require('../view/output/outputPernotTableView');
 var OutputListElder = require('../view/output/outputElderTableView');
-var OutputWaiting = require('../view/output/OutputWaitingTableView');
+var OutputWaiting = require('../view/output/outputWaitingTableView');
 
 function OutputCtrl () {
   this.showForm = function () {

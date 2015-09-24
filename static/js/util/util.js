@@ -1,7 +1,7 @@
 var _      = require('underscore');
-var toastr = require('../../dependencies/toastr/toastr');
+var toastr = require('toastr');
 
-Task = {
+var Task = {
 	showError: function (message) {
 		if (_.isObject(message)) {
 			message = this.multipleMessage(message);
