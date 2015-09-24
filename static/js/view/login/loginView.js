@@ -5,8 +5,8 @@ var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
 	el:  $('#header-content'),
-	template: Handlebars.compile($('#login-view').html()),
-	templateMain: $('#initialize-view').html(),
+	template: 'login/templates/login.html',
+	templateMain: 'login/templates/main.html',
 
   events: {
 		'submit #login' : 'login',
@@ -19,21 +19,24 @@ module.exports = Backbone.View.extend({
 
 	render: function () {
 		this.renderHeader();
-		this.$main.html(this.templateMain);
+		$.get(rootView + this.templateMain, function (templateMain) {
+			this.$main.html(templateMain);
+		}.bind(this))
 	},
 
 	renderHeader: function () {
-		
-		var userData = this.model.toJSON();
-		var configData = this.config.toJSON();
-		var context = {
-			user: userData,
-			config: configData
-		};
+		$.get(rootView + this.template, function (template) {
+			var template = Handlebars.compile(template);
+			var userData = this.model.toJSON();
+			var configData = this.config.toJSON();
+			var context = {
+				user: userData,
+				config: configData
+			};
+			var html = template(context);
 
-		var html = this.template(context);
-
-		this.$el.html(html);
+			this.$el.html(html);
+		}.bind(this))
 	},
 
 	login: function (e) {

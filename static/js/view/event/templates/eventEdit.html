@@ -1,0 +1,36 @@
+{{#if notFound}}
+   <div>
+    <p>
+      Evento no encontrado
+    </p>
+   </div>
+  {{else}}
+  <div> 
+   <h3>Editar Evento</h3>
+  </div>
+  <form id="form-eventEdit">
+    <input type="text" placeholder="Nombre de Evento" name="name" value="{{name}}">
+    <label for="date_start">Inicio</label>
+    <input type="date" name="date_start" value="{{date_start}}">
+    <label for="entry_time">Hora de Inicio</label>
+    <input type="time" name="entry_time" value="{{entry_time}}">
+    <label for="departure_time">Hora de Fin</label>
+    <input type="time" name="departure_time" value="{{departure_time}}">
+    {{#if date_end}}
+    <label for="date_end">Finalizacion</label>
+    <input type="date" name="date_end" value="{{date_end}}">
+    {{else}}
+    <button class="btn btn-primary u-data btn-config" type="button">
+    + Finalización
+    </button>
+    <label for="date_end" class="u-disabled u-data">Finalizacion</label>
+    <input type="date" name="date_end" class="u-disabled u-data">
+    <button class="btn btn-primary u-disabled u-data btn-config" type="button">
+    Ocultar
+    </button>
+    {{/if}}
+    <label for="description">Descripcion</label>
+    <textarea name="description">{{description}}</textarea>
+    <button type="submit">Enviar</button>
+  </form>
+  {{/if}}

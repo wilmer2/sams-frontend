@@ -13,7 +13,7 @@ function appView () {
         .render()
         .then(function () {
           $('#main-content').html(this.currentMenuView.el);
-
+        
           resolve();
         }.bind(this))
 

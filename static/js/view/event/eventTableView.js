@@ -6,7 +6,7 @@ var EventView = require('./eventRowView');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: $('#event-table').html(),
+  template: 'event/templates/eventTable.html',
   boxError: Handlbars.compile($('#error-event').html()),
 
   initialize: function () {
@@ -16,23 +16,30 @@ module.exports = Backbone.View.extend({
   },
 
   render: function () {
-    if (_.isEmpty(this.message)) {
-      this.$el.html(this.template);
+    $.get(rootView + this.template, function (template) {
+      if (_.isEmpty(this.message)) {
+        var template = template;
 
-      this.$tbody = this.$el.find('table').children('tbody');
+        this.$el.html(template);
 
-      this.addAll();
-    } else {
-      if (_.isObject(this.message)) {
-        var error = 'No es posible encontra eventos';
+        this.$tbody = this
+                        .$el
+                        .find('table')
+                        .children('tbody');
 
-        util.showError(this.message);
-        this.emptyEvents(error);
+        this.addAll();
       } else {
-        this.emptyEvents(this.message);
-      }
+          if (_.isObject(this.message)) {
+            var error = 'No es posible encontra eventos';
 
-    }
+            util.showError(this.message);
+            this.emptyEvents(error);
+          } else {
+            this.emptyEvents(this.message);
+          }
+      }
+    }.bind(this))
+ 
   },
 
   addAll: function () {

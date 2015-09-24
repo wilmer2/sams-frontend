@@ -3,6 +3,7 @@
     Registro de Cita
   </h3>
 </div>
+{{#if activiti}}
 <form id="citation-register">
   <label for="date_day">Fecha</label>
   <input type="date" name="date_day">
@@ -12,3 +13,9 @@
   <textarea name="reason"></textarea>
   <button type="submit">Enviar</button>
 </form>
+{{else}}
+
+<div>
+  <p>Adulto no residente  no puede registar citas</p>
+</div>
+{{/if}}

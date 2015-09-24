@@ -118,11 +118,11 @@ module.exports = Backbone.Router.extend({
 
 		var role = this.userLogin.get('role');
 
-		// if (role == 'User') {
+		if (role == 'User') {
 			this.navigate('elders', triggerData);
-		// } else {
-		// 	this.navigate('employees', triggerData);
-		// }
+		} else {
+			this.navigate('employees', triggerData);
+		}
 	},
 
 	renderHeader: function () {
@@ -130,13 +130,23 @@ module.exports = Backbone.Router.extend({
 	},
 
 	renderMenuUser: function () {
-		this.renderHeader();
-		this.loginCtrl.menuUserRender(this.userLogin);
+		return new Promise(function (resolve, reject) {
+			this.renderHeader();
+			this
+			  .loginCtrl
+			  .menuUserRender(this.userLogin)
+			  .then(resolve)
+		}.bind(this))
 	},
 
 	renderMenuAdmin: function () {
-		this.renderHeader();
-		this.loginCtrl.menuAdminRender(this.userLogin);
+		return new Promise(function (resolve, reject) {
+			this.renderHeader();
+			this
+				.loginCtrl
+				.menuAdminRender(this.userLogin)
+				.then(resolve) 
+		}.bind(this));
 	},
 
 	elders: function () {
@@ -155,8 +165,12 @@ module.exports = Backbone.Router.extend({
 	},
 
 	register: function () {
-		this.renderMenuAdmin();
-		this.employeeCtrl.showForm();
+		this
+			.renderMenuAdmin()
+			.then(function () {
+				this.employeeCtrl.showForm();
+			}.bind(this))
+
 	},
 
 	notFound: function () {
@@ -284,19 +298,42 @@ module.exports = Backbone.Router.extend({
 	},
 
   invokeInstanceModule: function (subroute) {
-  	this.renderMenuUser();
-
-  	if (!Backbone.Main.Instance) {
-  		Backbone.Main.Instance = new InstanceRouter('instance/')
-  	}
+  	this.renderMenuUser()
+  	  .then(function () {
+  	  	if (!Backbone.Main.Instance) {
+  				Backbone.Main.Instance = new InstanceRouter('instance/')
+  			}
+  	  })
   },
 
-	invokeActionModule: function (subroute) {
-		this.renderMenuUser();
+  invokeEventModule: function (subroute) {
+		this.renderMenuUser()
+		  .then(function () {
+		  	if (!Backbone.Main.Event) {
+					Backbone.Main.Event = new EventRouter('event/');
+				}
+		  })
 
-		if (!Backbone.Main.Action) {
-			Backbone.Main.Action = new ActionRouter('action/');
-		}
+		
+	},
+
+	invokeActionModule: function (subroute) {
+		this.renderMenuUser()
+		  .then(function () {
+		  	if (!Backbone.Main.Action) {
+					Backbone.Main.Action = new ActionRouter('action/');
+				}
+		  })
+	},
+
+	invokeProductModule: function (subroute) {
+		this.renderMenuUser()
+		  .then(function () {  	     
+				if (!Backbone.Main.Product) {
+					Backbone.Main.Product = new ProductRouter('product/');
+				}
+		  })
+
 	},
 
 	invokeOutputModule: function (subroute) {
@@ -315,21 +352,7 @@ module.exports = Backbone.Router.extend({
 		}
 	},
 
-	invokeEventModule: function (subroute) {
-		this.renderMenuUser();
-
-		if (!Backbone.Main.Event) {
-			Backbone.Main.Event = new EventRouter('event/');
-		}
-	},
-
-	invokeProductModule: function (subroute) {
-		this.renderMenuUser();
-
-		if (!Backbone.Main.Product) {
-			Backbone.Main.Product = new ProductRouter('product/');
-		}
-	}
+	
 	
 });
 

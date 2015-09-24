@@ -2,9 +2,19 @@
   <h3>Registrar Salida</h3>
 </div>
 
+{{#if activiti}}
+
 <form id="output-register">
   <label for="info">Agregar informacion (opcional)</label>
   <textarea name="info"></textarea>
   <input type="hidden" name="type" value="normal">
   <button class="btn btn-primary">Registrar</button>
 </form>
+
+{{else}}
+
+<div>
+  <p>Adulto no residente no puede registar salidas</p>
+</div>
+
+{{/if}}

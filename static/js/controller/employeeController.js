@@ -1,4 +1,5 @@
 var $ = require('jquery');
+var Employee = require('../model/employee');
 var Employees = require('../collection/employees');
 var EmployeeList = require('../view/employee/employeeTableView');
 var EmployeeForm = require('../view/employee/employeeNewView');
@@ -8,7 +9,8 @@ var EmployeeForm = require('../view/employee/employeeNewView');
 function EmployeeCtrl () {
 
   this.showForm = function () {
-    var employeeForm = new EmployeeForm();
+    var employee = new Employee();
+    var employeeForm = new EmployeeForm({model:employee});
 
     appView.showAdminView(employeeForm);
   },

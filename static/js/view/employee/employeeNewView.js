@@ -1,8 +1,8 @@
 var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('underscore');
+var alertify = require('alertifyjs');
 var util = require('../../util/util');
-
 
 module.exports = Backbone.View.extend({
   template: 'employee/templates/employeeNew.html',
@@ -16,6 +16,7 @@ module.exports = Backbone.View.extend({
     'click .Modal-snap': 'snapShot',
     'click .Modal-repeat': 'repeat',
     'click .Modal-btnPic': 'showPic',
+    'click .close': 'closeModal',
     'change .Form-file': 'uploadPic',
     'submit #form-employee': 'register'
   },
@@ -33,13 +34,16 @@ module.exports = Backbone.View.extend({
       this.$snap = this.$el.find('.Modal-snap');
       this.$canvasForm = this.$el.find('.Lienzo');
       this.$containerBtn = this.$el.find('.Modal-btn');
+      this.$close = this.$el.find('.close');
       this.$typeFile = this.$el.find('input[type="file"]');
     }.bind(this))
+    
   },
 
   showModal: function () {
     this.$modalPic.show();
     this.$containerBtn.hide();
+    this.$close.hide();
     this.showCamera();
   },
 
@@ -90,8 +94,8 @@ module.exports = Backbone.View.extend({
       canvas.attr({'width': 150,'height': 150});
 
       var ctx = canvas[0].getContext('2d');
+
       ctx.drawImage(this.picCam, 0 , 0, 150, 150);
-      this.photoSource = canvas[0].toDataURL('image/png')
 
       this.closeCamera();
       this.optBtn();
@@ -102,13 +106,14 @@ module.exports = Backbone.View.extend({
   showPic: function () {
     this.$typeFile.val('');
 
+    this.photoSource = this.$canvas[0].toDataURL('image/png');
     var canvasForm = this.$canvasForm;
 
     canvasForm.attr({'width': 150, 'height': 150});
 
     var ctxForm = canvasForm[0].getContext('2d');
 
-    ctxForm.drawImage(this.pickCam, 0, 0, 150, 150);
+    ctxForm.drawImage(this.picCam, 0, 0, 150, 150);
     this.closeModal();
   },
 
@@ -140,7 +145,7 @@ module.exports = Backbone.View.extend({
 
       var message = 'Ha ingresado un formato de archivo no valido';
       
-      util.showInfo(message);
+      util.showError(message);
     }
    
     reader.readAsDataURL(file);
@@ -165,6 +170,7 @@ module.exports = Backbone.View.extend({
 
   showBtn: function () {
     this.$snap.show();
+    this.$close.show();
     this.$confirmBtn.hide();
   },
 
@@ -199,7 +205,7 @@ module.exports = Backbone.View.extend({
       var mime = util.extractMime(this.photoSource);
 
       formData.append('photo', this.photoSource);
-      formData.append('mime', mime);
+      formData.append('mime_request', mime);
     }
 
     $.ajax({
@@ -211,12 +217,38 @@ module.exports = Backbone.View.extend({
     })
     .done(function(res) {
       if (res.status == 'success') {
-        util.showSuccess(res.message);
-        Backbone.Main.navigate('employee/' + res.id + '/schedule/register', {trigger: true});
+        var successMessage = res.message;
+        var employeeData = res.data;
+
+        util.showSuccess(successMessage);
+        this.model.set(employeeData);
+        this.redirect();
       } else {
-        util.showError(res.message);
+        var errorMessage = res.message;
+
+        util.showError(errorMessage);
+      }
+    }.bind(this));
+  },
+
+  redirect: function () {
+    var title = 'Registrar Cuenta Usuario';
+    var message = 'Desea registrar cuenta de usuario a este empleado';
+    var employeeId = this.model.get('id');
+    var successCallback = function () {
+      window.location.href = '#employee/' + employeeId + '/user';
+    }
+    var cancelCallback = function () {
+      window.location.href = '#employee/' + employeeId;
+    }
+
+    alertify.confirm(message, successCallback, cancelCallback)
+    .setting({
+      'title': title,
+      'labels': {
+        'ok': 'Confirmar',
+        'cancel': 'Cancelar'
       }
     });
-
   }
 })

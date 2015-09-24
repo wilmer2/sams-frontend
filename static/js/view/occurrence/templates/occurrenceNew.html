@@ -4,6 +4,7 @@
     Registro de Inicidencia
   </h3>
 </div>
+{{#if activiti}}
 <form id="form-occurrence">
   <label for="data">Fecha de incidencia</label>
   <input type="date" name="date">
@@ -37,3 +38,9 @@
           </div>
       </div>
   </div>
+{{else}}
+
+<div>
+  <p>Adulto no residente no puede registrar incidencias</p>
+</div>
+{{/if}}

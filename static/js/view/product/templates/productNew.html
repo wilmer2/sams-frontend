@@ -1,0 +1,18 @@
+<div>
+  <h3>Agregar Producto</h3>
+</div>
+ <form id="form-product">
+    <label for="description">Descripcion</label>
+    <input type="text" name="description" required>
+    <label for="stock">Existencia</label>
+    <input type="number" name="stock" min=1 required>
+    <label for="unit">Tipo de unidad</label>
+    <select name="unit" class="Select">
+      <option value="kg">kg</option>
+      <option value="und">unidad</option>
+      <option value="caja">cajas</option>
+      <option value="paq">paquetes</option>
+      <option value="bultos">bultos</option>
+    </select>
+    <button type="submit">Enviar</button>
+  </form>

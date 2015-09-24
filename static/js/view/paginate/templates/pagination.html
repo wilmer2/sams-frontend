@@ -1,0 +1,14 @@
+  {{#prevBtn current}}
+      <button id="prevPage" class="prev btn-default btn">Anterior</button>
+    {{/prevBtn}}
+    <div class="btn-group">
+        <button data-toggle="dropdown" class="btn btn-default dropdown-toggle">Page 
+        {{current}} 
+    
+        {{#itere items current}}
+          {{items}}
+        {{/itere}}
+    </div>
+    {{#nextBtn items current}}
+      <button id='nextPage' class="btn btn-default next">Siguiente</button>
+    {{/nextBtn}}

@@ -7,7 +7,7 @@ var ActionView = require('./actionRowView');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: $('#action-table').html(),
+  template: 'action/templates/actionTable.html',
   boxError: Handlebars.compile($('#error-action').html()),
   events: {
     'keyup .Search': 'serch'
@@ -26,15 +26,24 @@ module.exports = Backbone.View.extend({
   },
 
   render: function () {
-    if (_.isEmpty(this.message)) {
-      this.$el.html(this.template);
-      this.getPaginateView();
-      this.$tbody = this.$el.find('table').children('tbody');
+    $.get(rootView + this.template, function (template) {
+       if (_.isEmpty(this.message)) {
+        var template = template;
+        
+        this.$el.html(template);
+        this.getPaginateView();
+        this.$tbody = this
+                        .$el
+                        .find('table')
+                        .children('tbody');
 
-      this.addAll();
-    } else {
-      this.emptyAction(this.message);
-    }
+        this.addAll();
+      } else {
+        this.emptyAction(this.message);
+      }
+    }.bind(this))
+
+   
   },
 
   addAll: function () {

@@ -1,6 +1,7 @@
 var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('underscore');
+var Handlebars = require('handlebars');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
@@ -21,9 +22,11 @@ module.exports = Backbone.View.extend({
 
   render: function () {
     $.get(rootView + this.template, function (template) {
-      var template = template;
+      var template = Handlebars.compile(template);
+      var data = this.model.toJSON();
+      var html = template(data);
       
-      this.$el.html(template);
+      this.$el.html(html);
 
       this.$modalPic = this.$el.find('.Modal');
       this.$camera = this.$el.find('.Modal-camera');

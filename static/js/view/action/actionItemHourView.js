@@ -1,12 +1,13 @@
 var Backbone = require('backbone');
 var $ = require('jquery');
 var Handlebars = require('handlebars');
+var alertify = require('alertifyjs');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: Handlebars.compile($('#actionHour-element').html()),
+  template: 'action/templates/actionItemHour.html',
   events: {
-    'click .btn-remove': 'removeHour'
+    'click .btn-remove': 'confirmRemove'
   },
 
   initialize: function (opt) {
@@ -14,12 +15,32 @@ module.exports = Backbone.View.extend({
   },
 
   render: function () {
-    var data = this.model.toJSON();
-    var html = this.template(data);
+    $.get(rootView + this.template, function (template) {
+      var template = Handlebars.compile(template);
+      var data = this.model.toJSON();
+      var html = template(data);
 
-    this.$el.html(html);
+      this.$el.html(html);
+    }.bind(this))
 
     return this;
+  },
+
+  confirmRemove: function () {
+    var title = 'Remover horario de actividad';
+    var message = 'Esta seguro remover esta horario';
+    var callback = function () {
+      this.removeHour();
+    }.bind(this);
+
+    alertify.confirm(message, callback)
+    .setting({
+      'title': title,
+      'labels': {
+        'ok': 'Confirmar',
+        'cancel': 'Cancelar'
+      }
+    });
   },
 
   removeHour: function () {

@@ -1,10 +1,10 @@
-var Backbone   = require('backbone');
-var $          = require('jquery');
+var Backbone = require('backbone');
+var $ = require('jquery');
 var Handlebars = require('handlebars');
 
 
 module.exports = Backbone.View.extend({
-	template: Handlebars.compile($('#menuPaginate').html()),
+	template: 'paginate/templates/pagination.html',
 
 	events: {
 		'click a.page' :'goToPage',
@@ -17,13 +17,16 @@ module.exports = Backbone.View.extend({
 	},
 
 	render: function () {
-		this.items = this.collection.totalPage();
-		var current = this.currentPage;
-		var data = JSON.stringify({items: this.items, current: current});
-		var html = this.template(JSON.parse(data));
+		$.get(rootView + this.template, function (template) {
+			var template = Handlebars.compile(template);
+			this.items = this.collection.totalPage();
+			var current = this.currentPage;
+			var data = JSON.stringify({items: this.items, current: current});
+			var html = template(JSON.parse(data));
 
-		this.$el.html(html);
-
+			this.$el.html(html);
+		}.bind(this))
+		
 		return this;
 	},
 

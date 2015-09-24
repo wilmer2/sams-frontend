@@ -23,11 +23,7 @@
 
 <!-- Content Event -->
 <script id="event-contentView" type="text/x-handlebars-template">
-  <form id="date-event">
-    <input type="date" class="Search-date" required> 
-    <button class="btn btn-primary" type="submit">Buscar</button>
-  </form>
-  <div id="content-event"></div>
+  
 </script>
 
 <!-- Instance Content -->
@@ -258,42 +254,7 @@
 
 <!-- Data employee -->
 <script id="employee-data" type="text/x-handlebars-template">
-  <div>
-   <div>
-     <span>Cedula</span> <span>{{identity_card}}</span>
-   </div>
-   <div>
-     <span>Nombre</span> <span>{{first_name}}</span>
-   </div>
-   <div>
-     <span>Apellido</span> <span>{{last_name}}</span>
-   </div>
-   <div>
-     <span>Fecha de nacimiento</span> <span>{{date_birth}}</span>
-   </div>
-   <div>
-     <span>Telefono</span> {{#if phone}} <span>{{phone}}</span>{{else}} <span>No aplica</span>{{/if}}
-   </div>
-   <div> 
-     <span>Direccion</span> <p>{{address}}</p>
-   </div>
-   <div>
-     <span>Genero</span> <span>{{gender}}</span>
-   </div>
-   <div>
-     <span>Grado de instruccion</span> <span>{{degree_instruction}}</span>
-   </div>
-   <div>
-     <span>Estado civil</span> <span>{{civil_status}}</span>
-   </div>
-   <div>
-     <span>Cargo</span> <span>{{office}}</span>
-   </div>
-   <div>
-     <span>Estado</span> {{#if activiti}} <span>activo</span> {{else}} <span>No activo</span> {{/if}}
-   </div>
-    <a href="#employee/{{id}}/edit">Editar</a>
-  </div>
+  
 </script>
 
 
@@ -1450,22 +1411,7 @@
 
 <!-- Form Event -->
 <script id="register-event" type="text/x-handlebars-template">
-  <form id="form-event">
-    <input type="text" name="name" placeholder="Nombre del evento">
-    <label for="date_start">Inicio</label>
-    <input type="date" name="date_start">
-    <label for="entry_time">Hora de Inicio</label>
-    <input type="time" name="entry_time">
-    <label for="departure_time">Hora de Fin</label>
-    <input type="time" name="departure_time">
-    <button class="btn btn-primary u-data btn-config" type="button">+ Finalización</button>
-    <label for="date_end" class="u-disabled u-data">Finalizacion</label>
-    <input type="date" name="date_end" class="u-disabled u-data">
-    <button class="btn btn-primary u-disabled u-data btn-config" type="button">Ocultar</button>
-    <label for="description">Descripcion</label>
-    <textarea name="description"></textarea>
-    <button type="submit">Enviar</button>
-  </form>
+  
 </script>
 
 <!-- Form schedule action -->

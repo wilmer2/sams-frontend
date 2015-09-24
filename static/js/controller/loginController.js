@@ -45,22 +45,29 @@ function LoginCtrl () {
   },
 
   this.menuUserRender = function (user) {
-    console.log('sdfsdfsdf');
-    var menuUser = new MenuUser({model:user});
+    return new Promise(function (resolve, reject) {
+      var menuUser = new MenuUser ({model: user});
 
-    appView.showMenuView(menuUser);
+      appView
+        .showMenuView(menuUser)
+        .then(resolve);
+    }.bind(this))
   },
 
   this.menuAdminRender = function (user) {
-    var role = user.get('role');
+    return new Promise(function (resolve, reject) {
+      var role = user.get('role');
 
-    if (role == 'User') {
-      window.location.href = '#elders'
-    } else {
-      var menuAdmin = new MenuAdmin({model:user});
+      if (role == 'User') {
+        window.location.href = '#elders'
+      } else {
+        var menuAdmin = new MenuAdmin({model:user});
 
-      appView.showMenuView(menuAdmin);
-    }
+        appView
+          .showMenuView(menuAdmin)
+          .then(resolve)
+      }   
+    }.bind(this));
   }
 }
 

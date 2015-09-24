@@ -1,0 +1,45 @@
+{{#if notFound}}
+<div>
+  <p>Empleado no encontrado</p>
+</div>
+{{else}}
+<div>
+   <div>
+     <span>Cedula</span> <span>{{identity_card}}</span>
+   </div>
+   <div>
+     <span>Nombre</span> <span>{{first_name}}</span>
+   </div>
+   <div>
+     <span>Apellido</span> <span>{{last_name}}</span>
+   </div>
+   <div>
+     <span>Fecha de nacimiento</span> <span>{{date_birth}}</span>
+   </div>
+   <div>
+     <span>Telefono</span> {{#if phone}} <span>{{phone}}</span>{{else}} <span>No aplica</span>{{/if}}
+   </div>
+   <div> 
+     <span>Direccion</span> <p>{{address}}</p>
+   </div>
+   <div>
+     <span>Genero</span> <span>{{gender}}</span>
+   </div>
+   <div>
+     <span>Grado de instruccion</span> <span>{{degree_instruction}}</span>
+   </div>
+   <div>
+     <span>Estado civil</span> <span>{{civil_status}}</span>
+   </div>
+   <div>
+     <span>Cargo</span> <span>{{office}}</span>
+   </div>
+   <div>
+     <span>Estado</span> {{#if activiti}} <span>activo</span> {{else}} <span>No activo</span> {{/if}}
+   </div>
+   <div>
+     <button class="btn btn-primary btn-edit">Editar</button>
+     <button class="btn btn-dange btn-delete">Eliminar</button>
+   </div>
+  </div>
+  {{/if}}
