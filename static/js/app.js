@@ -1,4 +1,7 @@
 var Backbone    = require('backbone');
+var _           = require('underscore');
+window._ = _;
+window.Backbone = Backbone;
 var $           = require('jquery');
 window.jQuery = $;
 var Bootstrap   = require('bootstrap');

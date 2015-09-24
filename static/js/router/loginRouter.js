@@ -99,6 +99,7 @@ module.exports = Backbone.Router.extend({
 	},
 
 	login: function () {
+
 		if (this.userLogin.has('role')) {
 			this.selectMenu();
 		} else {

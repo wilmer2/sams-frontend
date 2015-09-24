@@ -6,6 +6,8 @@ var typeahead = require('../../../../bower_components/typeahead.js/dist/typeahea
 
 module.exports = Backbone.View.extend({
   template: 'menu/templates/menuAdmin.html',
+  tagName: 'div',
+  className: 'appContent',
 
   render: function () {
     return new Promise(function (resolve, reject) {

@@ -4,6 +4,7 @@ var Handlebars = require('handlebars');
 
 module.exports = Backbone.View.extend({
   template: 'menu/templates/menuElder.html',
+  className: 'appContent',
 
   render: function () {
     return new Promise(function (resolve, reject) {

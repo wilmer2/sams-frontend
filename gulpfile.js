@@ -7,11 +7,13 @@ var exorcist    = require('exorcist');
 var concat      = require('gulp-concat');
 var browserify  = require('browserify');
 var browserSync = require('browser-sync').create();
+var stylus      = require('gulp-stylus');
 
 var cssDependencies = [
   'node_modules/bootstrap/dist/css/bootstrap.min.css',
   'node_modules/toastr/build/toastr.min.css',
-  'static/**/*.css'
+  'node_modules/normalize.css/normalize.css',
+  'node_modules/font-awesome/css/font-awesome.css'
 ];
 
 // Input file.
@@ -48,16 +50,31 @@ gulp.task('bundle', function () {
 });
 
 gulp.task('css', function () {
+  gutil.log('Cocatenating CSS...');
   gulp.src(cssDependencies)
-    .pipe(concat('bundle.css'))
-    .pipe(gulp.dest('./'))
-})
+    .pipe(concat('dependencies.css'))
+    .pipe(gulp.dest('./css'));
+});
 
 /**
  * First bundle, then serve from the ./app directory
  */
-gulp.task('default', ['bundle', 'css'], function () {
+gulp.task('default', ['bundle', 'css', 'fonts', 'stylus'], function () {
     browserSync.init({
         server: "./"
     });
+    gulp.watch('stylus/**/*.styl', ['stylus']);
+});
+
+gulp.task('fonts', function () {
+  gulp.src('node_modules/font-awesome/fonts/**')
+    .pipe(gulp.dest('./fonts'));
+});
+
+gulp.task('stylus', function () {
+  gutil.log('Stylus...');
+  gulp.src('stylus/main.styl')
+    .pipe(stylus())
+    .pipe(gulp.dest('./css'))
+    .pipe(browserSync.stream({once: true}));
 });
