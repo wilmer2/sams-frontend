@@ -1,0 +1,69 @@
+  <div>
+    <h3>Notificacion de Entrada</h3>
+  </div>
+  {{#if notFound}}
+     <div>
+      <p>Adulto Mayot no tiene notificacion de entrada por confirmar</p>
+     </div>
+  {{else}}
+  <div>
+    <button class="btn btn-info btn-config">Confirmar</button>
+    <button class="btn btn-primary btn-config">Rechazar</button>
+  </div>
+  <div>
+    <h3>
+      Informacion de visita
+    </h3>
+  </div>
+  <form id="instance-waitingEdit">
+    <ul>
+      <li>
+        <strong>Cedula</strong> <span class="u-data">{{identity_card}}</span>
+        <input type="text" name="identity_card" value="{{identity_card}}" class="u-submit u-disabled">
+      </li>
+      <li>
+        <strong>Referido por</strong> <span class="u-data">{{referred}}</span>
+          <select name="referred" class="Select u-submit u-disabled" >
+            <option value="presidency_inass" {{selected referred "presidency_inass"}}>Presidencia del Inass</option>
+            <option value="social_welfare" {{selected referred "social_welfare"}}>Gerencia de Bienestar Social</option>
+            <option value="health" {{selected referred "health"}}>Gerencia de Salud</option>
+            <option value="cssr" {{selected referred "cssr"}}>Director del C.S.S.R</option>
+            <option value="other" {{selected referred "other"}}>Otros</option>
+          </select>
+      </li>
+      <li>
+        <strong>Direccion</strong> <div class="u-data">{{address}}</div>
+        <textarea name="address" class="u-submit u-disabled">
+          {{address}}
+        </textarea>
+      </li>
+      <li>
+        <strong>Descripcion</strong> 
+        {{#if description}}
+          <div class="u-data">{{description}}</div>
+        {{else}}
+          <span class="u-data">No aplica</span>
+        {{/if}}
+        <textarea name="description" class="u-submit u-disabled">
+          {{description}}
+        </textarea>
+      </li>
+      <li>
+        <strong>Fecha de Visita</strong> 
+        <span class="u-data"> {{visit_date}}</span>
+        <input type="date" name="visit_date" value="{{old_date}}" class="u-submit u-disabled">
+      </li>
+    </ul>
+    <div class="u-submit u-disabled">
+      <button class="btn btn-primary" type="submit">Guardar</button>
+      <button class="btn btn-danger btn-cancel" type="button">Cancelar</button>
+  </div>
+  </form>
+
+
+  <div class="u-data">
+    <button class="btn btn-primary btn-edit">Editar</button>
+    <button class="btn btn-danger btn-delete">Eliminar</button>
+  </div>
+
+  {{/if}}

@@ -1,0 +1,33 @@
+<div>
+  <h3>Datos de cita</h3>
+</div>
+{{#if notFound}}
+<div>
+  <p>Cita no encontrada</p>
+</div>
+{{else}}
+<ul>
+  <li>
+    <strong>Fecha</strong> <span>{{date_day}}</span>
+  </li>
+  <li>
+    <strong>Hora</strong> <span>{{hour}}</span>
+  </li>
+  <li>
+    <strong>Razon</strong> <div>{{reason}}</div>
+  </li>
+  <li>
+    <strong>Estado</strong> <span>{{state}}</span>
+  </li>
+</ul>
+<div>
+  {{#if waiting}}
+  <button class="btn btn-primary btn-edit">Editar</button>
+  {{/if}}
+  <button class="btn btn-danger btn-delete">Eliminar</button>
+</div>
+
+{{/if}}
+
+
+

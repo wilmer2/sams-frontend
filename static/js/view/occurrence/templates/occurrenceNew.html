@@ -1,0 +1,39 @@
+
+<div>
+  <h3>
+    Registro de Inicidencia
+  </h3>
+</div>
+<form id="form-occurrence">
+  <label for="data">Fecha de incidencia</label>
+  <input type="date" name="date">
+  <label for="case_situation">Situacion del caso</label>
+  <textarea name="case_situation"></textarea>
+  <button class="Form-btnCamera btn btn-info" type="button">Tomar foto</button>
+  <button type="submit" class="btn btn-success">enviar</button>
+</form>
+
+<canvas class="Lienzo"></canvas>
+  <div class="Modal u-disabled u-modal">
+      <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+            <button class="close">x</button>
+              <h4>Tomar</h4>
+            </div>
+            <div class="modal-body">
+              <video class="Modal-camera" autoplay width=150 height=150></video>
+              <canvas class="Modal-lienzo u-disabled"></canvas>
+            </div>
+            <div class="modal-footer">
+             <div class="Modal-btn">
+              <button class="Modal-snap btn btn-info">Tomar foto</button>
+             <div class="Modal-btnConf" class="u-disabled">
+                <button class="Modal-repeat" type="button">repiter foto</button>
+                <button class="Modal-btnPic" type="button">confirmar</button>
+             </div>
+             </div>
+            </div>
+          </div>
+      </div>
+  </div>

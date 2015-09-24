@@ -6,9 +6,8 @@ var PaginateView = require('../paginate/paginationView');
 var OutputPernotView = require('./outputPernotRowView');
 var util = require('../../util/util');
 
-
 module.exports = Backbone.View.extend({
-  template: $('#outputPernot-table').html(),
+  template: 'output/templates/outputPernotTable.html',
   boxError: Handlebars.compile($('#error-output').html()),
   events: {
     'keyup .Search': 'search'
@@ -19,8 +18,6 @@ module.exports = Backbone.View.extend({
     this.paginateView = new PaginateView(collectionData);
 
     this.collection.on('goTo', this.changePage, this);
-    this.collection.on('check', this.countOutput, this);
-    
     this.listenTo(this.collection, 'notOutput', function (message) {
       this.message = message;
     });
@@ -29,16 +26,20 @@ module.exports = Backbone.View.extend({
   },
   
    render: function () {
-    if (_.isEmpty(this.message)) {
-      this.$el.html(this.template);
-      this.getPaginateView();
+    $.get(rootView + this.template, function (template) {
+      if (_.isEmpty(this.message)) {
+        var template = template;
+        this.$el.html(template);
+        this.getPaginateView();
 
-      this.$tbody = this.$el.find('table').children('tbody');
+        this.$tbody = this.$el.find('table').children('tbody');
 
-      this.addAll();
-    } else {
-      this.emptyOutput(this.message);
-    }
+        this.addAll();
+      } else {
+        this.emptyOutput(this.message);
+      }
+    }.bind(this))
+
   },
 
   addAll: function () {

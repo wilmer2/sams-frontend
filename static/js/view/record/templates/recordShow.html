@@ -1,0 +1,138 @@
+<div>
+   <div>
+     <h3>Historia Clinica</h3>
+   </div>
+   {{#if notFound}}
+    <div>
+     <p>
+       La historia clinica no encontrada
+     </p>
+    </div>
+   {{else}}
+  <figure>
+     <img src="{{image_url}}">
+    </figure>
+    <h4>Condicion</h4>
+    <div>
+      <strong>Condicion</strong>
+      {{#if self_validating}}
+      <span>Autovalido</span>
+      {{else}}
+      <span>Necesita ayuda</span>
+      {{/if}}
+    </div>
+    <h4>Tipo de discapacidad</h4>
+    <div>
+      <strong>Discapacidad motora</strong>
+      {{#if disability_moto}} 
+      <span>{{disability_moto}}</span>
+      {{else}}
+      <span>No aplica</span>
+      {{/if}}
+    </div>
+    <div>
+      <strong>Discapacidad visual</strong>
+      {{#if disability_visual}}
+      <span>{{disability_visual}}</span>
+      {{else}}
+      <span>No aplica</span>
+      {{/if}}
+    </div>
+    <div>
+      <strong>Discapacidad auditiva</strong>
+      {{#if disability_hearing}}
+      <span>{{ disability_hearing}}</span>
+      {{else}}
+      <span>No aplica</span>
+      {{/if}}
+    </div>
+    <h4>Ayuda asistidad (soporte ortopedico)</h4>
+    <div>
+      <strong>Baston</strong>
+      {{#if baston}}
+      <span> {{baston}}</span>
+      {{else}}
+        <span>No aplica</span>
+      {{/if}}
+    </div>
+    <div>
+      <strong>Silla de ruedas</strong>
+      {{#if wheelchair}}
+      <span>Si</span>
+      {{else}}
+      <span>No aplica</span>
+    {{/if}}
+    </div>
+    <div>
+      <strong>Andadera</strong>
+    {{#if walker}}
+      <span>Si</span>
+    {{else}}
+      <span>No aplica</span>
+    {{/if}}
+    </div>
+    <div>
+      <strong>Muleta</strong>
+      {{#if muleta}}
+      <span>{{muleta}}</span>
+      {{else}}
+      <span>No aplica</span>
+      {{/if}}
+    </div>
+    <div>
+      <strong>Pañal</strong>
+      {{#if size_diaper}}
+      <span>Talla: {{size_diaper}}</span>
+      {{else}}
+      <span>No aplica</span>
+      {{/if}}
+    </div>
+    <h4>Datos clinicos del adultos mayor</h4>
+    <div>
+      <strong>Patologia cronica</strong>
+      {{#if pathology_chronic}}
+        <p>{{pathology_chronic}}</p>
+      {{else}}
+      <span>No aplica</span>
+      {{/if}}
+    </div>
+    <div>
+      <strong>Patologia psiquiatrica</strong>
+      {{#if pathology_psychiatric}}
+        <p>{{pathology_psychiatric}}</p>
+      {{else}}
+      <span>No aplica</span>
+      {{/if}}
+    </div>
+    <div>
+      <strong>Alergias</strong>
+      {{#if allergies}}
+      <p>{{allergies}}</p>
+      {{else}}
+      <span>No aplica</span>
+      {{/if}}
+    </div>
+    <h4>Indicadores de calidad de vida</h4>
+    <div>
+      <strong>Indice Kast</strong>
+      <span>{{index_katz}}</span>
+    </div>
+    <div>
+      <strong>Indice de lawton brody</strong>
+      <span> {{index_lawtonbrody}}</span>
+      
+    </div>
+    <div>
+      <strong>Escala cruz roja de incapacidad fisica</strong>
+      <span>{{disability_physical}}</span>
+    </div>
+    <div>
+      <strong>Escala cruz roja de grados de incapacidad psiquica</strong>
+      <span>{{disability_psychic}}</span>
+    </div>
+     <div>
+      <button class="btn btn-primary btn-edit">Editar</button>
+      <button class="btn btn-danger btn-delete">Eliminar</button>
+    </div>
+    {{/if}}
+  </div>

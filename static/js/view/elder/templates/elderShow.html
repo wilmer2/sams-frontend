@@ -1,0 +1,64 @@
+    {{#if instance}}
+  <div>
+    <p>
+      Adulto mayor tiene notificacion de entrada pendiente
+      <a href="#elder/{{id}}/instance-waiting">ver</a>
+    </p>
+  </div>
+  {{/if}}
+  <div>
+    <h3>
+      Datos de Adulto Mayor
+    </h3>
+  </div>
+  <div>
+    <ul>
+      <li>
+        <strong>Cedula</strong> <span>{{identity_card}}</span>
+      </li>
+      <li>
+        <strong>Nombre</strong> 
+        {{#if full_name}}
+        <span>{{full_name}}</span>
+        {{else}}
+        <span>No aplica</span>
+        {{/if}}
+      </li>
+      <li>
+        <strong>Direccion</strong> 
+        {{#if address}}
+        <div>{{address}}</div>
+        {{else}}
+        <span>No aplica</span>
+        {{/if}}
+      </li>
+      <li>
+        <strong>Genero</strong>
+        {{#if gender}}
+          <span>{{gender}}</span>
+        {{else}}
+        <span>No aplica</span>
+        {{/if}}
+      </li>
+      <li>
+        <strong>Fecha de Nacimiento</strong> 
+        {{#if date_birth}}
+        <span>{{date_birth}}</span>
+        {{else}}
+        <span>No aplica</span>
+        {{/if}}
+      </li>
+      <li>
+        <strong>Estado Civil</strong>
+        {{#if civil_status}}
+         <span>{{civil_status}}</span>
+        {{else}}
+         <span>No aplica</span>
+        {{/if}}
+      </li>
+    </ul>
+    <div>
+      <button class="btn btn-primary btn-edit">Editar</button>
+      <button class="btn btn-danger btn-delete">Eliminar</button>
+    </div>
+  </div>

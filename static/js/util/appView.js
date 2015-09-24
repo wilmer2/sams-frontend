@@ -2,16 +2,29 @@ var $ = require('jquery');
 
 function appView () {
   this.showMenuView = function (view) {
-    if (this.currentMenuView) {
-      this.currentMenuView.close();
-    }
+    return new Promise(function (resolve, reject) {
+      if (this.currentMenuView) {
+        this.currentMenuView.close();
+      }
 
-    this.currentMenuView = view;
+      this.currentMenuView = view;
 
-    this.currentMenuView.render();
+      this.currentMenuView
+        .render()
+        .then(function () {
+          $('#main-content').html(this.currentMenuView.el);
 
-    $('#main-content').html(this.currentMenuView.el);
-  }
+          resolve();
+        }.bind(this))
+
+    }.bind(this));
+  },
+
+  this.showNotFound = function () {
+    var notFoundView = $('#error-NotFound').html();
+
+    $('#main-content').html(notFoundView);
+  },
 
   this.showAdminView = function (view) {
     if (this.currentAdminView) {
@@ -23,19 +36,19 @@ function appView () {
     this.currentAdminView.render();
 
     $('#container-admin').html(this.currentAdminView.el);
-  }
+  },
 
-	this.showUserView = function (view) {
-	 if (this.currentUserView) {
-	   this.currentUserView.close();
-	 }
+  this.showUserView = function (view) {
+   if (this.currentUserView) {
+     this.currentUserView.close();
+   }
 
-	 this.currentUserView = view;
+   this.currentUserView = view;
 
-	 this.currentUserView.render();
+   this.currentUserView.render();
 
-	 $('#container-user').html(this.currentUserView.el);
-	},
+   $('#container-user').html(this.currentUserView.el);
+  },
 
   this.showElderView = function (view) {
     if (this.currentElderView) {
@@ -45,7 +58,7 @@ function appView () {
     this.currentElderView = view;
      
     this.currentElderView.render();
-       
+    
     $('#content-elder').html(this.currentElderView.el);
   },
 

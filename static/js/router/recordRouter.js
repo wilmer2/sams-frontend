@@ -1,16 +1,14 @@
-var Backbone   = require('backbone');
-var $          = require('jquery');
-var Subroute   = require('../../dependencies/backboneSubroutes/backboneSubroutes');
-var Record     = require('../model/record');
-var FormRecord = require('../view/formRecord');
-var RecordEdit = require('../view/recordEditView');
-var RecordData = require('../view/recordDataView');
+var Backbone = require('backbone');
+var Subroute = require('../../dependencies/backboneSubroutes/backboneSubroutes');
+var RecordCtrl = require('../controller/recordController');
 
 module.exports = Subroute.extend({
   routes: {
     'register' : 'register',
-    ':idRecod/edit': 'editRecord',
-    ':idRecod': 'show'
+    'list': 'list',
+    ':recordId':'show',
+    ':recordId/edit': 'edit'
+    
   },
 
   before: {
@@ -21,15 +19,31 @@ module.exports = Subroute.extend({
     var parent = Backbone.Main.Elder;
   
     parent.loadElder(fragment, null, function () {
-       next();
+      next();
     });
   },
 
   initialize: function () {
-    this.record = new Record;
+    this.recordCtrl = new RecordCtrl();
   },
 
-  register: function (id) {
+  register: function () {
+    this.recordCtrl.showForm();
+  },
+
+  show: function (elderId, recordId) {
+    this.recordCtrl.show(elderId, recordId);
+  },
+
+  edit: function (elderId, recordId) {
+    this.recordCtrl.edit(elderId, recordId);
+  },
+
+  list: function (elderId) {
+    this.recordCtrl.list(elderId);
+  }
+
+/*  register: function (id) {
     var elder = Backbone.Main.Elder.elder;
     $.get(Backend_url + 'state/record/' + id)
       .done(function (res) {
@@ -83,7 +97,7 @@ module.exports = Subroute.extend({
             reject(err);
           })
     })
-  }
+  }*/
 
 });
 

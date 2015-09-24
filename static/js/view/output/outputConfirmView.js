@@ -4,35 +4,38 @@ var Handlebars = require('handlebars');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: Handlebars.compile($('#register-outputConfirm').html()),
+  template: 'output/templates/outputConfirm.html',
   events: {
-    'submit #form-outputConfirm': 'additionalInfo',
+    'submit #output-confirm': 'confirm',
     'click .btn-cancel': 'redirect'
   },
 
   render: function () {
-    var data = this.model.toJSON();
-    var html = this.template(data);
+    $.get(rootView + this.template, function (template) {
+      var template = Handlebars.compile(template);
+      var data = this.model.toJSON();
+      var html = template(data);
 
-    this.$el.html(html);
+      this.$el.html(html);
+    }.bind(this))
   },
 
-  additionalInfo: function (e) {
+  confirm: function (e) {
     e.preventDefault();
 
-    var outputId = this.model.get('id');
     var elderId = this.model.get('elder_id');
-    var data = $('#form-outputConfirm').serialize();
-    
-    'elder/{elderId}/output/{outputId}/edit'
+    var outputId = this.model.get('id');
+    var url = 'elder/' + elderId + '/output/' + outputId + '/edit?_method=PUT';
+    var data = $('#output-confirm').serialize();
 
-    $.post(Backend_url + 'elder/' + elderId + '/output/' + outputId + '/edit?_method=PUT', data)
+    $.post(Backend_url + url, data)
      .done(function (res) {
       if (res.status == 'success') {
         var successMessage = res.message;
 
         util.showSuccess(successMessage);
         this.redirect();
+
       } else {
         var errorMessage = res.message;
 
@@ -43,16 +46,17 @@ module.exports = Backbone.View.extend({
 
   redirect: function () {
     var type = this.model.get('type');
-
-    if (type == 'pernot') {
-      window.location.replace('#output/waiting');
-    } else {
+    
+    if (type == 'normal') {
       window.location.replace('#output/');
+    } else {
+      window.location.replace('#output/waiting');
     }
-
   },
 
   close: function () {
     this.remove();
   }
+
+
 });

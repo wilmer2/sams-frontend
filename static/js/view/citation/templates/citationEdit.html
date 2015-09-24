@@ -1,0 +1,21 @@
+<div>
+  <h3>Editar Cita</h3>
+</div>
+
+{{#if waiting}}
+ <form id="formCitation-edit">
+   <label for="date_day">Fecha</label>
+   <input type="date" name="date_day" value="{{date_day}}">
+   <label for="hour">Hora</label>
+   <input type="time" value="{{hour}}" name="hour">
+   <label for="reason">Razon</label>
+   <textarea name="reason"> {{reason}}</textarea>
+   <button type="submit">Enviar</button>
+ </form>
+{{else}}
+
+<div>
+  <p>Cita ya fue confirmada</p>
+</div>
+
+{{/if}}

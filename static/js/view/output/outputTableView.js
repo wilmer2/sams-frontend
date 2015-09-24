@@ -7,7 +7,7 @@ var OutputView = require('./outputRowView');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: $('#output-table').html(),
+  template: 'output/templates/outputTable.html',
   boxError: Handlebars.compile($('#error-output').html()),
   events: {
     'keyup .Search': 'search'
@@ -18,7 +18,6 @@ module.exports = Backbone.View.extend({
     this.paginateView = new PaginateView(collectionData);
 
     this.collection.on('goTo', this.changePage, this);
-    this.collection.on('destroy', this.countOutput, this);
     
     this.listenTo(this.collection, 'notOutput', function (message) {
       this.message = message;
@@ -28,16 +27,22 @@ module.exports = Backbone.View.extend({
   },
   
    render: function () {
-    if (_.isEmpty(this.message)) {
-      this.$el.html(this.template);
-      this.getPaginateView();
+    $.get(rootView + this.template, function (template) {
+      if (_.isEmpty(this.message)) {
+        var template = template
 
-      this.$tbody = this.$el.find('table').children('tbody');
+        this.$el.html(template);
+        this.getPaginateView();
 
-      this.addAll();
-    } else {
-      this.emptyOutput(this.message);
-    }
+        this.$tbody = this.$el.find('table').children('tbody');
+
+        this.addAll();
+      } else {
+        this.emptyOutput(this.message);
+      }
+    }.bind(this))
+
+  
   },
 
   addAll: function () {
@@ -80,16 +85,6 @@ module.exports = Backbone.View.extend({
 
   getPaginateView: function () {
     this.$el.append(this.paginateView.render().el);
-  },
-
-  countOutput: function () {
-    var countAssitance = this.collection.length;
-
-    if (countAssitance == 0) {
-      var message = 'No hay salidas en este momento';
-
-      this.emptyOutput(message);
-    }
   },
 
   updateUrl: function () {

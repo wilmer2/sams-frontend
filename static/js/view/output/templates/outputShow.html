@@ -1,0 +1,50 @@
+{{#if notFound}}
+  <p>Salida no encontrada</p>
+{{else}}
+<div>
+  <h3>
+    Informacion de Salida
+  </h3>
+</div>
+<div>
+  <strong>Tipo</strong> 
+  <span>{{type}}</span>
+</div>
+<div>
+  <strong>Estado</strong> 
+  {{#if state}} 
+    <span>confirmada</span> 
+  {{else}} 
+    <span>en espera</span> 
+  {{/if}}
+</div>
+{{#if date_start}}
+<div>
+  <strong>Fecha de Salida</strong>
+  <span>{{date_start}}</span>
+</div>
+<div>
+  <strong>
+    Fecha de Llegada
+  </strong>
+  <span>{{data_end}}</span>
+</div>
+{{/if}}
+
+{{#if info}}
+<div>
+  <strong>
+    Informacion
+  </strong>
+  <div>
+    <p>
+      {{info}}
+    </p>
+  </div>
+</div>
+{{/if}}
+<div>
+  <button class="btn btn-primary btn-edit">Editar</button>
+  <button class="btn btn-danger btn-delete">Eliminar</button>
+</div>
+{{/if}}

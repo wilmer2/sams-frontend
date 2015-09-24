@@ -1,0 +1,21 @@
+<td>
+  {{#if image_url}}
+  <figure>
+    <img src="{{image_url}}">
+  </figure>
+  {{else}}
+  <figure>
+    <img src="http://localhost/image/geriatric/default/profile_default_man.png">
+  </figure>
+  {{/if}}
+</td>
+<td>{{identity_card}}</td>
+<td>{{first_name}} {{last_name}}</td>
+<td>
+  {{#if activiti}}
+   Activo
+  {{else}}
+   No activo
+   {{/if}}
+</td>
+<td><button class="btn btn-primary btn-show">Ver</button></td>

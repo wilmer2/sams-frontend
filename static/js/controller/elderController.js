@@ -1,9 +1,24 @@
 var $ = require('jquery');
+var Elder = require('../model/elder');
 var Elders = require('../collection/elders');
+var ElderShow = require('../view/elder/elderShowView');
+var ElderEdit = require('../view/elder/elderEditView');
 var ElderList = require('../view/elder/elderTableView');
 var ElderNotResident = require('../view/elder/elderNotResidentTableView');
 
 function ElderCtrl () {
+  this.show = function (elder) {
+    var elderShow = new ElderShow({model:elder});
+
+    appView.showElderView(elderShow);
+  },
+
+  this.edit = function (elder) {
+    var elderEdit = new ElderEdit({model: elder});
+
+    appView.showElderView(elderEdit);
+  },
+
   this.list = function () {
     var elders = new Elders();
     var elderList = new ElderList({collection: elders});
@@ -49,19 +64,24 @@ function ElderCtrl () {
     var editView = new ElderEdit({model: elder});
 
     appView.showElderView(editView);
-  },
+  },*/
 
-  this.getElder = function (id) {
+  this.getElder = function (elderId) {
     return new Promise(function (resolve, reject) {
-      $.get(Backend_url + 'elder/' + id)
-       .done(function (data) {
-        resolve(data);
+      $.get(Backend_url + 'elder/' + elderId)
+       .done(function (res) {
+        if (res.status == 'success') {
+          var data = res.data;
+
+          resolve(data);
+        }
        })
        .fail(function (err) {
+        console.log('fail');
         reject(err);
        })
-    });
-  }*/
+    })
+  }
 }
 
 module.exports = ElderCtrl;

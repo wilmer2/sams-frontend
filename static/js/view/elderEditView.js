@@ -4,23 +4,28 @@ var Handlebars = require('handlebars');
 var util       = require('../util/util');
 
 module.exports = Backbone.View.extend({
-  template: Handlebars.compile($('#elderEdit-view').html()),
+  template: 'elder/templates/elderEdit.html',
 
   events: {
     'submit #formEdit-elder' : 'edit',
-    'click .Modal-item' : 'redirect'
   },
 
   render: function () {
-    var data = this.model.toJSON();
-    var gender = this.model.get('gender');
+    $.get(rootView + this.template, function (template) {
+      var template = Handlebars.compile(template);
+      var data = this.model.toJSON();
 
-    this.$el.html(this.template(data));
+      console.log('render');
+      var html = template(template);
 
-    this.$modal = this.$el.find('.Modal');
-    var radio = this.$el.find('input[value=' + gender + ']:radio');
+      this.$el.html(html);
 
-    radio.prop('checked', true);
+      this.$modal = this.$el.find('.Modal');
+      var radio = this.$el.find('input[value=' + gender + ']:radio');
+      
+      radio.prop('checked', true);
+
+    }.bind(this))
   },
 
   edit: function (e) {
@@ -49,7 +54,7 @@ module.exports = Backbone.View.extend({
 
   },
 
-  redirect: function (e) {
+  /*redirect: function (e) {
     e.preventDefault();
     e.stopPropagation();
 
@@ -65,16 +70,16 @@ module.exports = Backbone.View.extend({
        this.clearElder();
        this.profileElder(id);
     }
-  },
+  },*/
 
-  clearElder: function () {
+  /*clearElder: function () {
     Backbone.Main.Elder.elder.clear();
   },
 
   profileElder: function (id) {
     Backbone.Main.Elder.navigate('elder/' + id, {trigger: true});
   },
-
+*/
   close: function () {
     this.remove();
   }

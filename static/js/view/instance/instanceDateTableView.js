@@ -6,7 +6,7 @@ var InstanceDate = require('./instanceDateRowView');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: $('#instanceDate-table').html(),
+  template: 'instance/templates/instanceDateTable.html',
   boxError: Handlbars.compile($('#error-instance').html()),
 
   initialize: function () {
@@ -16,23 +16,27 @@ module.exports = Backbone.View.extend({
   },
 
   render: function () {
-    if (_.isEmpty(this.message)) {
-      this.$el.html(this.template);
+    $.get(rootView + this.template, function (template) {
+      var template = template;
 
-      this.$tbody = this.$el.find('table').children('tbody');
+      if (_.isEmpty(this.message)) {
+        this.$el.html(template);
 
-      this.addAll();
-    } else {
-      if (_.isObject(this.message)) {
-        var error = 'No es posible encontrar Visitas';
+        this.$tbody = this.$el.find('table').children('tbody');
 
-        util.showError(this.message);
-        this.emptyInstance(error);
+        this.addAll();
       } else {
-        this.emptyInstance(this.message);
-      }
+        if (_.isObject(this.message)) {
+          var error = 'No es posible encontrar Visitas';
 
-    }
+          util.showError(this.message);
+          this.emptyInstance(error);
+        } else {
+          this.emptyInstance(this.message);
+        }
+      }
+    }.bind(this))
+   
   },
 
   addAll: function () {

@@ -5,16 +5,21 @@ var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
   tagName: 'tr',
-  template: Handlebars.compile($('#output-element').html()),
+  template: 'output/templates/outputRow.html',
   events: {
     'click .Table-btnConfirm': 'confirm'
   },
 
   render: function () {
-    var data = this.model.toJSON();
-    var html = this.template(data);
+    $.get(rootView + this.template, function (template) {
+      var template = Handlebars.compile(template);
+      var data = this.model.toJSON();
+      var html = template(data);
 
-    this.$el.html(html);
+      this.$el.html(html);
+
+    }.bind(this))
+
 
     return this;
   },

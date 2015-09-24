@@ -5,7 +5,7 @@ var Handlebars = require('handlebars');
 var InstanceWaiting = require('./instanceWaitingRowView');
 
 module.exports = Backbone.View.extend({
-  template: $('#instanceWaiting-table').html(),
+  template: 'instance/templates/instanceWaitingTable.html',
   boxError: Handlebars.compile($('#error-instance').html()),
    events: {
     'keyup .Search': 'serch'
@@ -20,15 +20,19 @@ module.exports = Backbone.View.extend({
   },
 
   render: function () {
-    if (_.isEmpty(this.message)) {
-      this.$el.html(this.template);
+    $.get(rootView + this.template, function (template) {
+      var template = template;
 
-      this.$tbody = this.$el.find('table').children('tbody');
+      if (_.isEmpty(this.message)) {
+        this.$el.html(template);
 
-      this.addAll();
-    } else {
-      this.emptyInstance(this.message);
-    }
+        this.$tbody = this.$el.find('table').children('tbody');
+
+        this.addAll();
+      } else {
+        this.emptyInstance(this.message);
+      }
+    }.bind(this))
   },
 
   addAll: function () {

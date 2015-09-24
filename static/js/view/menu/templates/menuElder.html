@@ -1,0 +1,93 @@
+<div class="row">
+    <nav class="col-md-3">
+      <div class="col-md-12">
+        {{#if image_url}}
+        <img src="{{image_url}}">
+        {{else}}
+        <img src="http://localhost/image/geriatric/default/profile_default_man.png">
+        {{/if}}
+      </div>
+      <div>
+        <button class="btn btn-primary btn-show">
+          Inicio
+        </button>
+      </div>
+      <div>
+        <span>{{full_name}}</span>
+      </div>
+      <ul>
+        <li> Informacion 
+          <ul>
+            <li>
+              <a href="">Ver informacion</a>
+            </li>
+          </ul>
+        <li> Citas
+          <ul>
+            <li>
+              <a href="#elder/{{id}}/citation/register">Registrar Cita</a>
+            </li>
+            <li>
+              <a href="#elder/{{id}}/citation/waiting">
+                Citas por Confirmar 
+                {{#if citation}}
+                <label for="">
+                {{citation}}
+                </label>
+                {{/if}}
+              </a>
+            </li>
+            <li>
+              <a href="#elder/{{id}}/citation/list">Todas las Citas</a>
+            </li>
+          </ul>   
+        </li>
+        <li> Salidas
+          <ul>
+            <li>
+              <a href="#elder/{{id}}/output/register">Registar Salida</a>
+            </li>
+            <li>
+              <a href="#elder/{{id}}/output-pernot/register">Registrar Salida con Pernocta</a>
+            </li>
+            <li>
+              <a href="#elder/{{id}}/output/list">Lista de Salidas</a>
+            </li>
+          </ul>
+        </li>
+        <li> Incidencia
+          <ul>
+            <li>
+              <a href="#elder/{{id}}/occurrence/register">Registrar incidencia</a>
+            </li>
+            <li>
+              <a href="#elder/{{id}}/occurrence/list">
+                Lista de incidencias
+              </a>
+            </li>
+          </ul>
+        </li>
+        <li> Historias clinicas
+          <ul>
+            <li>
+              <a href="#elder/{{id}}/record/register">Registar Historia</a>
+            </li>
+            <li>
+              <a href="#elder/{{id}}/record/list">Lista de Historias</a>
+            </li>
+          </ul>     
+        </li> 
+        </li>
+        <li> Notificacion de Ingreso
+          <ul>
+            <li>
+              <a href="#elder/{{id}}/instances">
+               Lista de Notificacion de Ingreso
+              </a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </div>
+  <div id="content-elder"></div>

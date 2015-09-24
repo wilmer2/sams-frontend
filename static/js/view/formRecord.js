@@ -82,12 +82,12 @@ module.exports = Backbone.View.extend({
 
       var canvas = this.$canvas;
       var camera = this.$camera;
-      this.pickCam = camera[0];
+      this.picCam = camera[0];
 
       canvas.attr({'width': 150,'height': 150});
 
       var ctx = canvas[0].getContext('2d');
-      ctx.drawImage(this.pickCam, 0 , 0, 150, 150);
+      ctx.drawImage(this.picCam, 0 , 0, 150, 150);
       this.photoSource = canvas[0].toDataURL('image/png')
       this.closeCamera();
       this.optBtn();
@@ -101,7 +101,7 @@ module.exports = Backbone.View.extend({
     canvasForm.attr({'width': 150, 'height': 150});
 
     var ctxForm = canvasForm[0].getContext('2d');
-    ctxForm.drawImage(this.pickCam, 0, 0, 150, 150);
+    ctxForm.drawImage(this.picCam, 0, 0, 150, 150);
     this.closeModal();
   },
 

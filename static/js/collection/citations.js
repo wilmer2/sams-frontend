@@ -1,20 +1,22 @@
-var Citation           = require('../model/citation');
-var PageableCollection = require('backbone.paginator');
+var Backbone = require('backbone');
+var Citation = require('../model/citation');
 
-module.exports = PageableCollection.extend({
-  url: 'http://localhost/citations/hour/day',
+module.exports = Backbone.Collection.extend({
   model: Citation,
-  mode: 'client',
 
-  state: {
-    firstPage: 1,
-    currentPage: 1,
-    pageSize: 6,
+  parse: function (res) {
+    if (res.status == 'success') {
+      var data = res.data;
+
+      return data;
+    } else {
+      var message = res.message;
+
+      this.trigger('notCitation', message);
+    }
   },
 
-  parseRecords: function (res) {
-    if (res.status == 'success') {
-      return res.data;
-    }
+  updateUrl: function (url) {
+    this.url = url;
   }
 })

@@ -3,14 +3,14 @@ var $ = require('jquery');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: $('#register-instance').html(),
   events: {
     'submit #form-instance': 'register'
   },
 
   render: function () {
-    console.log('render');
-    this.$el.html(this.template);
+    $.get(rootView + 'instance/templates/instanceNew.html', function (html) {
+      this.$el.html(html);
+    }.bind(this))
   },
 
   register: function (e) {
@@ -27,9 +27,9 @@ module.exports = Backbone.View.extend({
         this.model.set(data);
         util.showSuccess(successMessage);
 
-        var elderId = this.get('id');
+        var elderId = this.model.get('id');
 
-        window.location.href = '#elder/' + elderId;
+        window.location.href = '#elder/' + elderId + '/instance-waiting';
       } else {
         var errorMessage = res.message;
         

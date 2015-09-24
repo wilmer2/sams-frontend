@@ -1,0 +1,29 @@
+<div>
+  <h3>
+    Notificacion de entrada
+  </h3>
+</div>
+{{#if notFound}}
+<div>
+  <p>
+    Notificacion de entrada no encontrada
+  </p>
+</div>
+{{else}}
+<ul>
+  <li><strong>Referido por</strong> <span class="u-data">{{referred}}</span></li>
+  <li><strong>Direccion</strong> <div class="u-data">{{address}}</div></li>
+  <li><strong>Descripcion</strong> 
+      {{#if description}}
+        <div class="u-data">{{description}}</div>
+      {{else}}
+        <span class="u-data">No aplica</span>
+      {{/if}}
+  </li>
+  <li><strong>Fecha de Visita</strong><span class="u-data">{{visit_date}}</span></li>
+</ul>
+<div>
+  <button class="btn btn-primary btn-edit">Editar</button>
+  <button class="btn btn-danger btn-delete">Eliminar</button>
+</div>
+{{/if}}

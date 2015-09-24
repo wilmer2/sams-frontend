@@ -46,7 +46,6 @@ module.exports = Backbone.View.extend({
     var stock = this.model.get('stock');
     var unit = this.model.get('unit');
     
-
     this.$description.val(description);
     this.$stock.val(stock);
     this.$unit.children('option[value="'  + unit + '"]').attr('selected', 'selected');

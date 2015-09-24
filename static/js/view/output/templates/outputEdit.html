@@ -1,0 +1,26 @@
+<div>
+  <h3>Editar Salida</h3>
+</div>
+{{#if notFound}}
+  <div>
+    <p>Salida no Encontrada</p>
+  </div>
+{{else}}
+<form id="formOutput-edit">
+ {{#configState state}}
+  {{#if date_start}}
+  <label for="date_start">Fecha de Salida</label>
+  <input type="date" name="date_start" value="{{date_start}}">
+  <label for="date_end">Fecha de LLegada</label>
+  <input type="date" name="date_end" value="{{date_end}}">
+  {{/if}}
+ {{/configState}}
+  <label for="info">Informacion</label>
+  <textarea name="info" name="info">
+  {{info}}
+  </textarea>
+  <input type="hidden" value="{{type}}" name="type">
+  <button type="submit">Registrar</button>
+</form>
+
+{{/if}}

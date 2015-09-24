@@ -1,0 +1,37 @@
+<div id="remote">
+    <input type="text" placeholder='Buscar Adulto Mayor' class="typeahead">
+</div>
+<div class="row">
+  <nav class="col-md-3">
+    <ul>
+      <li> Asistencias
+        <ul>
+          <li><a href="">Consultar Asistencias</a></li>
+        </ul>
+      </li>
+      <li> Empleados
+        <ul>
+          <li><a href="#register">Registrar Empleado</a></li>
+          <li><a href="#employees">Lista de Empleados</a></li>
+        </ul>   
+      </li>
+      <li> Auditoria
+        <ul>
+          <li>
+            <a href="">Auditoria</a>
+          </li>
+        </ul>
+      </li>
+      {{#if isSuperAdmin}}
+      <li> Cuenta Super Usuario
+        <ul>
+          <li>
+            <a href="">Editar Cuenta</a>
+          </li>
+        </ul>
+      </li>
+      {{/if}}
+    </ul>
+  </nav>
+</div>
+<div id="container-admin"></div>

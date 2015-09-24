@@ -1,0 +1,25 @@
+<div>
+  <h3>
+    Desea agregar informacion adicional
+  </h3>
+</div>
+{{#if notFound}}
+  <div>
+    <p>Salida no encontrada</p>
+  </div>
+{{else}}
+
+  {{#if state}}
+  <form id="output-confirm">
+    <textarea name="info">
+      {{info}}
+    </textarea>
+    <button class="btn btn-primary" type="submit">Guardar</button>
+    <button class="btn btn-danger btn-cancel" type="button">Cancelar</button>
+  </form>
+  {{else}}
+    <div>
+      <p>Salida aun no ha sido confirmada</p>
+    </div>
+  {{/if}}
+{{/if}}

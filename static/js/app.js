@@ -19,6 +19,7 @@ $(function () {
   window.triggerData = {trigger: true};
   window.fetchData = {fetch: true};
   window.notFound = {notFound: true};
+  window.rootView = 'static/js/view/';
 
   alertify.defaults.theme.ok = "btn btn-primary";
   alertify.defaults.theme.cancel = "btn btn-danger";

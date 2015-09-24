@@ -2,7 +2,6 @@ var Backbone = require('backbone');
 var Subroute = require('../../dependencies/backboneSubroutes/backboneSubroutes');
 var OutputCtrl = require('../controller/outputController');
 
-
 module.exports = Subroute.extend({
   routes: {
     '': 'outputs',

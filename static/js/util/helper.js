@@ -8,6 +8,12 @@ module.exports = function () {
     }
 	});
 
+	Handlebars.registerHelper('configState', function (state, options) {
+		if (!state) {
+			return options.fn(this);
+		}
+	})
+
   Handlebars.registerHelper('numberMax', function (count, options) {
 	  if (count > 20) {
 				return new Handlebars.SafeString('+ 20');

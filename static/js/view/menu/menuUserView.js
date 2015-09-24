@@ -6,14 +6,21 @@ var typeahead  = require('../../../../bower_components/typeahead.js/dist/typeahe
 
 
 module.exports = Backbone.View.extend({
-	template: Handlebars.compile($('#menu-user').html()),
+	template: 'menu/templates/menuUser.html',
 
 	render: function () {
-    var data = this.model.toJSON();
-    var html = this.template(data);
+    return new Promise(function (resolve, reject) {
+      $.get(rootView + this.template, function (template) {
+         var template =  Handlebars.compile(template);
+         var data = this.model.toJSON();
+         var html = template(data);
 
-		this.$el.html(html);
-    this.initTypehead();
+         this.$el.html(html);
+         this.initTypehead();
+
+         resolve();
+      }.bind(this));
+    }.bind(this));
 	},
    
   initTypehead: function (e) {

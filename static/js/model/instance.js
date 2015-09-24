@@ -30,22 +30,27 @@ module.exports = Backbone.Model.extend({
         referredFormat = 'otros';
     }
 
-    this.set('referred', referredFormat);
+    if (!_.isUndefined(referred)) {
+      this.set('referred', referredFormat);
+    }
+
   },
 
   dateFormat: function () {
     var date = this.get('visit_date');
 
-    var letter = _.indexOf(date, '/');
+    if (!_.isUndefined(date)) {
+      var letter = _.indexOf(date, '/');
      
-    letter = date[letter];
+      letter = date[letter];
 
-    if (_.isUndefined(letter)) {
-      var dateFormat = utilHour.dateFormat(date);
+      if (_.isUndefined(letter)) {
+        var dateFormat = utilHour.dateFormat(date);
 
-      this.set('visit_date', dateFormat);
+        this.set('visit_date', dateFormat, silentData);
+        this.set('old_date', date, silentData);
+      }
     }
-  
   },
 
   stateFormat: function () {
@@ -64,6 +69,10 @@ module.exports = Backbone.Model.extend({
       break;
     }
 
-    this.set('state', stateFormat);
+    if (!_.isUndefined(state)) {
+      this.set('state', stateFormat, silentData);
+      this.set('old_state', state, silentData);
+    }
+
   }
 });

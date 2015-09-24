@@ -1,0 +1,118 @@
+{{#if recordState}}
+   <div>
+      Este adulto mayor posee historia  clinica aun sin vencer, de agregar un nueva pasara a ser la historia actual
+    </div>
+   {{/if}}
+  <form id="form-record">
+  <label for="self_validating">Autovalido<input type="checkbox" name="self_validating"></label>
+  <label for="feeding_assisted">Alimentacion Asistida <input type="checkbox" name="feeding_assisted"></label>
+  <label for="size_diaper">Talla de pañal</label>
+  <select name="size_diaper">
+    <option value="S">Pequeña</option>
+    <option value="M">Mediana</option>
+    <option value="L">Grande</option>
+  </select>
+  <label for="baston">Baston</label>
+  <select name="baston">
+    <option value="1 point">1 Punto</option>
+    <option value="3 point">3 Punto</option>
+    <option value="4 point">4 Punto</option>
+  </select>
+  <label for="muleta">Muleta</label>
+  <select name="muleta">
+    <option value="canadian">Canadiense</option>
+    <option value="auxiliary">Auixiliares</option>
+  </select>
+  <label for="disability_moto">Discapacidad motora</label>
+  <select name="disability_moto">
+    <option value="parcial">Parcial</option>
+    <option value="total">Total</option>
+  </select>
+  <label for="disability_visual">Discapacidad visual</label>
+  <select name="disability_visual">
+    <option value="parcial">Parcial</option>
+    <option value="total">Total</option>
+  </select>
+  <label for="disability_hearing">Discapacidad auditiva</label>
+  <select name="disability_hearing">
+    <option value="parcial">Parcial</option>
+    <option value="total">Total</option>
+  </select>
+  <label for="index_katz">Indice kast</label>
+  <select name="index_katz">
+    <option value="A">A</option>
+    <option value="B">B</option>
+    <option value="C">C</option>
+    <option value="D">D</option>
+    <option value="E">E</option>
+    <option value="F">F</option>
+    <option value="G">G</option>
+    <option value="H">H</option>
+  </select>
+  <label for="index_lawtonbrody">Indice de lawton brody</label>
+  <select name="index_lawtonbrody">
+    <option value="0">0</option>
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+    <option value="5">5</option>
+    <option value="6">6</option>
+    <option value="7">7</option>
+    <option value="8">8</option>
+  </select>
+  <label for="disability_physical">Escala cruz roja de incapacidad fisica</label>
+  <select name="disability_physical">
+    <option value="0">0</option>
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+    <option value="5">5</option>
+  </select>
+  <label for="disability_psychic">Escala cruz roja grados de incapacidad psiquica</label>
+  <select name="disability_psychic">
+    <option value="0">0</option>
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+    <option value="5">5</option>
+  </select>
+  <label for="wheelchair">Silla de ruedas <input type="checkbox" name="wheelchair"></label>
+  <label for="walker">Andadera <input type="checkbox" name="walker"></label>
+  <label for="allergies">Alergias</label>
+  <textarea name="allergies"></textarea>
+  <label for="pathology_psychiatric">Patologia psiquitrica</label>
+  <textarea name="pathology_psychiatric" ></textarea>
+  <label for="pathology_chronic">Patologia cronica</label>
+  <textarea name="pathology_chronic"></textarea>
+  <label>Subir foto</label>
+  <input type="file" class="Form-file">
+  <button class="Form-btnCamera btn btn-info" type="button">Tomar foto</button>
+  <button class="btn btn-success" type="submit">Enviar </button>
+  </form>
+  <canvas class="Lienzo"></canvas>
+  <div class="Modal u-disabled u-modal">
+      <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+            <button class="close">x</button>
+              <h4>Tomar</h4>
+            </div>
+            <div class="modal-body">
+              <video class="Modal-camera" autoplay width=150 height=150></video>
+              <canvas class="Modal-lienzo u-disabled"></canvas>
+            </div>
+            <div class="modal-footer">
+             <div class="Modal-btn">
+              <a href="#" class="Modal-snap">Tomar foto</a>
+             <div class="Modal-btnConf" class="u-disabled">
+                <button class="Modal-repeat" type="button">repiter foto</button>
+                <button class="Modal-btnPic" type="button">coNfirmar</button>
+             </div>
+             </div>
+            </div>
+          </div>
+      </div>
+  </div>

@@ -1,0 +1,30 @@
+
+<div>
+  <h3>Informacion de Incidencia</h3>
+</div>
+{{#if notFound}}
+<div>
+  <p>
+    No se encontro incidencia
+  </p>
+</div>
+{{else}}
+ <figure>
+     <img src="{{image_url}}">
+</figure>
+<div>
+  <div>
+    <strong>Fecha</strong> <span>{{date}}</span>
+  </div>
+  <div>
+    <strong>Situacion del Caso</strong>
+    <p>
+      {{case_situation}}
+    </p>
+  </div>
+  <div>
+    <button class="btn btn-primary btn-edit">Editar</button>
+    <button class="btn btn-danger btn-delete">Eliminar</button>
+  </div>
+</div>
+{{/if}}

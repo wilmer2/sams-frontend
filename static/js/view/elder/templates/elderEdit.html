@@ -1,0 +1,39 @@
+  <form id="formEdit-elder">
+    <input type="text" placeholder="Cedula" name="identity_card" value={{identity_card}}>
+    <input type="text" placeholder="Nombre" name="full_name" value={{full_name}}>
+    <textarea name="address">{{address}}</textarea>
+    <label>
+      <input type="radio" name="gender" value="m">M
+    </label>
+    <label>
+      <input type="radio" name="gender" value="f">F
+    </label>
+    <select name="civil_status">
+      <option value="married" {{selected civil_status "married"}}>Casado</option>
+      <option value="single" {{selected civil_status "single"}}>Soltero</option>
+    </select>
+    <input type="date" name="date_birth" value="{{old_date}}">
+    <label><input type="checkbox" name="retired" {{#if retired}} checked {{/if}}> Jubilado</label>
+   <label><input type="checkbox" name="pensioner" {{#if pensioner}} checked {{/if}}>Pensionado</label>
+   <button type="submit">enviar</button>
+  </form>
+  <div class="Modal u-disabled u-modal">
+      <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4>Historia</h4>
+        </div>
+        <div class="modal-body">
+          <p>
+            Desea agregar historia?
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary Modal-item">Confirmar</button>
+          <button class="btn btn-danger Modal-item">Cancelar</button>
+        </div>
+        </div>
+      </div>
+  </div>
+
+

@@ -5,15 +5,16 @@ var Config = require('../model/config');
 var LoginView = require('../view/login/loginView');
 var LoginCtrl = require('../controller/loginController');
 var ElderCtrl = require('../controller/elderController');
+var EmployeeCtrl = require('../controller/employeeController');
 // var Citations       = require('../collection/citations');
 // var CitationsNotify = require('../view/citationNotifyView');
 // var LoginView       = require('../view/loginView');
 // var MenuUser        = require('../view/menuView');
 // var MenuAdmin       = require('../view/menuAdminView');
 // var HomeRouter      = require('./homeRouter');
-// var ElderRouter     = require('./elderRouter');
 // var AdminRouter     = require('./adminRouter');
 // var EmployeeRouter  = require('./employeeRouter');
+var ElderRouter = require('./elderRouter');
 var InstanceRouter = require('./instanceRouter');
 var ActionRouter = require('./actionRouter');
 var EventRouter = require('./eventRouter');
@@ -28,13 +29,16 @@ module.exports = Backbone.Router.extend({
 		'' :     'selectMenu',
 		'login': 'login',
 		'elders': 'elders',
+		'employees': 'employees',
+		'register': 'register',
 		'elders/notResident': 'eldersNotResident',
+		'notFound': 'notFound',
 		// 'logout':'logout',
 		
 		// 'home/*subroute': 'invokeHomeModule',
 		// 'admin/*subroute': 'invokeAdminModule',
-		// 'elder/*subroute': 'invokeElderModule',
 		// 'employee/*subroute': 'invokeEmployeeModule',
+		'elder/*subroute': 'invokeElderModule',
 		'action/*subroute': 'invokeActionModule',
 		'instance/*subroute': 'invokeInstanceModule',
 		'attendance/*subroute': 'invokeAttendanceModule',
@@ -48,6 +52,7 @@ module.exports = Backbone.Router.extend({
 		this.config = new Config();
 		this.loginCtrl = new LoginCtrl();
 		this.elderCtrl = new ElderCtrl();
+		this.employeeCtrl = new EmployeeCtrl();
 
 		var loginData = {model: this.userLogin, config: this.config};
 		
@@ -112,11 +117,11 @@ module.exports = Backbone.Router.extend({
 	selectMenu: function () {
 		var role = this.userLogin.get('role');
 
-		// if (role == 'User') {
+		if (role == 'User') {
 			this.navigate('elders', triggerData);
-		// } else {
-		// 	console.log('test');
-		// }
+		} else {
+			this.navigate('employees', triggerData);
+		}
 	},
 
 	renderHeader: function () {
@@ -128,6 +133,11 @@ module.exports = Backbone.Router.extend({
 		this.loginCtrl.menuUserRender(this.userLogin);
 	},
 
+	renderMenuAdmin: function () {
+		this.renderHeader();
+		this.loginCtrl.menuAdminRender(this.userLogin);
+	},
+
 	elders: function () {
 		this.renderMenuUser();
 		this.elderCtrl.list();
@@ -136,6 +146,20 @@ module.exports = Backbone.Router.extend({
 	eldersNotResident: function () {
 		this.renderMenuUser();
 		this.elderCtrl.listNotResident();
+	},
+
+	employees: function () {
+		this.renderMenuAdmin();
+		this.employeeCtrl.showList();
+	},
+
+	register: function () {
+		this.renderMenuAdmin();
+		this.employeeCtrl.showForm();
+	},
+
+	notFound: function () {
+		appView.showNotFound();
 	},
 /*
 	closeNotify: function () {
@@ -245,17 +269,18 @@ module.exports = Backbone.Router.extend({
 		}
 	},
 
-	invokeElderModule: function (subroute) {
-		if (!Backbone.Main.Elder) {
-			Backbone.Main.Elder = new ElderRouter('elder/');
-		}
-	},
-
+	
 	invokeEmployeeModule: function (subroute) {
 		if (!Backbone.Main.Employee) {
 			Backbone.Main.Employee = new EmployeeRouter('employee/');
 		}
 	},*/
+
+	invokeElderModule: function (subroute) {
+		if (!Backbone.Main.Elder) {
+			Backbone.Main.Elder = new ElderRouter('elder/');
+		}
+	},
 
   invokeInstanceModule: function (subroute) {
   	this.renderMenuUser();

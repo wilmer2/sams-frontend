@@ -7,7 +7,7 @@ var ElderView = require('./elderRowView');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: $('#elderDeactive-table').html(),
+  template: 'elder/templates/elderNotResidentTable.html',
   boxError: Handlebars.compile($('#error-elderDeactive').html()),
 
   events: {
@@ -15,7 +15,7 @@ module.exports = Backbone.View.extend({
   },
 
   initialize: function () {
-     var collectionData = {collection: this.collection};
+    var collectionData = {collection: this.collection};
     this.paginateView = new PaginateView(collectionData);
 
     this.collection.on('goTo', this.changePage, this);
@@ -28,16 +28,21 @@ module.exports = Backbone.View.extend({
   },
 
   render: function () {
-    if (_.isEmpty(this.message)) {
-      this.$el.html(this.template);
-      this.getPaginateView();
+    $.get(rootView + this.template, function (template) {
+      var template = template;
 
-      this.$tbody = this.$el.find('table').children('tbody');
+      if (_.isEmpty(this.message)) {
+        this.$el.html(template);
+        this.getPaginateView();
 
-      this.addAll();
-    } else {
-      this.emptyElder(this.message);
-    }
+        this.$tbody = this.$el.find('table').children('tbody');
+
+        this.addAll();
+      } else {
+        this.emptyElder(this.message);
+      }
+    }.bind(this))
+    
   },
 
   addAll: function () {

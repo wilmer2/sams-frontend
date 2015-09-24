@@ -3,11 +3,11 @@ var $ = require('jquery');
 var _ = require('underscore');
 var Handlebars = require('handlebars');
 var PaginateView = require('../paginate/paginationView');
-var OutputView = require('./outputRowView');
+var OutputView = require('./outputWaitingRowView');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: $('#output-table').html(),
+  template: 'output/templates/outputWaitingTable.html',
   boxError: Handlebars.compile($('#error-output').html()),
   events: {
     'keyup .Search': 'search'
@@ -18,8 +18,6 @@ module.exports = Backbone.View.extend({
     this.paginateView = new PaginateView(collectionData);
 
     this.collection.on('goTo', this.changePage, this);
-    this.collection.on('destroy', this.countOutput, this);
-    
     this.listenTo(this.collection, 'notOutput', function (message) {
       this.message = message;
     });
@@ -28,16 +26,19 @@ module.exports = Backbone.View.extend({
   },
   
    render: function () {
-    if (_.isEmpty(this.message)) {
-      this.$el.html(this.template);
-      this.getPaginateView();
+    $.get(rootView + this.template, function (template) {
+      var template = template;
+      if (_.isEmpty(this.message)) {
+        this.$el.html(template);
+        this.getPaginateView();
 
-      this.$tbody = this.$el.find('table').children('tbody');
+        this.$tbody = this.$el.find('table').children('tbody');
 
-      this.addAll();
-    } else {
-      this.emptyOutput(this.message);
-    }
+        this.addAll();
+      } else {
+        this.emptyOutput(this.message);
+      }
+    }.bind(this))
   },
 
   addAll: function () {
