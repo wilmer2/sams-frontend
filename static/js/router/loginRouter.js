@@ -115,13 +115,14 @@ module.exports = Backbone.Router.extend({
 	},
 
 	selectMenu: function () {
-		//var role = this.userLogin.get('role');
-     console.log('test')
-		if (role == 'User') {
+
+		var role = this.userLogin.get('role');
+
+		// if (role == 'User') {
 			this.navigate('elders', triggerData);
-		} else {
-			this.navigate('employees', triggerData);
-		}
+		// } else {
+		// 	this.navigate('employees', triggerData);
+		// }
 	},
 
 	renderHeader: function () {

@@ -1,5 +1,5 @@
 var Handlebars = require('handlebars');
-var $          = require('jquery');
+var $ = require('jquery');
 
 module.exports = function () {
   Handlebars.registerHelper('checkView', function (notification, count ,options) {
