@@ -3,12 +3,15 @@ var $ = require('jquery');
 var Handlebars = require('handlebars');
 var Schedules = require('../../collection/schedules');
 var ActionItemHour = require('./actionItemHourView');
+var alertify = require('alertifyjs');
+var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: Handlebars.compile($('#data-action').html()),
+  template: 'action/templates/actionShow.html',
   boxError: Handlebars.compile($('#error-actionHour').html()),
   events: {
     'click .btn-edit': 'redirectEdit',
+    'click .btn-delete': 'confirmDelete',
     'click .btn-addHour': 'redirectAddHour'
   },
 
@@ -24,14 +27,19 @@ module.exports = Backbone.View.extend({
   },
 
   render: function () {
-    var data = this.model.toJSON();
-    var html = this.template(data);
+    $.get(rootView + this.template, function (template) {
+      var template = Handlebars.compile(template);
+      var data = this.model.toJSON();
+      var html = template(data);
 
-    this.$el.html(html);
+      this.$el.html(html);
 
-    this.$contentHours = this.$el.find('#action-content');
+      this.$contentHours = this
+                            .$el
+                            .find('#action-content');
 
-    this.showHours();
+      this.showHours();
+    }.bind(this))
   },
 
   showHours: function () {
@@ -97,6 +105,37 @@ module.exports = Backbone.View.extend({
     var actionId = this.model.get('id');
 
     Backbone.Main.navigate('action/' + actionId + '/schedule', triggerData);
+  },
+
+  confirmDelete: function () {
+    var title = 'Eliminar Actividad';
+    var message = 'Esta seguro de eliminar actividad';
+    var callback = function () {
+      this.delete();
+    }.bind(this);
+
+    alertify.confirm(message, callback)
+    .setting({
+      'title': title,
+      'labels': {
+        'ok': 'Confirmar',
+        'cancel': 'Cancelar'
+      }
+    });
+  },
+
+  delete: function () {
+    var actionId = this.model.get('id');
+    
+    $.post(Backend_url + 'action/' + actionId + '/delete?_method=DELETE')
+     .done(function (res) {
+      if (res.status == 'success') {
+        var deleteMessage = res.message;
+
+        util.showSuccess(deleteMessage);
+        window.location.replace('#action/list');
+      }
+     })
   },
 
   close: function () {

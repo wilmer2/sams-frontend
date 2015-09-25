@@ -4,18 +4,19 @@ var Handlebars = require('handlebars');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: Handlebars.compile($('#edit-action').html()),
+  template: 'action/templates/actionEdit.html',
   events: {
     'submit #form-actionEdit': 'edit'
   },
 
   render: function () {
-    var data = this.model.toJSON();
-    var html = this.template(data);
+    $.get(rootView + this.template ,function (template) {
+      var template = Handlebars.compile(template);
+      var data = this.model.toJSON();
+      var html = template(data);
 
-    this.$el.html(html);
-
-    return this;
+      this.el.html(html);
+    }.bind(this))
   },
 
   edit: function (e) {

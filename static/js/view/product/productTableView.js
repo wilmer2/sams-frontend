@@ -6,7 +6,7 @@ var PaginateView = require('../paginate/paginationView');
 var ProductView = require('./productRowView');
 
 module.exports = Backbone.View.extend({
-  template: $('#product-table').html(),
+  template: 'product/templates/productTable.html',
   boxError: Handlebars.compile($('#error-product').html()),
   events: {
     'keyup .Search': 'serch'
@@ -25,16 +25,20 @@ module.exports = Backbone.View.extend({
   },
 
   render: function () {
-    if (_.isEmpty(this.message)) {
-      this.$el.html(this.template);
-      this.getPaginateView();
+    $.get(rootView + this.template, function (template) {
+       if (_.isEmpty(this.message)) {
+         var template = template;
 
-      this.$tbody = this.$el.find('table').children('tbody');
+         this.$el.html(template);
+         this.getPaginateView();
 
-      this.addAll();
-    } else {
-      this.emptyProduct(this.message);
-    }
+         this.$tbody = this.$el.find('table').children('tbody');
+
+         this.addAll();
+       } else {
+        this.emptyProduct(this.message);
+       }
+    }.bind(this))
   },
 
   addAll: function () {

@@ -5,7 +5,7 @@ var Handlebars = require('handlebars');
 var ActionToday = require('./actionTodayRowView');
 
 module.exports = Backbone.View.extend({
-  template: $('#actionToday-table').html(),
+  template: 'action/templates/actionTodayTable.html',
   boxError: Handlebars.compile($('#error-action').html()),
 
   initialize: function () {  
@@ -15,14 +15,19 @@ module.exports = Backbone.View.extend({
   },
 
   render: function () {
-    if (_.isEmpty(this.message)) {
-      this.$el.html(this.template);
-      this.$tbody = this.$el.find('table').children('tbody');
+    $.get(rootView + this.template, function (template) {
+      if (_.isEmpty(this.message)) {
+        var template = template;
 
-      this.addAll();
-    } else {
-      this.emptyAction(this.message);
-    }
+        this.$el.html(template);
+        this.$tbody = this.$el.find('table').children('tbody');
+
+        this.addAll();
+      } else {
+        this.emptyAction(this.message);
+      }
+    }.bind(this))
+    
   },
 
   addAll: function () {

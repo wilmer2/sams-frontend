@@ -5,19 +5,24 @@ var alertify = require('alertifyjs');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: Handlebars.compile($('#data-event').html()),
+  template: 'event/templates/eventShow.html',
   events: {
     'click .btn-edit': 'redirectEdit',
     'click .btn-delete': 'confirm'
   },
 
   render: function () {
-    this.model.hourStandar();
+    $.get(rootView + this.template, function (template) {
+      var template = Handlebars.compile(template);
 
-    var data = this.model.toJSON();
-    var html = this.template(data);
+      this.model.hourStandar();
 
-    this.$el.html(html);
+      var data = this.model.toJSON();
+      var html = template(data);
+
+      this.$el.html(html);
+    }.bind(this))
+
   },
   
   redirectEdit: function () {

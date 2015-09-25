@@ -31541,6 +31541,7 @@ function ElderCtrl () {
 module.exports = ElderCtrl;
 },{"../collection/elders":53,"../model/elder":80,"../view/elder/elderEditView":124,"../view/elder/elderNotResidentTableView":125,"../view/elder/elderShowView":127,"../view/elder/elderTableView":128,"jquery":43}],67:[function(require,module,exports){
 var $ = require('jquery');
+var Employee = require('../model/employee');
 var Employees = require('../collection/employees');
 var EmployeeList = require('../view/employee/employeeTableView');
 var EmployeeForm = require('../view/employee/employeeNewView');
@@ -31550,7 +31551,8 @@ var EmployeeForm = require('../view/employee/employeeNewView');
 function EmployeeCtrl () {
 
   this.showForm = function () {
-    var employeeForm = new EmployeeForm();
+    var employee = new Employee();
+    var employeeForm = new EmployeeForm({model:employee});
 
     appView.showAdminView(employeeForm);
   },
@@ -31588,7 +31590,7 @@ function EmployeeCtrl () {
 }
 
 module.exports = EmployeeCtrl;
-},{"../collection/employees":54,"../view/employee/employeeNewView":129,"../view/employee/employeeTableView":131,"jquery":43}],68:[function(require,module,exports){
+},{"../collection/employees":54,"../model/employee":81,"../view/employee/employeeNewView":129,"../view/employee/employeeTableView":131,"jquery":43}],68:[function(require,module,exports){
 var $ = require('jquery');
 var Event = require('../model/event');
 var EventForm = require('../view/event/eventNewView');
@@ -31825,21 +31827,29 @@ function LoginCtrl () {
   },
 
   this.menuUserRender = function (user) {
-    var menuUser = new MenuUser({model:user});
+    return new Promise(function (resolve, reject) {
+      var menuUser = new MenuUser ({model: user});
 
-    appView.showMenuView(menuUser);
+      appView
+        .showMenuView(menuUser)
+        .then(resolve);
+    }.bind(this))
   },
 
   this.menuAdminRender = function (user) {
-    var role = user.get('role');
+    return new Promise(function (resolve, reject) {
+      var role = user.get('role');
 
-    if (role == 'User') {
-      window.location.href = '#elders'
-    } else {
-      var menuAdmin = new MenuAdmin({model:user});
+      if (role == 'User') {
+        window.location.href = '#elders'
+      } else {
+        var menuAdmin = new MenuAdmin({model:user});
 
-      appView.showMenuView(menuAdmin);
-    }
+        appView
+          .showMenuView(menuAdmin)
+          .then(resolve)
+      }   
+    }.bind(this));
   }
 }
 
@@ -32912,13 +32922,23 @@ module.exports = Backbone.Router.extend({
 	},
 
 	renderMenuUser: function () {
-		this.renderHeader();
-		this.loginCtrl.menuUserRender(this.userLogin);
+		return new Promise(function (resolve, reject) {
+			this.renderHeader();
+			this
+			  .loginCtrl
+			  .menuUserRender(this.userLogin)
+			  .then(resolve)
+		}.bind(this))
 	},
 
 	renderMenuAdmin: function () {
-		this.renderHeader();
-		this.loginCtrl.menuAdminRender(this.userLogin);
+		return new Promise(function (resolve, reject) {
+			this.renderHeader();
+			this
+				.loginCtrl
+				.menuAdminRender(this.userLogin)
+				.then(resolve) 
+		}.bind(this));
 	},
 
 	elders: function () {
@@ -32937,8 +32957,12 @@ module.exports = Backbone.Router.extend({
 	},
 
 	register: function () {
-		this.renderMenuAdmin();
-		this.employeeCtrl.showForm();
+		this
+			.renderMenuAdmin()
+			.then(function () {
+				this.employeeCtrl.showForm();
+			}.bind(this))
+
 	},
 
 	notFound: function () {
@@ -33066,19 +33090,42 @@ module.exports = Backbone.Router.extend({
 	},
 
   invokeInstanceModule: function (subroute) {
-  	this.renderMenuUser();
-
-  	if (!Backbone.Main.Instance) {
-  		Backbone.Main.Instance = new InstanceRouter('instance/')
-  	}
+  	this.renderMenuUser()
+  	  .then(function () {
+  	  	if (!Backbone.Main.Instance) {
+  				Backbone.Main.Instance = new InstanceRouter('instance/')
+  			}
+  	  })
   },
 
-	invokeActionModule: function (subroute) {
-		this.renderMenuUser();
+  invokeEventModule: function (subroute) {
+		this.renderMenuUser()
+		  .then(function () {
+		  	if (!Backbone.Main.Event) {
+					Backbone.Main.Event = new EventRouter('event/');
+				}
+		  })
 
-		if (!Backbone.Main.Action) {
-			Backbone.Main.Action = new ActionRouter('action/');
-		}
+		
+	},
+
+	invokeActionModule: function (subroute) {
+		this.renderMenuUser()
+		  .then(function () {
+		  	if (!Backbone.Main.Action) {
+					Backbone.Main.Action = new ActionRouter('action/');
+				}
+		  })
+	},
+
+	invokeProductModule: function (subroute) {
+		this.renderMenuUser()
+		  .then(function () {  	     
+				if (!Backbone.Main.Product) {
+					Backbone.Main.Product = new ProductRouter('product/');
+				}
+		  })
+
 	},
 
 	invokeOutputModule: function (subroute) {
@@ -33097,21 +33144,7 @@ module.exports = Backbone.Router.extend({
 		}
 	},
 
-	invokeEventModule: function (subroute) {
-		this.renderMenuUser();
-
-		if (!Backbone.Main.Event) {
-			Backbone.Main.Event = new EventRouter('event/');
-		}
-	},
-
-	invokeProductModule: function (subroute) {
-		this.renderMenuUser();
-
-		if (!Backbone.Main.Product) {
-			Backbone.Main.Product = new ProductRouter('product/');
-		}
-	}
+	
 	
 });
 
@@ -33343,7 +33376,7 @@ function appView () {
         .render()
         .then(function () {
           $('#main-content').html(this.currentMenuView.el);
-
+        
           resolve();
         }.bind(this))
 
@@ -33409,7 +33442,7 @@ function appView () {
 module.exports = appView;
 },{"jquery":43}],101:[function(require,module,exports){
 var Handlebars = require('handlebars');
-var $          = require('jquery');
+var $ = require('jquery');
 
 module.exports = function () {
   Handlebars.registerHelper('checkView', function (notification, count ,options) {
@@ -33651,18 +33684,19 @@ var Handlebars = require('handlebars');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: Handlebars.compile($('#edit-action').html()),
+  template: 'action/templates/actionEdit.html',
   events: {
     'submit #form-actionEdit': 'edit'
   },
 
   render: function () {
-    var data = this.model.toJSON();
-    var html = this.template(data);
+    $.get(rootView + this.template ,function (template) {
+      var template = Handlebars.compile(template);
+      var data = this.model.toJSON();
+      var html = template(data);
 
-    this.$el.html(html);
-
-    return this;
+      this.el.html(html);
+    }.bind(this))
   },
 
   edit: function (e) {
@@ -33697,12 +33731,13 @@ module.exports = Backbone.View.extend({
 var Backbone = require('backbone');
 var $ = require('jquery');
 var Handlebars = require('handlebars');
+var alertify = require('alertifyjs');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: Handlebars.compile($('#actionHour-element').html()),
+  template: 'action/templates/actionItemHour.html',
   events: {
-    'click .btn-remove': 'removeHour'
+    'click .btn-remove': 'confirmRemove'
   },
 
   initialize: function (opt) {
@@ -33710,12 +33745,32 @@ module.exports = Backbone.View.extend({
   },
 
   render: function () {
-    var data = this.model.toJSON();
-    var html = this.template(data);
+    $.get(rootView + this.template, function (template) {
+      var template = Handlebars.compile(template);
+      var data = this.model.toJSON();
+      var html = template(data);
 
-    this.$el.html(html);
+      this.$el.html(html);
+    }.bind(this))
 
     return this;
+  },
+
+  confirmRemove: function () {
+    var title = 'Remover horario de actividad';
+    var message = 'Esta seguro remover esta horario';
+    var callback = function () {
+      this.removeHour();
+    }.bind(this);
+
+    alertify.confirm(message, callback)
+    .setting({
+      'title': title,
+      'labels': {
+        'ok': 'Confirmar',
+        'cancel': 'Cancelar'
+      }
+    });
   },
 
   removeHour: function () {
@@ -33738,19 +33793,23 @@ module.exports = Backbone.View.extend({
     this.remove();
   }
 })
-},{"../../util/util":102,"backbone":12,"handlebars":31,"jquery":43}],106:[function(require,module,exports){
+},{"../../util/util":102,"alertifyjs":9,"backbone":12,"handlebars":31,"jquery":43}],106:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: $('#register-action').html(),
+  template: 'action/templates/actionNew.html',
   events : {
     'submit #form-action': 'register'
   },
 
   render: function () {
-    this.$el.html(this.template);
+    $.get(rootView + this.template, function (template) {
+      var template = template;
+
+      this.$el.html(template);
+    }.bind(this))
   },
 
   register: function (e) {
@@ -33788,16 +33847,19 @@ var Handlebars = require('handlebars');
 
 module.exports = Backbone.View.extend({
   tagName: 'tr',
-  template: Handlebars.compile($('#action-element').html()),
+  template: 'action/templates/actionRow.html',
   events: {
     'click .btn-show': 'show'
   },
 
   render: function () {
-    var data = this.model.toJSON();
-    var html = this.template(data);
+    $.get(rootView + this.template, function (template) {
+      var template = Handlebars.compile(template);
+      var data = this.model.toJSON();
+      var html = template(data);
 
-    this.$el.html(html);
+      this.$el.html(html);
+    }.bind(this))
 
     return this;
   },
@@ -33815,16 +33877,20 @@ var Handlebars = require('handlebars');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: Handlebars.compile($('#register-actionSchedule').html()),
+  template: 'action/templates/actionSchedule.html',
   events: {
     'submit #form-actionSchedule': 'addHour'
   },
 
   render: function () {
-    var data = this.model.toJSON();
-    var html = this.template(data);
+    $.get(rootView + this.template, function (template) {
+      var template = Handlebars.compile(template);
+      var data = this.model.toJSON();
+      var html = template(data);
 
-    this.$el.html(html);
+      this.$el.html(html);
+    }.bind(this))
+   
   },
 
   addHour: function (e) {
@@ -33858,12 +33924,15 @@ var $ = require('jquery');
 var Handlebars = require('handlebars');
 var Schedules = require('../../collection/schedules');
 var ActionItemHour = require('./actionItemHourView');
+var alertify = require('alertifyjs');
+var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: Handlebars.compile($('#data-action').html()),
+  template: 'action/templates/actionShow.html',
   boxError: Handlebars.compile($('#error-actionHour').html()),
   events: {
     'click .btn-edit': 'redirectEdit',
+    'click .btn-delete': 'confirmDelete',
     'click .btn-addHour': 'redirectAddHour'
   },
 
@@ -33879,14 +33948,19 @@ module.exports = Backbone.View.extend({
   },
 
   render: function () {
-    var data = this.model.toJSON();
-    var html = this.template(data);
+    $.get(rootView + this.template, function (template) {
+      var template = Handlebars.compile(template);
+      var data = this.model.toJSON();
+      var html = template(data);
 
-    this.$el.html(html);
+      this.$el.html(html);
 
-    this.$contentHours = this.$el.find('#action-content');
+      this.$contentHours = this
+                            .$el
+                            .find('#action-content');
 
-    this.showHours();
+      this.showHours();
+    }.bind(this))
   },
 
   showHours: function () {
@@ -33954,11 +34028,42 @@ module.exports = Backbone.View.extend({
     Backbone.Main.navigate('action/' + actionId + '/schedule', triggerData);
   },
 
+  confirmDelete: function () {
+    var title = 'Eliminar Actividad';
+    var message = 'Esta seguro de eliminar actividad';
+    var callback = function () {
+      this.delete();
+    }.bind(this);
+
+    alertify.confirm(message, callback)
+    .setting({
+      'title': title,
+      'labels': {
+        'ok': 'Confirmar',
+        'cancel': 'Cancelar'
+      }
+    });
+  },
+
+  delete: function () {
+    var actionId = this.model.get('id');
+    
+    $.post(Backend_url + 'action/' + actionId + '/delete?_method=DELETE')
+     .done(function (res) {
+      if (res.status == 'success') {
+        var deleteMessage = res.message;
+
+        util.showSuccess(deleteMessage);
+        window.location.replace('#action/list');
+      }
+     })
+  },
+
   close: function () {
     this.remove();
   }
 })
-},{"../../collection/schedules":61,"./actionItemHourView":105,"backbone":12,"handlebars":31,"jquery":43}],110:[function(require,module,exports){
+},{"../../collection/schedules":61,"../../util/util":102,"./actionItemHourView":105,"alertifyjs":9,"backbone":12,"handlebars":31,"jquery":43}],110:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('underscore');
@@ -33968,7 +34073,7 @@ var ActionView = require('./actionRowView');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: $('#action-table').html(),
+  template: 'action/templates/actionTable.html',
   boxError: Handlebars.compile($('#error-action').html()),
   events: {
     'keyup .Search': 'serch'
@@ -33987,15 +34092,24 @@ module.exports = Backbone.View.extend({
   },
 
   render: function () {
-    if (_.isEmpty(this.message)) {
-      this.$el.html(this.template);
-      this.getPaginateView();
-      this.$tbody = this.$el.find('table').children('tbody');
+    $.get(rootView + this.template, function (template) {
+       if (_.isEmpty(this.message)) {
+        var template = template;
+        
+        this.$el.html(template);
+        this.getPaginateView();
+        this.$tbody = this
+                        .$el
+                        .find('table')
+                        .children('tbody');
 
-      this.addAll();
-    } else {
-      this.emptyAction(this.message);
-    }
+        this.addAll();
+      } else {
+        this.emptyAction(this.message);
+      }
+    }.bind(this))
+
+   
   },
 
   addAll: function () {
@@ -34064,13 +34178,16 @@ var Handlebars = require('handlebars');
 
 module.exports = Backbone.View.extend({
   tagName: 'tr',
-  template: Handlebars.compile($('#actionToday-element').html()),
+  template: 'action/templates/actionTodayRow.html',
 
   render: function () {
-    var data = this.model.toJSON();
-    var html = this.template(data);
+    $.get(rootView + this.template, function (template) {
+      var template = Handlebars.compile(template);
+      var data = this.model.toJSON();
+      var html = template(data);
 
-    this.$el.html(html);
+      this.$el.html(html);
+    }.bind(this))
 
     return this;
   }
@@ -34083,7 +34200,7 @@ var Handlebars = require('handlebars');
 var ActionToday = require('./actionTodayRowView');
 
 module.exports = Backbone.View.extend({
-  template: $('#actionToday-table').html(),
+  template: 'action/templates/actionTodayTable.html',
   boxError: Handlebars.compile($('#error-action').html()),
 
   initialize: function () {  
@@ -34093,14 +34210,19 @@ module.exports = Backbone.View.extend({
   },
 
   render: function () {
-    if (_.isEmpty(this.message)) {
-      this.$el.html(this.template);
-      this.$tbody = this.$el.find('table').children('tbody');
+    $.get(rootView + this.template, function (template) {
+      if (_.isEmpty(this.message)) {
+        var template = template;
 
-      this.addAll();
-    } else {
-      this.emptyAction(this.message);
-    }
+        this.$el.html(template);
+        this.$tbody = this.$el.find('table').children('tbody');
+
+        this.addAll();
+      } else {
+        this.emptyAction(this.message);
+      }
+    }.bind(this))
+    
   },
 
   addAll: function () {
@@ -34140,17 +34262,21 @@ var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
   tagName: 'tr',
-  template: Handlebars.compile($('#assistance-elementIn').html()),
+  template: 'attendances/templates/attendanceEntryRow.html',
   events: {
     'click .Table-confirm': 'confirm'
   },
 
   render: function () {
-    var data = this.model.toJSON();
-    var html = this.template(data);
+    $.get(rootView + this.template, function (template) {
+      var template = Handlebars.compile(template);
+      var data = this.model.toJSON();
+      var html = template(data);
 
-    this.$el.html(html);
+      this.$el.html(html);
 
+    }.bind(this))
+    
     return this;
   },
 
@@ -34191,7 +34317,7 @@ var AssistanceView = require('./attendanceEntryRowView');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: $('#assistance-tableIn').html(),
+  template: 'attendances/templates/attendanceEntryTable.html',
   boxError: Handlebars.compile($('#error-assistance').html()),
   events: {
     'keyup .Search': 'serch'
@@ -34212,16 +34338,24 @@ module.exports = Backbone.View.extend({
   },
 
   render: function () {
-    if (_.isEmpty(this.message)) {
-      this.$el.html(this.template);
-      this.getPaginateView();
+    $.get(rootView + this.template, function (template) {
+       if (_.isEmpty(this.message)) {
+         var template = template;
 
-      this.$tbody = this.$el.find('table').children('tbody');
+         this.$el.html(template);
+         this.getPaginateView();
 
-      this.addAll();
-    } else {
-      this.emptyAssistance(this.message);
-    }
+         this.$tbody = this
+                        .$el
+                        .find('table')
+                        .children('tbody');
+
+         this.addAll();
+       } else {
+         this.emptyAssistance(this.message);
+       }
+    }.bind(this))
+   
   },
 
   addAll: function () {
@@ -34302,24 +34436,27 @@ module.exports = Backbone.View.extend({
 
 })
 },{"../../util/util":102,"../paginate/paginationView":171,"./attendanceEntryRowView":113,"backbone":12,"handlebars":31,"jquery":43,"underscore":44}],115:[function(require,module,exports){
-var Backbone   = require('backbone');
-var $          = require('jquery');
+var Backbone = require('backbone');
+var $ = require('jquery');
 var Handlebars = require('handlebars');
-var util       = require('../../util/util');
+var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
   tagName: 'tr',
-  template: Handlebars.compile($('#assistance-elementOut').html()),
+  template: 'attendances/templates/attendanceOutRow.html',
   events: {
     'click .Table-btnConfirm': 'confirm'
   },
 
   render: function () {
-    var data = this.model.toJSON();
-    var html = this.template(data);
+    $.get(rootView + this.template, function (template) {
+      var template = Handlebars.compile(template);
+      var data = this.model.toJSON();
+      var html = template(data);
 
-    this.$el.html(html);
-
+      this.$el.html(html);
+    }.bind(this))
+   
     return this;
   },
 
@@ -34355,7 +34492,7 @@ var AssistanceOutView = require('./attendanceOutRowView');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: $('#assistance-tableOut').html(),
+  template: 'attendances/templates/attendanceOutTable.html',
   boxError: Handlebars.compile($('#error-assistance').html()),
   events: {
     'keyup .Search': 'serch'
@@ -34377,18 +34514,20 @@ module.exports = Backbone.View.extend({
   },
 
   render: function () {
-    if (_.isEmpty(this.message)) {
-      this.$el.html(this.template);
-      this.getPaginateView();
+    $.get(rootView + this.template, function (template) {
+      if (_.isEmpty(this.message)) {
+        var template = template;
+        this.$el.html(template);
+        this.getPaginateView();
 
-      this.$tbody = this.$el.find('table')
+        this.$tbody = this.$el.find('table')
                     .children('tbody');
 
-      this.addAll();
-    } else {
-      this.emptyAssistance(this.message);
-    }
-   
+        this.addAll();
+      } else {
+        this.emptyAssistance(this.message);
+      }
+    }.bind(this))
   },
 
   addAll: function () {
@@ -34675,6 +34814,7 @@ module.exports = Backbone.View.extend({
 },{"../../util/util":102,"../paginate/paginationView":171,"./citationElderRowView":118,"backbone":12,"handlebars":31,"jquery":43,"underscore":44}],120:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
+var Handlebars = require('handlebars');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
@@ -34685,9 +34825,11 @@ module.exports = Backbone.View.extend({
 
   render: function () {
     $.get(rootView + this.template, function (template) {
-      var template = template;
+      var template = Handlebars.compile(template);
+      var data = this.model.toJSON();
+      var html = template(data);
 
-      this.$el.html(template);
+      this.$el.html(html);
     }.bind(this))
   },
 
@@ -34717,7 +34859,7 @@ module.exports = Backbone.View.extend({
     this.remove();
   }
 })
-},{"../../util/util":102,"backbone":12,"jquery":43}],121:[function(require,module,exports){
+},{"../../util/util":102,"backbone":12,"handlebars":31,"jquery":43}],121:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var Handlebars = require('handlebars');
@@ -35355,8 +35497,8 @@ module.exports = Backbone.View.extend({
 var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('underscore');
+var alertify = require('alertifyjs');
 var util = require('../../util/util');
-
 
 module.exports = Backbone.View.extend({
   template: 'employee/templates/employeeNew.html',
@@ -35370,6 +35512,7 @@ module.exports = Backbone.View.extend({
     'click .Modal-snap': 'snapShot',
     'click .Modal-repeat': 'repeat',
     'click .Modal-btnPic': 'showPic',
+    'click .close': 'closeModal',
     'change .Form-file': 'uploadPic',
     'submit #form-employee': 'register'
   },
@@ -35387,13 +35530,16 @@ module.exports = Backbone.View.extend({
       this.$snap = this.$el.find('.Modal-snap');
       this.$canvasForm = this.$el.find('.Lienzo');
       this.$containerBtn = this.$el.find('.Modal-btn');
+      this.$close = this.$el.find('.close');
       this.$typeFile = this.$el.find('input[type="file"]');
     }.bind(this))
+    
   },
 
   showModal: function () {
     this.$modalPic.show();
     this.$containerBtn.hide();
+    this.$close.hide();
     this.showCamera();
   },
 
@@ -35444,8 +35590,8 @@ module.exports = Backbone.View.extend({
       canvas.attr({'width': 150,'height': 150});
 
       var ctx = canvas[0].getContext('2d');
+
       ctx.drawImage(this.picCam, 0 , 0, 150, 150);
-      this.photoSource = canvas[0].toDataURL('image/png')
 
       this.closeCamera();
       this.optBtn();
@@ -35456,13 +35602,14 @@ module.exports = Backbone.View.extend({
   showPic: function () {
     this.$typeFile.val('');
 
+    this.photoSource = this.$canvas[0].toDataURL('image/png');
     var canvasForm = this.$canvasForm;
 
     canvasForm.attr({'width': 150, 'height': 150});
 
     var ctxForm = canvasForm[0].getContext('2d');
 
-    ctxForm.drawImage(this.pickCam, 0, 0, 150, 150);
+    ctxForm.drawImage(this.picCam, 0, 0, 150, 150);
     this.closeModal();
   },
 
@@ -35494,7 +35641,7 @@ module.exports = Backbone.View.extend({
 
       var message = 'Ha ingresado un formato de archivo no valido';
       
-      util.showInfo(message);
+      util.showError(message);
     }
    
     reader.readAsDataURL(file);
@@ -35519,6 +35666,7 @@ module.exports = Backbone.View.extend({
 
   showBtn: function () {
     this.$snap.show();
+    this.$close.show();
     this.$confirmBtn.hide();
   },
 
@@ -35553,7 +35701,7 @@ module.exports = Backbone.View.extend({
       var mime = util.extractMime(this.photoSource);
 
       formData.append('photo', this.photoSource);
-      formData.append('mime', mime);
+      formData.append('mime_request', mime);
     }
 
     $.ajax({
@@ -35565,16 +35713,42 @@ module.exports = Backbone.View.extend({
     })
     .done(function(res) {
       if (res.status == 'success') {
-        util.showSuccess(res.message);
-        Backbone.Main.navigate('employee/' + res.id + '/schedule/register', {trigger: true});
+        var successMessage = res.message;
+        var employeeData = res.data;
+
+        util.showSuccess(successMessage);
+        this.model.set(employeeData);
+        this.redirect();
       } else {
-        util.showError(res.message);
+        var errorMessage = res.message;
+
+        util.showError(errorMessage);
+      }
+    }.bind(this));
+  },
+
+  redirect: function () {
+    var title = 'Registrar Cuenta Usuario';
+    var message = 'Desea registrar cuenta de usuario a este empleado';
+    var employeeId = this.model.get('id');
+    var successCallback = function () {
+      window.location.href = '#employee/' + employeeId + '/user';
+    }
+    var cancelCallback = function () {
+      window.location.href = '#employee/' + employeeId;
+    }
+
+    alertify.confirm(message, successCallback, cancelCallback)
+    .setting({
+      'title': title,
+      'labels': {
+        'ok': 'Confirmar',
+        'cancel': 'Cancelar'
       }
     });
-
   }
 })
-},{"../../util/util":102,"backbone":12,"jquery":43,"underscore":44}],130:[function(require,module,exports){
+},{"../../util/util":102,"alertifyjs":9,"backbone":12,"jquery":43,"underscore":44}],130:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var Handlebars = require('handlebars');
@@ -35715,19 +35889,25 @@ var EventList = require('./eventTableView');
 var util = require('../../util/util')
 
 module.exports = Backbone.View.extend({
-  template: $('#event-contentView').html(),
+  template: 'event/templates/eventContent.html',
   events: {
     'submit #date-event': 'getEvents'
   },
 
   render: function () {
-    var currentDate = util.currentDate();
+    $.get(rootView + this.template, function (template) {
+      var template = template;
+      var currentDate = util.currentDate();
 
-    this.$el.html(this.template);
+      this.$el.html(template);
 
-    this.$contentEvent = this.$el.find('#content-event');
+      this.$contentEvent = this
+                             .$el
+                             .find('#content-event');
 
-    this.showEvents(currentDate);
+      this
+        .showEvents(currentDate);
+    }.bind(this))
   },
 
   getEvents: function (e) {
@@ -35774,19 +35954,26 @@ var util = require('../../util/util');
 var utilHour = require('../../util/utilHour');
 
 module.exports = Backbone.View.extend({
-  template: Handlebars.compile($('#edit-event').html()),
+  template: 'event/templates/eventEdit.html',
   events: {
     'submit #form-eventEdit': 'edit',
     'click .btn-config': 'toggle'
   },
 
   render: function () {
-    var data = this.model.toJSON();
-    var html = this.template(data);
 
-    this.$el.html(html);
+    $.get(rootView + this.template, function (template) {
+      var template = Handlebars.compile(template);
+      var data = this.model.toJSON();
+      var html = template(data);
 
-    this.$data = this.$el.find('.u-data');
+      this.$el.html(html);
+
+      this.$data = this
+                     .$el
+                     .find('.u-data');
+    }.bind(this))
+
   },
 
   edit: function (e) {
@@ -35847,16 +36034,20 @@ var $ = require('jquery');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: $('#register-event').html(),
+  template: 'event/templates/eventNew.html',
   events: {
     'submit #form-event': 'register',
     'click .btn-config': 'toggle'
   },
 
   render: function () {
-    this.$el.html(this.template);
+    $.get(rootView + this.template, function (template) {
+      var template = template;
 
-    this.$data = this.$el.find('.u-data');
+      this.$el.html(template);
+
+      this.$data = this.$el.find('.u-data');
+    }.bind(this))
   },
 
   register: function (e) {
@@ -35897,16 +36088,20 @@ var Handlebars = require('handlebars');
 
 module.exports = Backbone.View.extend({
   tagName: 'tr',
-  template: Handlebars.compile($('#event-element').html()),
+  template: 'event/templates/eventRow.html',
   events: {
     'click .btn-info': 'redirectShow'
   },
 
   render: function () {
-    var data = this.model.toJSON();
-    var html = this.template(data);
+    $.get(rootView + this.template, function (template) {
+      var template = Handlebars.compile(template);
+      var data = this.model.toJSON();
+      var html = template(data);
 
-    this.$el.html(html);
+      this.$el.html(html);
+
+    }.bind(this));
 
     return this;
   },
@@ -35926,19 +36121,24 @@ var alertify = require('alertifyjs');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: Handlebars.compile($('#data-event').html()),
+  template: 'event/templates/eventShow.html',
   events: {
     'click .btn-edit': 'redirectEdit',
     'click .btn-delete': 'confirm'
   },
 
   render: function () {
-    this.model.hourStandar();
+    $.get(rootView + this.template, function (template) {
+      var template = Handlebars.compile(template);
 
-    var data = this.model.toJSON();
-    var html = this.template(data);
+      this.model.hourStandar();
 
-    this.$el.html(html);
+      var data = this.model.toJSON();
+      var html = template(data);
+
+      this.$el.html(html);
+    }.bind(this))
+
   },
   
   redirectEdit: function () {
@@ -35991,7 +36191,7 @@ var EventView = require('./eventRowView');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: $('#event-table').html(),
+  template: 'event/templates/eventTable.html',
   boxError: Handlbars.compile($('#error-event').html()),
 
   initialize: function () {
@@ -36001,23 +36201,30 @@ module.exports = Backbone.View.extend({
   },
 
   render: function () {
-    if (_.isEmpty(this.message)) {
-      this.$el.html(this.template);
+    $.get(rootView + this.template, function (template) {
+      if (_.isEmpty(this.message)) {
+        var template = template;
 
-      this.$tbody = this.$el.find('table').children('tbody');
+        this.$el.html(template);
 
-      this.addAll();
-    } else {
-      if (_.isObject(this.message)) {
-        var error = 'No es posible encontra eventos';
+        this.$tbody = this
+                        .$el
+                        .find('table')
+                        .children('tbody');
 
-        util.showError(this.message);
-        this.emptyEvents(error);
+        this.addAll();
       } else {
-        this.emptyEvents(this.message);
-      }
+          if (_.isObject(this.message)) {
+            var error = 'No es posible encontra eventos';
 
-    }
+            util.showError(this.message);
+            this.emptyEvents(error);
+          } else {
+            this.emptyEvents(this.message);
+          }
+      }
+    }.bind(this))
+ 
   },
 
   addAll: function () {
@@ -36787,8 +36994,8 @@ var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
 	el:  $('#header-content'),
-	template: Handlebars.compile($('#login-view').html()),
-	templateMain: $('#initialize-view').html(),
+	template: 'login/templates/login.html',
+	templateMain: 'login/templates/main.html',
 
   events: {
 		'submit #login' : 'login',
@@ -36801,21 +37008,24 @@ module.exports = Backbone.View.extend({
 
 	render: function () {
 		this.renderHeader();
-		this.$main.html(this.templateMain);
+		$.get(rootView + this.templateMain, function (templateMain) {
+			this.$main.html(templateMain);
+		}.bind(this))
 	},
 
 	renderHeader: function () {
-		
-		var userData = this.model.toJSON();
-		var configData = this.config.toJSON();
-		var context = {
-			user: userData,
-			config: configData
-		};
+		$.get(rootView + this.template, function (template) {
+			var template = Handlebars.compile(template);
+			var userData = this.model.toJSON();
+			var configData = this.config.toJSON();
+			var context = {
+				user: userData,
+				config: configData
+			};
+			var html = template(context);
 
-		var html = this.template(context);
-
-		this.$el.html(html);
+			this.$el.html(html);
+		}.bind(this))
 	},
 
 	login: function (e) {
@@ -36903,8 +37113,8 @@ module.exports = Backbone.View.extend({
 
 });
 },{"Backbone":7,"handlebars":31,"jquery":43}],152:[function(require,module,exports){
-var Backbone   = require('backbone');
-var $          = require('jquery');
+var Backbone = require('backbone');
+var $ = require('jquery');
 var Handlebars = require('handlebars');
 var Bloodhound = require('../../../../bower_components/typeahead.js/dist/bloodhound.js');
 var typeahead  = require('../../../../bower_components/typeahead.js/dist/typeahead.jquery');
@@ -37187,6 +37397,7 @@ module.exports = Backbone.View.extend({
 var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('underscore');
+var Handlebars = require('handlebars');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
@@ -37207,9 +37418,11 @@ module.exports = Backbone.View.extend({
 
   render: function () {
     $.get(rootView + this.template, function (template) {
-      var template = template;
+      var template = Handlebars.compile(template);
+      var data = this.model.toJSON();
+      var html = template(data);
       
-      this.$el.html(template);
+      this.$el.html(html);
 
       this.$modalPic = this.$el.find('.Modal');
       this.$camera = this.$el.find('.Modal-camera');
@@ -37379,7 +37592,7 @@ module.exports = Backbone.View.extend({
     this.remove();
   }
 })
-},{"../../util/util":102,"backbone":12,"jquery":43,"underscore":44}],155:[function(require,module,exports){
+},{"../../util/util":102,"backbone":12,"handlebars":31,"jquery":43,"underscore":44}],155:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var Handlebars = require('handlebars');
@@ -37933,6 +38146,7 @@ module.exports = Backbone.View.extend({
 },{"../../util/util":102,"../paginate/paginationView":171,"./outputElderRowView":161,"backbone":12,"handlebars":31,"jquery":43,"underscore":44}],163:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
+var Handlebars = require('handlebars');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
@@ -37943,9 +38157,11 @@ module.exports = Backbone.View.extend({
 
   render: function () {
     $.get(rootView + this.template, function (template) {
-      var template = template;
+      var template = Handlebars.compile(template);
+      var data = this.model.toJSON();
+      var html = template(data);
 
-      this.$el.html(template);
+      this.$el.html(html);
     }.bind(this));
   },
 
@@ -37975,7 +38191,7 @@ module.exports = Backbone.View.extend({
     this.remove();
   }
 })
-},{"../../util/util":102,"backbone":12,"jquery":43}],164:[function(require,module,exports){
+},{"../../util/util":102,"backbone":12,"handlebars":31,"jquery":43}],164:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var util = require('../../util/util');
@@ -38431,13 +38647,13 @@ module.exports = Backbone.View.extend({
   }
 })
 },{"../../util/util":102,"backbone":12,"handlebars":31,"jquery":43}],171:[function(require,module,exports){
-var Backbone   = require('backbone');
-var $          = require('jquery');
+var Backbone = require('backbone');
+var $ = require('jquery');
 var Handlebars = require('handlebars');
 
 
 module.exports = Backbone.View.extend({
-	template: Handlebars.compile($('#menuPaginate').html()),
+	template: 'paginate/templates/pagination.html',
 
 	events: {
 		'click a.page' :'goToPage',
@@ -38450,13 +38666,16 @@ module.exports = Backbone.View.extend({
 	},
 
 	render: function () {
-		this.items = this.collection.totalPage();
-		var current = this.currentPage;
-		var data = JSON.stringify({items: this.items, current: current});
-		var html = this.template(JSON.parse(data));
+		$.get(rootView + this.template, function (template) {
+			var template = Handlebars.compile(template);
+			this.items = this.collection.totalPage();
+			var current = this.currentPage;
+			var data = JSON.stringify({items: this.items, current: current});
+			var html = template(JSON.parse(data));
 
-		this.$el.html(html);
-
+			this.$el.html(html);
+		}.bind(this))
+		
 		return this;
 	},
 
@@ -38516,17 +38735,26 @@ var $ = require('jquery');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: $('#register-product').html(),
+  template: 'product/templates/productNew.html',
 
   events: {
     'submit #form-product': 'register'
   },
 
   render: function () {
-    this.$el.html(this.template);
+    $.get(rootView + this.template, function (template) {
+      var template = template;
+      
+      this.$el.html(template);
 
-    this.$form = this.$el.find('#form-product');
-    this.$select = this.$el.find('.Select');
+      this.$form = this
+                    .$el
+                    .find('#form-product');
+      this.$select = this
+                      .$el
+                      .find('.Select');
+
+    }.bind(this));
   },
 
   register: function (e) {
@@ -38568,7 +38796,7 @@ var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
   tagName: 'tr',
-  template: Handlebars.compile($('#product-element').html()),
+  template: 'product/templates/productRow.html',
   events: {
     'click .Table-btnEdit': 'edit',
     'click .Table-btnCancel': 'cancel',
@@ -38581,17 +38809,20 @@ module.exports = Backbone.View.extend({
   },
 
   render: function () {
-    var data = this.model.toJSON();
-    var html = this.template(data);
+    $.get(rootView + this.template, function (template) {
+      var template = Handlebars.compile(template);
+      var data = this.model.toJSON();
+      var html = template(data);
 
-    this.$el.html(html);
+      this.$el.html(html);
 
-    this.$submit = this.$el.find('.u-submit');
-    this.$data = this.$el.find('.u-data');
-    this.$description = this.$el.find('.Table-description');
-    this.$unit = this.$el.find('.Select');
-    this.$stock = this.$el.find('.Table-stock');
-
+      this.$submit = this.$el.find('.u-submit');
+      this.$data = this.$el.find('.u-data');
+      this.$description = this.$el.find('.Table-description');
+      this.$unit = this.$el.find('.Select');
+      this.$stock = this.$el.find('.Table-stock');
+    }.bind(this))
+   
     return this;
   },
 
@@ -38696,7 +38927,7 @@ var PaginateView = require('../paginate/paginationView');
 var ProductView = require('./productRowView');
 
 module.exports = Backbone.View.extend({
-  template: $('#product-table').html(),
+  template: 'product/templates/productTable.html',
   boxError: Handlebars.compile($('#error-product').html()),
   events: {
     'keyup .Search': 'serch'
@@ -38715,16 +38946,20 @@ module.exports = Backbone.View.extend({
   },
 
   render: function () {
-    if (_.isEmpty(this.message)) {
-      this.$el.html(this.template);
-      this.getPaginateView();
+    $.get(rootView + this.template, function (template) {
+       if (_.isEmpty(this.message)) {
+         var template = template;
 
-      this.$tbody = this.$el.find('table').children('tbody');
+         this.$el.html(template);
+         this.getPaginateView();
 
-      this.addAll();
-    } else {
-      this.emptyProduct(this.message);
-    }
+         this.$tbody = this.$el.find('table').children('tbody');
+
+         this.addAll();
+       } else {
+        this.emptyProduct(this.message);
+       }
+    }.bind(this))
   },
 
   addAll: function () {

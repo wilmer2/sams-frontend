@@ -3,13 +3,17 @@ var $ = require('jquery');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: $('#register-action').html(),
+  template: 'action/templates/actionNew.html',
   events : {
     'submit #form-action': 'register'
   },
 
   render: function () {
-    this.$el.html(this.template);
+    $.get(rootView + this.template, function (template) {
+      var template = template;
+
+      this.$el.html(template);
+    }.bind(this))
   },
 
   register: function (e) {

@@ -5,19 +5,25 @@ var EventList = require('./eventTableView');
 var util = require('../../util/util')
 
 module.exports = Backbone.View.extend({
-  template: $('#event-contentView').html(),
+  template: 'event/templates/eventContent.html',
   events: {
     'submit #date-event': 'getEvents'
   },
 
   render: function () {
-    var currentDate = util.currentDate();
+    $.get(rootView + this.template, function (template) {
+      var template = template;
+      var currentDate = util.currentDate();
 
-    this.$el.html(this.template);
+      this.$el.html(template);
 
-    this.$contentEvent = this.$el.find('#content-event');
+      this.$contentEvent = this
+                             .$el
+                             .find('#content-event');
 
-    this.showEvents(currentDate);
+      this
+        .showEvents(currentDate);
+    }.bind(this))
   },
 
   getEvents: function (e) {

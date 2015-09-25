@@ -7,7 +7,7 @@ var AssistanceView = require('./attendanceEntryRowView');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: $('#assistance-tableIn').html(),
+  template: 'attendances/templates/attendanceEntryTable.html',
   boxError: Handlebars.compile($('#error-assistance').html()),
   events: {
     'keyup .Search': 'serch'
@@ -28,16 +28,24 @@ module.exports = Backbone.View.extend({
   },
 
   render: function () {
-    if (_.isEmpty(this.message)) {
-      this.$el.html(this.template);
-      this.getPaginateView();
+    $.get(rootView + this.template, function (template) {
+       if (_.isEmpty(this.message)) {
+         var template = template;
 
-      this.$tbody = this.$el.find('table').children('tbody');
+         this.$el.html(template);
+         this.getPaginateView();
 
-      this.addAll();
-    } else {
-      this.emptyAssistance(this.message);
-    }
+         this.$tbody = this
+                        .$el
+                        .find('table')
+                        .children('tbody');
+
+         this.addAll();
+       } else {
+         this.emptyAssistance(this.message);
+       }
+    }.bind(this))
+   
   },
 
   addAll: function () {

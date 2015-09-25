@@ -1,0 +1,28 @@
+  <td>
+    <span class="u-data">{{description}}</span>
+    <input type="text" name="description" class="Table-description u-disabled u-submit" value="{{description}}">
+  </td>
+  <td>
+    <span class="u-data">{{unit}}</span>
+    <select name="unit" class="Table-unit Select u-disabled u-submit">
+      <option value="kg" {{selected unit "kg"}}>kg</option>
+      <option value="und" {{selected unit "und"}}>unidades</option>
+      <option value="caja" {{selected unit "caja"}}>cajas</option>
+      <option value="paq" {{selected unit "paq"}}>paquetes</option>
+      <option value="bultos" {{selected unit "bultos"}}>bultos</option>
+    </select>
+  </td>
+  <td>
+    <span class="u-data">{{stock}}</span>
+    <input type="number" name="stock" class="Table-stock u-disabled u-submit" value="{{stock}}">
+  </td>
+  <td>
+   <button type="button" class="Table-btnEdit btn btn-primary u-data">editar</button>
+    <div class="Table-btnContent u-submit u-disabled">
+      <button type="button" class="Table-btnSubmit btn btn-primary">Guardar</button>
+      <button type="button" class="Table-btnCancel btn btn-danger">Cancelar</button>
+    </div>
+  </td>
+  <td>
+    <button class="Table-btnDelete btn btn-danger">Eliminar</button>
+  </td>

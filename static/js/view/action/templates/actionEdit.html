@@ -1,0 +1,15 @@
+{{#if notFound}}
+    <p> Actividad no encontrada</p>
+  {{else}}
+  <div>
+    <h3>Editar Actividad</h3>
+  </div>
+  <form id="form-actionEdit">
+    <input type="text" name="name" placeholder="Nombre de actividad" value="{{name}}">
+    <label for="description">Descripcion</label>
+    <textarea name="description">
+    {{description}}
+    </textarea>
+    <button type="submit">Editar</button>
+  </form>
+{{/if}}

@@ -3,17 +3,26 @@ var $ = require('jquery');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: $('#register-product').html(),
+  template: 'product/templates/productNew.html',
 
   events: {
     'submit #form-product': 'register'
   },
 
   render: function () {
-    this.$el.html(this.template);
+    $.get(rootView + this.template, function (template) {
+      var template = template;
+      
+      this.$el.html(template);
 
-    this.$form = this.$el.find('#form-product');
-    this.$select = this.$el.find('.Select');
+      this.$form = this
+                    .$el
+                    .find('#form-product');
+      this.$select = this
+                      .$el
+                      .find('.Select');
+
+    }.bind(this));
   },
 
   register: function (e) {

@@ -1,5 +1,5 @@
-var Backbone   = require('backbone');
-var $          = require('jquery');
+var Backbone = require('backbone');
+var $ = require('jquery');
 var Handlebars = require('handlebars');
 var Bloodhound = require('../../../../bower_components/typeahead.js/dist/bloodhound.js');
 var typeahead  = require('../../../../bower_components/typeahead.js/dist/typeahead.jquery');

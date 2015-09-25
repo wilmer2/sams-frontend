@@ -4,16 +4,20 @@ var Handlebars = require('handlebars');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: Handlebars.compile($('#register-actionSchedule').html()),
+  template: 'action/templates/actionSchedule.html',
   events: {
     'submit #form-actionSchedule': 'addHour'
   },
 
   render: function () {
-    var data = this.model.toJSON();
-    var html = this.template(data);
+    $.get(rootView + this.template, function (template) {
+      var template = Handlebars.compile(template);
+      var data = this.model.toJSON();
+      var html = template(data);
 
-    this.$el.html(html);
+      this.$el.html(html);
+    }.bind(this))
+   
   },
 
   addHour: function (e) {

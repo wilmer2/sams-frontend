@@ -6,19 +6,26 @@ var util = require('../../util/util');
 var utilHour = require('../../util/utilHour');
 
 module.exports = Backbone.View.extend({
-  template: Handlebars.compile($('#edit-event').html()),
+  template: 'event/templates/eventEdit.html',
   events: {
     'submit #form-eventEdit': 'edit',
     'click .btn-config': 'toggle'
   },
 
   render: function () {
-    var data = this.model.toJSON();
-    var html = this.template(data);
 
-    this.$el.html(html);
+    $.get(rootView + this.template, function (template) {
+      var template = Handlebars.compile(template);
+      var data = this.model.toJSON();
+      var html = template(data);
 
-    this.$data = this.$el.find('.u-data');
+      this.$el.html(html);
+
+      this.$data = this
+                     .$el
+                     .find('.u-data');
+    }.bind(this))
+
   },
 
   edit: function (e) {
