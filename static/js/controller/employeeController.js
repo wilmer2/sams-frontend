@@ -1,6 +1,9 @@
 var $ = require('jquery');
 var Employee = require('../model/employee');
+var User = require('../model/user');
 var Employees = require('../collection/employees');
+var UserView = require('../view/user/userShowView');
+var UserEdit = require('../view/user/userEditView');
 var EmployeeForm = require('../view/employee/employeeNewView');
 var EmployeeList = require('../view/employee/employeeTableView');
 var EmployeeShow = require('../view/employee/employeeShowView');
@@ -32,6 +35,36 @@ function EmployeeCtrl () {
     appView.showEmployeeView(employeeShow);
   },
 
+  this.showUser = function (employeeId) {
+    var user = new User();
+    var userView = new UserView({model:user});
+
+    this.getUser(employeeId)
+    .then(function (data) {
+      user.set(data);
+      appView.showEmployeeView(userView);
+    })
+    .catch(function (err) {
+      user.set({employee_id: employeeId});
+      user.set(notFound, silentData);
+      appView.showEmployeeView(userView);
+    })
+  },
+
+  this.editUser = function (employeeId) {
+    var user = new User();
+    var userEdit = new UserEdit({model: user});
+
+    this.getUser(employeeId)
+    .then(function (data) {
+      user.set(data);
+      appView.showEmployeeView(userEdit);
+    })
+    .catch(function (err) {
+      window.location.replace('#employee/' + employeeId + '/user')
+    })
+  },
+
   this.getEmployee = function (employeeId) {
     return new Promise(function (resolve, reject) {
       $.get(Backend_url + 'employee/' + employeeId)
@@ -44,6 +77,24 @@ function EmployeeCtrl () {
        })
        .fail(function (err) {
         reject(err);
+       })
+    })
+  },
+
+  this.getUser = function (employeeId) {
+    return new Promise(function (resolve, reject) {
+      $.get(Backend_url + 'employee/' + employeeId + '/user/show')
+       .done(function (res) {
+        if (res.status == 'success') {
+          var data = res.data;
+
+          resolve(data);
+        }
+       })
+       .fail(function (err) {
+        if (err.status == 404) {
+          reject(err);
+        }
        })
     })
   }
