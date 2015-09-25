@@ -7,5 +7,10 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "wilmer maldonadoo y alberto pedron",
-  "license": "mit"
+  "license": "mit",
+  "dependencies": {
+    "alertifyjs": "^1.4.1",
+    "bluebird": "^2.10.0",
+    "watchify": "^3.3.1"
+  }
 }
