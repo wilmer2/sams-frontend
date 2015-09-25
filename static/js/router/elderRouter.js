@@ -42,7 +42,7 @@ module.exports = Subroute.extend({
     '*any' : 'loadElder',
   },
 
-  loadElder: function (fragment, args, next, prueba) {
+  loadElder: function (fragment, args, next) {
     Backbone.Main.renderHeader();
 
     var elderId = util.getFragmentId(fragment);

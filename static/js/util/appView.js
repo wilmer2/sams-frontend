@@ -8,7 +8,7 @@ function appView () {
       }
 
       this.currentMenuView = view;
-
+      
       this.currentMenuView
         .render()
         .then(function () {

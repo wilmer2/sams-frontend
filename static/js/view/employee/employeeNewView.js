@@ -9,6 +9,7 @@ module.exports = Backbone.View.extend({
 
   initialize: function () {
     this.photoSource = '';
+
   },
 
   events: {
@@ -216,6 +217,7 @@ module.exports = Backbone.View.extend({
       contentType : false,
     })
     .done(function(res) {
+      console.log(res);
       if (res.status == 'success') {
         var successMessage = res.message;
         var employeeData = res.data;
