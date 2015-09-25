@@ -117,6 +117,17 @@
 .instanceWaitingShowView .centerButtonsRows button {
   margin: 0em 2%;
 }
+.citationEditView h3 {
+  text-align: center;
+}
+.citationEditView form {
+  width: 30em;
+  margin: auto;
+}
+.citationEditView .submitRow {
+  display: flex;
+  justify-content: center;
+}
 .citationElderTableView h3 {
   text-align: center;
 }

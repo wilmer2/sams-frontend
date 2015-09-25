@@ -6,6 +6,7 @@ var utilHour = require('../../util/utilHour');
 
 module.exports = Backbone.View.extend({
   template: 'citation/templates/citationEdit.html',
+  className: 'citationEditView',
   events: {
     'submit #formCitation-edit': 'edit'
   },

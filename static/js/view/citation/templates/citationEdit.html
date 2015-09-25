@@ -2,20 +2,40 @@
   <h3>Editar Cita</h3>
 </div>
 
+<hr>
+
 {{#if waiting}}
- <form id="formCitation-edit">
-   <label for="date_day">Fecha</label>
-   <input type="date" name="date_day" value="{{date_day}}">
-   <label for="hour">Hora</label>
-   <input type="time" value="{{hour}}" name="hour">
-   <label for="reason">Razon</label>
-   <textarea name="reason"> {{reason}}</textarea>
-   <button type="submit">Enviar</button>
+ <form class="form-horizontal" id="formCitation-edit">
+
+  <div class="form-group">
+    <label class="control-label col-sm-2">Fecha</label>
+    <div class="col-sm-10">
+      <input class="form-control" type="date" name="date_day" value="{{date_day}}">
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="control-label col-sm-2">Hora</label>
+    <div class="col-sm-10">
+      <input class="form-control" type="time" value="{{hour}}" name="hour">
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="control-label col-sm-2">Razon</label>
+    <div class="col-sm-10">
+       <textarea class="form-control" name="reason">{{reason}}</textarea>
+    </div>
+  </div>
+
+  <div class="submitRow">
+    <button class="btn btn-primary" type="submit">Editar Informacion</button>
+  </div>
  </form>
 {{else}}
 
-<div>
-  <p>Cita ya fue confirmada</p>
+<div class="alert alert-warning" role="alert">
+  Cita ya fue confirmada
 </div>
 
 {{/if}}
