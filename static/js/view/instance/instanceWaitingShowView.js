@@ -6,6 +6,7 @@ var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
   template: 'instance/templates/instanceWaitingShow.html',
+  className: 'instanceWaitingShowView',
   events: {
     'click .btn-edit': 'edit',
     'click .btn-cancel': 'cancel',

@@ -65,6 +65,18 @@
 .header ul {
   display: flex;
 }
+.elderEditView h3 {
+  text-align: center;
+}
+.elderEditView form {
+  min-width: 30em;
+  max-width: 40em;
+  margin: auto;
+}
+.elderEditView .submitRow {
+  display: flex;
+  justify-content: center;
+}
 .elderShowView h3 {
   text-align: center;
 }
@@ -85,17 +97,23 @@
 .elderShowView .buttonsRow button {
   margin: 0em 5%;
 }
-.elderEditView h3 {
-  text-align: center;
-}
-.elderEditView form {
-  min-width: 30em;
-  max-width: 40em;
+.instanceWaitingShowView .panel {
+  width: 35em;
   margin: auto;
 }
-.elderEditView .submitRow {
+.instanceWaitingShowView h3 {
+  text-align: center;
+}
+.instanceWaitingShowView table {
+  width: 35em;
+  margin: 1em auto;
+}
+.instanceWaitingShowView .centerButtonsRows {
   display: flex;
   justify-content: center;
+}
+.instanceWaitingShowView .centerButtonsRows button {
+  margin: 0em 2%;
 }
 .u-disabled {
   display: none;
