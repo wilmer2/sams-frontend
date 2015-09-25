@@ -13,7 +13,7 @@ var EmployeeCtrl = require('../controller/employeeController');
 // var MenuAdmin       = require('../view/menuAdminView');
 // var HomeRouter      = require('./homeRouter');
 // var AdminRouter     = require('./adminRouter');
-// var EmployeeRouter  = require('./employeeRouter');
+var EmployeeRouter  = require('./employeeRouter');
 var ElderRouter = require('./elderRouter');
 var InstanceRouter = require('./instanceRouter');
 var ActionRouter = require('./actionRouter');
@@ -37,7 +37,7 @@ module.exports = Backbone.Router.extend({
 		
 		// 'home/*subroute': 'invokeHomeModule',
 		// 'admin/*subroute': 'invokeAdminModule',
-		// 'employee/*subroute': 'invokeEmployeeModule',
+		'employee/*subroute': 'invokeEmployeeModule',
 		'elder/*subroute': 'invokeElderModule',
 		'action/*subroute': 'invokeActionModule',
 		'instance/*subroute': 'invokeInstanceModule',
@@ -283,14 +283,14 @@ module.exports = Backbone.Router.extend({
 		if (!Backbone.Main.Activity) {
 			Backbone.Main.Activity = new ActivityRouter('activity/');
 		}
-	},
+	},*/
 
 	
 	invokeEmployeeModule: function (subroute) {
 		if (!Backbone.Main.Employee) {
 			Backbone.Main.Employee = new EmployeeRouter('employee/');
 		}
-	},*/
+	},
 
 	invokeElderModule: function (subroute) {
 		if (!Backbone.Main.Elder) {

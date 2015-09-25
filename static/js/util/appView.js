@@ -9,9 +9,11 @@ function appView () {
 
       this.currentMenuView = view;
 
+      console.log('menu main');
       this.currentMenuView
         .render()
         .then(function () {
+          console.log(this.currentMenuView.el)
           $('#main-content').html(this.currentMenuView.el);
         
           resolve();

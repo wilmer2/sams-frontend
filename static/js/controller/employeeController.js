@@ -1,8 +1,9 @@
 var $ = require('jquery');
 var Employee = require('../model/employee');
 var Employees = require('../collection/employees');
-var EmployeeList = require('../view/employee/employeeTableView');
 var EmployeeForm = require('../view/employee/employeeNewView');
+var EmployeeList = require('../view/employee/employeeTableView');
+var EmployeeShow = require('../view/employee/employeeShowView');
 // var EmployeeData = require('../view/employeeDataView');
 // var EmployeeEdit = require('../view/employeeEditView');
 
@@ -22,6 +23,28 @@ function EmployeeCtrl () {
     employees.getFirstPage(fetchData)
     .done(function () {
       appView.showAdminView(employeeList);
+    })
+  },
+
+  this.show = function (employee) {
+    var employeeShow = new EmployeeShow({model: employee});
+
+    appView.showEmployeeView(employeeShow);
+  },
+
+  this.getEmployee = function (employeeId) {
+    return new Promise(function (resolve, reject) {
+      $.get(Backend_url + 'employee/' + employeeId)
+       .done(function (res) {
+        if (res.status == 'success') {
+          var data = res.data;
+
+          resolve(data);
+        }
+       })
+       .fail(function (err) {
+        reject(err);
+       })
     })
   }
   // this.showEmployee = function (employee) {

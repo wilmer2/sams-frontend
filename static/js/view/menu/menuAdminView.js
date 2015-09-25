@@ -17,16 +17,16 @@ module.exports = Backbone.View.extend({
         var html = template(data);
 
         this.$el.html(html);
-        this.initTypehead();
+        // this.initTypehead();
 
         resolve();
       }.bind(this))
     }.bind(this))
   },
-
+/*
   initTypehead: function () {
     //
-  },
+  },*/
 
   close: function () {
     this.remove();

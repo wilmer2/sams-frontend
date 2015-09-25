@@ -77,7 +77,6 @@ function ElderCtrl () {
         }
        })
        .fail(function (err) {
-        console.log('fail');
         reject(err);
        })
     })

@@ -14,6 +14,7 @@ module.exports = Backbone.View.extend({
         var template = Handlebars.compile(template);
         var data = this.model.toJSON();
         var html = template(data);
+        console.log(data);
 
         this.$el.html(html);
 
