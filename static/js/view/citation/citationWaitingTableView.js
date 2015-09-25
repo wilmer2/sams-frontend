@@ -7,6 +7,7 @@ var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
   template: 'citation/templates/citationWaitingTable.html',
+  className: 'citationWaitingTableView',
   boxError: Handlebars.compile($('#error-citation').html()),
 
   initialize: function () {

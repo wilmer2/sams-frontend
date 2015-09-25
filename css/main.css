@@ -115,6 +115,16 @@
 .instanceWaitingShowView .centerButtonsRows button {
   margin: 0em 2%;
 }
+.citationWaitingTableView h3 {
+  text-align: center;
+}
+.citationWaitingTableView table {
+  width: 85%;
+  margin: auto;
+}
+.citationWaitingTableView table .optionsColumn {
+  width: 10em;
+}
 .u-disabled {
   display: none;
 }
