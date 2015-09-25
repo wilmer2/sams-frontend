@@ -50,12 +50,14 @@
   justify-content: center;
 }
 .mainContent {
-  padding: 2em;
+  padding: 6em 2em 2em 2em;
   margin-left: 22em;
 }
 .header {
   height: 4em;
   display: flex;
+  position: fixed;
+  width: 100%;
   background-color: #467abf;
   color: #fff;
 }
