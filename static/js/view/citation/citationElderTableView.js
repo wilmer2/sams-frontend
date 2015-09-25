@@ -9,6 +9,7 @@ var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
   template: 'citation/templates/citationElderTable.html',
+  className: 'citationElderTableView',
   boxError: $('#error-citation').html(),
 
   initialize: function () {

@@ -117,6 +117,16 @@
 .instanceWaitingShowView .centerButtonsRows button {
   margin: 0em 2%;
 }
+.citationElderTableView h3 {
+  text-align: center;
+}
+.citationElderTableView table {
+  width: 30em;
+  margin: auto;
+}
+.citationElderTableView table .showColumn {
+  width: 5em;
+}
 .citationWaitingTableView h3 {
   text-align: center;
 }
@@ -143,4 +153,8 @@
   height: 90px;
   overflow-y: scroll;
   width: 900px;
+}
+.paginationView {
+  display: flex;
+  justify-content: space-between;
 }

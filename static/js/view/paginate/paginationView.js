@@ -5,6 +5,7 @@ var Handlebars = require('handlebars');
 
 module.exports = Backbone.View.extend({
 	template: 'paginate/templates/pagination.html',
+	className: 'paginationView',
 
 	events: {
 		'click a.page' :'goToPage',
