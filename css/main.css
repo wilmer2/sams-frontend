@@ -127,6 +127,20 @@
 .citationElderTableView table .showColumn {
   width: 5em;
 }
+.citationShowView h3 {
+  text-align: center;
+}
+.citationShowView table {
+  width: 30em;
+  margin: 1em auto;
+}
+.citationShowView .buttonsRow {
+  display: flex;
+  justify-content: center;
+}
+.citationShowView .buttonsRow button {
+  margin: 0em 2%;
+}
 .citationWaitingTableView h3 {
   text-align: center;
 }

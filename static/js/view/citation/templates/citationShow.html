@@ -1,30 +1,37 @@
 <div>
   <h3>Datos de cita</h3>
 </div>
+
+<hr>
+
 {{#if notFound}}
-<div>
-  <p>Cita no encontrada</p>
+<div class="alert alert-danger" role="alert">
+  Cita no encontrada
 </div>
 {{else}}
-<ul>
-  <li>
-    <strong>Fecha</strong> <span>{{date_day}}</span>
-  </li>
-  <li>
-    <strong>Hora</strong> <span>{{hour}}</span>
-  </li>
-  <li>
-    <strong>Razon</strong> <div>{{reason}}</div>
-  </li>
-  <li>
-    <strong>Estado</strong> <span>{{state}}</span>
-  </li>
-</ul>
-<div>
+<table class="table">
+  <tr>
+    <td><strong>Fecha</strong></td>
+     <td><span>{{date_day}}</span></td>
+  </tr>
+  <tr>
+    <td><strong>Hora</strong></td>
+     <td><span>{{hour}}</span></td>
+  </tr>
+  <tr>
+    <td><strong>Razon</strong></td>
+     <td><div>{{reason}}</div></td>
+  </tr>
+  <tr>
+    <td><strong>Estado</strong></td>
+     <td><span>{{state}}</span></td>
+  </tr>
+</table>
+<div class="buttonsRow">
   {{#if waiting}}
-  <button class="btn btn-primary btn-edit">Editar</button>
+  <button class="btn btn-primary btn-edit"><i class="fa fa-edit"></i> Editar</button>
   {{/if}}
-  <button class="btn btn-danger btn-delete">Eliminar</button>
+  <button class="btn btn-danger btn-delete"><i class="fa fa-trash-o"></i> Eliminar</button>
 </div>
 
 {{/if}}
