@@ -13,7 +13,8 @@ var cssDependencies = [
   'node_modules/bootstrap/dist/css/bootstrap.min.css',
   'node_modules/toastr/build/toastr.min.css',
   'node_modules/normalize.css/normalize.css',
-  'node_modules/font-awesome/css/font-awesome.css'
+  'node_modules/font-awesome/css/font-awesome.css',
+  'node_modules/alertifyjs/build/css/alertify.min.css'
 ];
 
 // Input file.

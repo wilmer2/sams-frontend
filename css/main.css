@@ -65,3 +65,52 @@
 .header ul {
   display: flex;
 }
+.elderShowView h3 {
+  text-align: center;
+}
+.elderShowView .alert {
+  min-width: 30em;
+  max-width: 40em;
+  margin: auto;
+}
+.elderShowView .table {
+  min-width: 30em;
+  max-width: 45em;
+  margin: 1em auto;
+}
+.elderShowView .buttonsRow {
+  display: flex;
+  justify-content: center;
+}
+.elderShowView .buttonsRow button {
+  margin: 0em 5%;
+}
+.elderEditView h3 {
+  text-align: center;
+}
+.elderEditView form {
+  min-width: 30em;
+  max-width: 40em;
+  margin: auto;
+}
+.elderEditView .submitRow {
+  display: flex;
+  justify-content: center;
+}
+.u-disabled {
+  display: none;
+}
+.u-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(1,1,1,0.5);
+}
+.Notify {
+  border: solid 1px #f00;
+  height: 90px;
+  overflow-y: scroll;
+  width: 900px;
+}

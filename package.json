@@ -4,8 +4,7 @@
   "description": "aplicacion del lado del frotend",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "install": "bower install && npm install"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "wilmer maldonadoo and @pedronalbert",
   "license": "mit",

@@ -6,6 +6,7 @@ var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
   template: 'elder/templates/elderShow.html',
+  className: 'elderShowView',
   events: {
     'click .btn-edit': 'redirectEdit',
     'click .btn-delete': 'confirmDelete'

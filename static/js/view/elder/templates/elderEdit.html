@@ -1,39 +1,99 @@
-  <form id="formEdit-elder">
-    <input type="text" placeholder="Cedula" name="identity_card" value={{identity_card}}>
-    <input type="text" placeholder="Nombre" name="full_name" value={{full_name}}>
-    <textarea name="address">{{address}}</textarea>
-    <label>
-      <input type="radio" name="gender" value="m">M
-    </label>
-    <label>
-      <input type="radio" name="gender" value="f">F
-    </label>
-    <select name="civil_status">
-      <option value="married" {{selected civil_status "married"}}>Casado</option>
-      <option value="single" {{selected civil_status "single"}}>Soltero</option>
-    </select>
-    <input type="date" name="date_birth" value="{{old_date}}">
-    <label><input type="checkbox" name="retired" {{#if retired}} checked {{/if}}> Jubilado</label>
-   <label><input type="checkbox" name="pensioner" {{#if pensioner}} checked {{/if}}>Pensionado</label>
-   <button type="submit">enviar</button>
-  </form>
-  <div class="Modal u-disabled u-modal">
-      <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4>Historia</h4>
-        </div>
-        <div class="modal-body">
-          <p>
-            Desea agregar historia?
-          </p>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-primary Modal-item">Confirmar</button>
-          <button class="btn btn-danger Modal-item">Cancelar</button>
-        </div>
-        </div>
-      </div>
+<h3>
+  Editar información
+</h3>
+
+<hr>
+
+<form id="formEdit-elder" class="form-horizontal">
+  <div class="form-group">
+    <label class="control-label col-sm-2">Nombre</label>
+    <div class="col-sm-10">
+      <input class="form-control" type="text" placeholder="Nombre" name="full_name" value={{full_name}}>
+    </div>
   </div>
+
+  <div class="form-group">
+    <label class="control-label col-sm-2">Cédula</label>
+    <div class="col-sm-10">
+      <input class="form-control" type="text" placeholder="Cedula" name="identity_card" value={{identity_card}}>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="control-label col-sm-2">Direccion</label>
+    <div class="col-sm-10">
+      <textarea class="form-control" name="address">{{address}}</textarea>
+    </div>
+  </div> 
+
+   <div class="form-group">
+    <label class="control-label col-sm-2">Direccion</label>
+    <div class="col-sm-10">
+      <textarea class="form-control" name="address">{{address}}</textarea>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="control-label col-sm-2">Sexo</label>
+    <div class="col-sm-10">
+      <label class="radio-inline">
+        <input type="radio" name="gender" value="m">M
+      </label>
+      <label class="radio-inline">
+        <input type="radio" name="gender" value="f">F
+      </label>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="control-label col-sm-2">Estado civil</label>
+    <div class="col-sm-10">
+      <select class="form-control" name="civil_status">
+        <option value="married" {{selected civil_status "married"}}>Casado</option>
+        <option value="single" {{selected civil_status "single"}}>Soltero</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="control-label col-sm-2">Fecha de nacimiento</label>
+    <div class="col-sm-10">
+      <input class="form-control" type="date" name="date_birth" value="{{old_date}}">
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="control-label col-sm-2">Estado</label>
+    <label class="radio-inline">
+      <input type="checkbox" name="retired" {{#if retired}} checked {{/if}}> Jubilado
+    </label>
+    <label class="radio-inline">
+      <input type="checkbox" name="pensioner" {{#if pensioner}} checked {{/if}}>Pensionado
+    </label>
+  </div>
+
+  <div class="submitRow">
+    <button class="btn btn-primary" type="submit"> Actualizar Información</button>
+  </div>
+</form>
+
+<div class="Modal u-disabled u-modal">
+    <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4>Historia</h4>
+      </div>
+      <div class="modal-body">
+        <p>
+          Desea agregar historia?
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary Modal-item">Confirmar</button>
+        <button class="btn btn-danger Modal-item">Cancelar</button>
+      </div>
+      </div>
+    </div>
+</div>
 
 

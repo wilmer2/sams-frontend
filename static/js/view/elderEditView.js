@@ -5,6 +5,7 @@ var util       = require('../util/util');
 
 module.exports = Backbone.View.extend({
   template: 'elder/templates/elderEdit.html',
+  className: 'elderEditView',
 
   events: {
     'submit #formEdit-elder' : 'edit',
