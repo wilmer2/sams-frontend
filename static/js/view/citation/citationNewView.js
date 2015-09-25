@@ -5,6 +5,7 @@ var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
   template: 'citation/templates/citationNew.html',
+  className: 'citationNewView',
   events: {
     'submit #citation-register': 'register'
   },
