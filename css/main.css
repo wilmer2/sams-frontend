@@ -177,11 +177,6 @@
 .citationWaitingTableView table .optionsColumn {
   width: 10em;
 }
-.outputNewView form,
-.outputNewView .alert {
-  width: 40em;
-  margin: auto;
-}
 .u-disabled {
   display: none;
 }
