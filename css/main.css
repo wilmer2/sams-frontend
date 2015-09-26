@@ -67,18 +67,6 @@
 .header ul {
   display: flex;
 }
-.elderEditView h3 {
-  text-align: center;
-}
-.elderEditView form {
-  min-width: 30em;
-  max-width: 40em;
-  margin: auto;
-}
-.elderEditView .submitRow {
-  display: flex;
-  justify-content: center;
-}
 .instanceWaitingShowView .panel {
   width: 35em;
   margin: auto;
