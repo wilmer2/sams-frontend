@@ -1,45 +1,139 @@
 {{#if notFound}}
-<div>
-  <p>Empleado no encontrado</p>
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+    <div class="alert alert-warning center-block" role="alert">
+      Empleado no encontrado
+    </div>
+  </div>
 </div>
 {{else}}
-<div>
-   <div>
-     <span>Cedula</span> <span>{{identity_card}}</span>
-   </div>
-   <div>
-     <span>Nombre</span> <span>{{first_name}}</span>
-   </div>
-   <div>
-     <span>Apellido</span> <span>{{last_name}}</span>
-   </div>
-   <div>
-     <span>Fecha de nacimiento</span> <span>{{date_birth}}</span>
-   </div>
-   <div>
-     <span>Telefono</span> {{#if phone}} <span>{{phone}}</span>{{else}} <span>No aplica</span>{{/if}}
-   </div>
-   <div> 
-     <span>Direccion</span> <p>{{address}}</p>
-   </div>
-   <div>
-     <span>Genero</span> <span>{{gender}}</span>
-   </div>
-   <div>
-     <span>Grado de instruccion</span> <span>{{degree_instruction}}</span>
-   </div>
-   <div>
-     <span>Estado civil</span> <span>{{civil_status}}</span>
-   </div>
-   <div>
-     <span>Cargo</span> <span>{{office}}</span>
-   </div>
-   <div>
-     <span>Estado</span> {{#if activiti}} <span>activo</span> {{else}} <span>No activo</span> {{/if}}
-   </div>
-   <div>
-     <button class="btn btn-primary btn-edit">Editar</button>
-     <button class="btn btn-dange btn-delete">Eliminar</button>
-   </div>
+
+<h3 class="text-center">Informacion del empleado</h3>
+
+<hr>
+
+<div class="row">
+  <div class="col-md-8 col-md-offset-2">
+    <table class="table">
+      <tr>
+        <th class="text-center active" colspan="2">Informacion</th>
+      <tr>
+        <tr>   
+          <td>
+            <span>Cedula</span>
+          </td> 
+          <td>
+            <span>{{identity_card}}</span>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <span>Nombre</span>
+          </td> 
+          <td>
+            <span>{{first_name}}</span>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <span>Apellido</span>
+          </td> 
+          <td>
+            <span>{{last_name}}</span>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <span>Fecha de nacimiento</span>
+          </td> 
+          <td>
+            <span>{{date_birth}}</span>
+          </td>
+          </tr>
+
+        <tr>
+          <td>
+            <span>Telefono</span>
+          </td> 
+          <td>
+            {{#if phone}} 
+            <span>{{phone}}</span>
+            {{else}} 
+            <span>No aplica</span>
+            {{/if}}
+          </td>
+        </tr>
+
+        <tr> 
+        <td>
+          <span>Direccion</span>
+        </td> 
+        <td>
+          <span>{{address}}</span>
+        </td>
+        </tr>
+
+        <tr>
+          <td>
+            <span>Genero</span>
+          </td> 
+          <td>
+            <span>{{gender}}</span>
+          </td>
+        </tr>
+
+        <tr> 
+          <td>
+            <span>Grado de instruccion</span>
+          </td> 
+          <td>
+            <span>{{degree_instruction}}</span>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <span>Estado civil</span>
+          </td> 
+          <td>
+            <span>{{civil_status}}</span>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <span>Cargo</span>
+          </td> 
+          <td>
+            <span>{{office}}</span>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <span>Estado</span>
+          </td>
+          <td> 
+            {{#if activiti}} 
+              <span>activo</span>
+            {{else}} 
+              <span>No activo</span>
+            {{/if}}
+          </td> 
+        </tr>   
+    </table>
+
+    <div class="row">
+      <div class="col-md-1 col-md-offset-4">
+        <button class="btn btn-primary btn-edit"><i class="fa fa-edit"></i> Editar</button>
+      </div>
+      <div class="col-md-1 col-md-offset-1">
+        <button class="btn btn-danger btn-delete"><i class="fa fa-trash-o"></i> Eliminar</button>
+      </div>
+    </div>
   </div>
-  {{/if}}
+</div>
+{{/if}}
