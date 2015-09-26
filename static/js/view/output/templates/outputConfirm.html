@@ -1,25 +1,45 @@
-<div>
-  <h3>
-    Desea agregar informacion adicional
-  </h3>
-</div>
+<h3 class="text-center">¿Desea agregar informacion adicional?</h3>
+
+<hr>
+
 {{#if notFound}}
-  <div>
-    <p>Salida no encontrada</p>
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+    <div class="alert alert-warning center-block" role="alert">
+      Salida no encontrada
+    </div>
   </div>
+</div>
 {{else}}
 
   {{#if state}}
-  <form id="output-confirm">
-    <textarea name="info">
-      {{info}}
-    </textarea>
-    <button class="btn btn-primary" type="submit">Guardar</button>
-    <button class="btn btn-danger btn-cancel" type="button">Cancelar</button>
-  </form>
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <form id="output-confirm" class="form-horizontal">
+
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-4 control-label">Información Adicional</label>
+          <div class="col-sm-8">
+            <textarea class="form-control" name="info"> {{info}}</textarea>
+          </div>
+        </div>
+
+        <div class="col-md-1 col-md-offset-4">
+          <button class="btn btn-primary" type="submit"><i class="fa fa-save"></i> Guardar</button>
+        </div>
+        <div class="col-md-1 col-md-offset-1">
+          <button class="btn btn-danger btn-cancel" type="button"><i class="fa fa-times"></i> Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
   {{else}}
-    <div>
-      <p>Salida aun no ha sido confirmada</p>
+    <div class="row">
+      <div class="col-md-6 col-md-offset-3">
+        <div class="alert alert-warning center-block" role="alert">
+          Salida no ha sido confirmada
+        </div>
+      </div>
     </div>
   {{/if}}
 {{/if}}
