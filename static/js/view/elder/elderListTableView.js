@@ -3,11 +3,12 @@ var $ = require('jquery');
 var _ = require('underscore');
 var Handlebars = require('handlebars');
 var PaginateView = require('../paginate/paginationView');
-var ElderView = require('./elderRowView');
+var ElderView = require('./elderListTableRowView');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-	template: 'elder/templates/elderTable.html',
+	template: 'elder/templates/elderListTable.html',
+  className: 'elderListTableView',
 	boxError: Handlebars.compile($('#error-elder').html()),
 
 	events: {

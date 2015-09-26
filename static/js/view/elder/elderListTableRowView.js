@@ -4,7 +4,7 @@ var Handlebars = require('handlebars');
 
 module.exports = Backbone.View.extend({
 	tagName: 'tr',
-	template: 'elder/templates/elderRow.html',
+	template: 'elder/templates/elderListTableRow.html',
   events: {
     'click .btn-show': 'redirectShow'
   },

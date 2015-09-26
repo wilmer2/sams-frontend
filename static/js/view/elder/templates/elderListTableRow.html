@@ -1,0 +1,22 @@
+ {{#if image_url}}
+  <td>
+    <img class="img-responsive img-rounded" src="{{image_url}}">
+  </td>
+  {{else}}
+  <td>
+      <img class="img-responsive img-rounded" src="http://localhost/image/geriatric/default/profile_default_man.png">
+  </td>
+  {{/if}}
+  <td>
+    <span>{{identity_card}}</span>
+  </td>
+  <td>
+    {{#if full_name}}
+    <span>{{full_name}}</span>
+    {{else}}
+    <span> No aplica </span>
+    {{/if}}
+  </td>
+  <td>
+    <button class="btn btn-primary btn-show"><i class="fa fa-eye"></i></button>
+  </td>

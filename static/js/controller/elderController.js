@@ -3,8 +3,8 @@ var Elder = require('../model/elder');
 var Elders = require('../collection/elders');
 var ElderShow = require('../view/elder/elderShowView');
 var ElderEdit = require('../view/elder/elderEditView');
-var ElderList = require('../view/elder/elderTableView');
-var ElderNotResident = require('../view/elder/elderNotResidentTableView');
+var ElderList = require('../view/elder/elderListTableView');
+var ElderNotResident = require('../view/elder/elderNotResidentListTableView');
 
 function ElderCtrl () {
   this.show = function (elder) {

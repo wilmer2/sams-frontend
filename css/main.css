@@ -74,6 +74,18 @@
 .employeeTableView .employeeTable td {
   line-height: 4em;
 }
+.elderListTableView .elderListTable img {
+  width: 4em;
+}
+.elderListTableView .elderListTable td {
+  line-height: 4em;
+}
+.elderNotResidentListTableView .elderNotResidentListTable img {
+  width: 4em;
+}
+.elderNotResidentListTableView .elderNotResidentListTable td {
+  line-height: 4em;
+}
 .u-disabled {
   display: none;
 }
