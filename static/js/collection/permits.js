@@ -1,5 +1,5 @@
 var PageableCollection = require('backbone.paginator');
-var Permit = require('../model/Permit');
+var Permit = require('../model/permit');
 
 module.exports = PageableCollection.extend({
   model: Permit,

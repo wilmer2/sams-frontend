@@ -1,115 +1,210 @@
-<div>
-  <h3>
-    Editar Historia Clinica
-  </h3>
-</div>
+<h3 class="text-center">Editar Historia Clinica</h3>
+
+<hr>
+
 {{#if notFound}}
-    <div>
-      <p>Historia clinica no encontrada</p>
+    <div class="row">
+      <div class="col-md-6 col-md-offset-3">
+        <div class="alert alert-warning center-block" role="alert">
+          Historia clinica no encontrada
+        </div>
+      </div>
     </div>
   {{else}}
-   <form id="form-editRecord">
-    <label for="self_validating">
-       Autovalido
-       <input type="checkbox" name="self_validating" {{#if self_validating}}checked{{/if}}>
-    </label>
-    <label for="feeding_assisted">
-      Alimentacion Asistida 
-      <input type="checkbox" name="feeding_assisted" {{#if feeding_assisted}} checked {{/if}}>
-    </label>
-    <label for="size_diaper">Talla de pañal</label>
-    <select name="size_diaper">
-      <option value="S" {{selected size_diaper "S"}}>Pequeña</option>
-      <option value="M" {{selected size_diaper "M"}}>Mediana</option>
-      <option value="L" {{selected size_diaper "L"}}>Grande</option>
-    </select>
-    <label for="baston">Baston</label>
-    <select name="baston">
-      <option value="1 point" {{selected baston "1 point"}}>1 Punto</option>
-      <option value="3 point" {{selected baston "3 point"}}>3 Punto</option>
-      <option value="4 point" {{selected baston "4 point"}}>4 Punto</option>
-    </select>
-    <label for="muleta">Muleta</label>
-    <select name="muleta">
-     <option value="canadian" {{selected muleta "canadian"}}>Canadiense</option>
-     <option value="auxiliary"{{selected muleta "auxiliary"}}>Auixiliares</option>
-    </select>
-    <label for="disability_moto">Discapacidad motora</label>
-    <select name="disability_moto">
-     <option value="parcial" {{selected disability_moto "parcial"}}>Parcial</option>
-     <option value="total"  {{selected disability_moto  "total"}}>Total</option>
-    </select>
-    <label for="disability_visual">Discapacidad visual</label>
-    <select name="disability_visual">
-     <option value="parcial" {{selected disability_visual "parcial"}}>Parcial</option>
-     <option value="total"  {{selected disability_visual  "total"}}>Total</option>
-    </select>
-    <label for="disability_hearing">Discapacidad auditiva</label>
-    <select name="disability_visual">
-     <option value="parcial" {{selected disability_hearing "parcial"}}>Parcial</option>
-     <option value="total"  {{selected disability_hearing  "total"}}>Total</option>
-    </select>
-    <label for="index_katz">Indice kast</label>
-    <select name="index_katz">
-      <option value="A" {{selected index_katz "A"}}>A</option>
-      <option value="B" {{selected index_katz "B"}}>B</option>
-      <option value="C" {{selected index_katz "C"}}>C</option>
-      <option value="D" {{selected index_katz "D"}}>D</option>
-      <option value="E" {{selected index_katz "E"}}>E</option>
-      <option value="F" {{selected index_katz "F"}}>F</option>
-      <option value="G" {{selected index_katz "G"}}>G</option>
-      <option value="H" {{selected index_katz "H"}}>H</option>
-    </select>
-    <label for="index_lawtonbrody">Indice de lawton brody</label>
-    <select name="index_lawtonbrody">
-      <option value="0" {{selected index_lawtonbrody "0"}}>0</option>
-      <option value="1" {{selected index_lawtonbrody "1"}}>1</option>
-      <option value="2" {{selected index_lawtonbrody "2"}}>2</option>
-      <option value="3" {{selected index_lawtonbrody "3"}}>3</option>
-      <option value="4" {{selected index_lawtonbrody "4"}}>4</option>
-      <option value="5" {{selected index_lawtonbrody "5"}}>5</option>
-      <option value="6" {{selected index_lawtonbrody "6"}}>6</option>
-      <option value="7" {{selected index_lawtonbrody "7"}}>7</option>
-      <option value="8" {{selected index_lawtonbrody "8"}}>8</option>
-    </select>
-    <label for="disability_physical">Escala cruz roja de incapacidad fisica</label>
-    <select name="disability_physical">
-      <option value="0" {{selected disability_physical "0"}}>0</option>
-      <option value="1" {{selected disability_physical "1"}}>1</option>
-      <option value="2" {{selected disability_physical "2"}}>2</option>
-      <option value="3" {{selected disability_physical "3"}}>3</option>
-      <option value="4" {{selected disability_physical "4"}}>4</option>
-      <option value="5" {{selected disability_physical "5"}}>5</option>
-    </select>
-    <label for="disability_psychic">Escala cruz roja grados de incapacidad psiquica</label>
-    <select name="disability_psychic">
-      <option value="0"  {{selected disability_psychic "0"}}>0</option>
-      <option value="1" {{selected disability_psychic "1"}}>1</option>
-      <option value="2" {{selected disability_psychic "2"}}>2</option>
-      <option value="3" {{selected disability_psychic "3"}}>3</option>
-      <option value="4" {{selected disability_psychic "4"}}>4</option>
-      <option value="5" {{selected disability_psychic "5"}}>5</option>
-    </select>
-    <label for="wheelchair">
-      Silla de ruedas 
-      <input type="checkbox" name="wheelchair" {{#if wheelchair}}checked{{/if}}>
-    </label>
-    <label for="walker">
-      Andadera 
-     <input type="checkbox" name="walker" {{#if walker}} checked {{/if}}>
-    </label>
-    <label for="allergies">Alergias</label>
-    <textarea name="allergies">{{allergies}}</textarea>
-    <label for="pathology_psychiatric">Patologia psiquitrica</label>
-    <textarea name="pathology_psychiatric">{{pathology_psychiatric}}</textarea>
-    <label for="pathology_chronic">Patologia cronica</label>
-    <textarea name="pathology_chronic">{{pathology_chronic}}</textarea>
-    <label>Subir foto</label>
-    <input type="file" id="file-editRecord">
-    <button class="Form-btnCamera btn btn-info" type="button">Tomar foto</button>
-    <button class="btn btn-success" type="submit">Enviar </button>
-   </form>
-  <canvas class="Lienzo"></canvas>
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+       <form id="form-editRecord" class="form-horizontal">
+
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-4 control-label">Alergias</label>
+          <div class="col-sm-8">
+            <textarea class="form-control" rows="5" name="allergies">{{allergies}}</textarea>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-4 control-label">Patologia psiquiatrica</label>
+          <div class="col-sm-8">
+            <textarea class="form-control" rows="5" name="pathology_psychiatric">{{pathology_psychiatric}}</textarea>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-4 control-label">Patologia crónica</label>
+          <div class="col-sm-8">
+            <textarea class="form-control" rows="5" name="pathology_chronic">{{pathology_chronic}}</textarea>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-4 control-label">Talla de pañal</label>
+          <div class="col-sm-8">
+            <select class="form-control" name="size_diaper">
+              <option value="S" {{selected size_diaper "S"}}>Pequeña</option>
+              <option value="M" {{selected size_diaper "M"}}>Mediana</option>
+              <option value="L" {{selected size_diaper "L"}}>Grande</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-4 control-label">Baston</label>
+          <div class="col-sm-8">
+            <select class="form-control" name="baston">
+              <option value="1 point" {{selected baston "1 point"}}>1 Punto</option>
+              <option value="3 point" {{selected baston "3 point"}}>3 Punto</option>
+              <option value="4 point" {{selected baston "4 point"}}>4 Punto</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-4 control-label">Muleta</label>
+          <div class="col-sm-8">
+            <select class="form-control" name="muleta">
+             <option value="canadian" {{selected muleta "canadian"}}>Canadiense</option>
+             <option value="auxiliary"{{selected muleta "auxiliary"}}>Auixiliares</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-4 control-label">Discapacidad motora</label>
+          <div class="col-sm-8">
+            <select class="form-control" name="disability_moto">
+             <option value="parcial" {{selected disability_moto "parcial"}}>Parcial</option>
+             <option value="total"  {{selected disability_moto  "total"}}>Total</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-4 control-label">Discapacidad visual</label>
+          <div class="col-sm-8">
+            <select class="form-control" name="disability_visual">
+             <option value="parcial" {{selected disability_visual "parcial"}}>Parcial</option>
+             <option value="total"  {{selected disability_visual  "total"}}>Total</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-4 control-label">Discapacidad auditiva</label>
+          <div class="col-sm-8">
+            <select class="form-control" name="disability_hearing">
+             <option value="parcial" {{selected disability_hearing "parcial"}}>Parcial</option>
+             <option value="total"  {{selected disability_hearing  "total"}}>Total</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-4 control-label">Indice de kast</label>
+          <div class="col-sm-8">
+            <select class="form-control" name="index_katz">
+              <option value="A" {{selected index_katz "A"}}>A</option>
+              <option value="B" {{selected index_katz "B"}}>B</option>
+              <option value="C" {{selected index_katz "C"}}>C</option>
+              <option value="D" {{selected index_katz "D"}}>D</option>
+              <option value="E" {{selected index_katz "E"}}>E</option>
+              <option value="F" {{selected index_katz "F"}}>F</option>
+              <option value="G" {{selected index_katz "G"}}>G</option>
+              <option value="H" {{selected index_katz "H"}}>H</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-4 control-label">Indice de lawton brody</label>
+          <div class="col-sm-8">
+            <select class="form-control" name="index_lawtonbrody">
+              <option value="0" {{selected index_lawtonbrody "0"}}>0</option>
+              <option value="1" {{selected index_lawtonbrody "1"}}>1</option>
+              <option value="2" {{selected index_lawtonbrody "2"}}>2</option>
+              <option value="3" {{selected index_lawtonbrody "3"}}>3</option>
+              <option value="4" {{selected index_lawtonbrody "4"}}>4</option>
+              <option value="5" {{selected index_lawtonbrody "5"}}>5</option>
+              <option value="6" {{selected index_lawtonbrody "6"}}>6</option>
+              <option value="7" {{selected index_lawtonbrody "7"}}>7</option>
+              <option value="8" {{selected index_lawtonbrody "8"}}>8</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-4 control-label">Escala de cruz roja de fisica</label>
+          <div class="col-sm-8">
+            <select class="form-control" name="disability_physical">
+              <option value="0" {{selected disability_physical "0"}}>0</option>
+              <option value="1" {{selected disability_physical "1"}}>1</option>
+              <option value="2" {{selected disability_physical "2"}}>2</option>
+              <option value="3" {{selected disability_physical "3"}}>3</option>
+              <option value="4" {{selected disability_physical "4"}}>4</option>
+              <option value="5" {{selected disability_physical "5"}}>5</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-4 control-label">Escala de cruz roja de incapacidad psiquica</label>
+          <div class="col-sm-8">
+            <select class="form-control" name="disability_psychic">
+              <option value="0"  {{selected disability_psychic "0"}}>0</option>
+              <option value="1" {{selected disability_psychic "1"}}>1</option>
+              <option value="2" {{selected disability_psychic "2"}}>2</option>
+              <option value="3" {{selected disability_psychic "3"}}>3</option>
+              <option value="4" {{selected disability_psychic "4"}}>4</option>
+              <option value="5" {{selected disability_psychic "5"}}>5</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-4 control-label">Autoválido</label>
+          <div class="col-sm-8">
+           <input type="checkbox" name="self_validating" {{#if self_validating}}checked{{/if}}>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-4 control-label">Alimentacion Asistida</label>
+          <div class="col-sm-8">
+            <input type="checkbox" name="feeding_assisted" {{#if feeding_assisted}} checked {{/if}}>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-4 control-label">Silla de ruedas</label>
+          <div class="col-sm-8">
+            <input type="checkbox" name="wheelchair" {{#if wheelchair}}checked{{/if}}>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-4 control-label">Andadera</label>
+          <div class="col-sm-8">
+             <input type="checkbox" name="walker" {{#if walker}} checked {{/if}}>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-4 control-label">Subir foto</label>
+          <div class="col-sm-8">
+            <input type="file" id="file-editRecord">
+          </div>
+        </div>
+        
+        <br>
+        <button class="Form-btnCamera btn btn-info center-block" type="button"><i class="fa fa-camera"></i> Tomar foto</button>
+        <br>
+        <canvas class="Lienzo center-block"></canvas>
+        <br>
+        <button class="btn btn-primary center-block" type="submit">Actualizar Historial </button>
+       </form>
+
+    </div>
+  </div>
+
   <div class="Modal u-disabled u-modal">
       <div class="modal-dialog">
           <div class="modal-content">
