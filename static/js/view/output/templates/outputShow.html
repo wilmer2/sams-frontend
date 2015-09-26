@@ -1,50 +1,80 @@
 {{#if notFound}}
-  <p>Salida no encontrada</p>
-{{else}}
-<div>
-  <h3>
-    Informacion de Salida
-  </h3>
-</div>
-<div>
-  <strong>Tipo</strong> 
-  <span>{{type}}</span>
-</div>
-<div>
-  <strong>Estado</strong> 
-  {{#if state}} 
-    <span>confirmada</span> 
-  {{else}} 
-    <span>en espera</span> 
-  {{/if}}
-</div>
-{{#if date_start}}
-<div>
-  <strong>Fecha de Salida</strong>
-  <span>{{date_start}}</span>
-</div>
-<div>
-  <strong>
-    Fecha de Llegada
-  </strong>
-  <span>{{data_end}}</span>
-</div>
-{{/if}}
-
-{{#if info}}
-<div>
-  <strong>
-    Informacion
-  </strong>
-  <div>
-    <p>
-      {{info}}
-    </p>
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3">
+      <div class="alert alert-warning center-block" role="alert">
+        Salida no encontrada
+      </div>
+    </div>
   </div>
-</div>
-{{/if}}
-<div>
-  <button class="btn btn-primary btn-edit">Editar</button>
-  <button class="btn btn-danger btn-delete">Eliminar</button>
-</div>
+{{else}}
+
+  <h3 class="text-center">Informacion de Salida</h3>
+  <hr>
+  
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <table class="table">
+        <tr>
+          <td>
+            <strong>Tipo</strong> 
+          </td>
+          <td>
+            <span>{{type}}</span>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <strong>Estado</strong> 
+          </td>
+          <td>
+            {{#if state}} 
+              <span>confirmada</span> 
+            {{else}} 
+              <span>en espera</span> 
+            {{/if}}
+          </td>
+        </tr>
+        {{#if date_start}}
+          <tr>
+            <td>
+              <strong>Fecha de Salida</strong>
+            </td>
+            <td>
+              <span>{{date_start}}</span>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <strong>
+              Fecha de Llegada
+            </strong>
+            </td>
+            <td>
+              <span>{{data_end}}</span>
+            </td>
+          </tr>
+        {{/if}}
+
+        {{#if info}}
+          <tr>
+            <td>
+              <strong>Informacion</strong>
+            </td>
+            <td>
+                {{info}}
+            </td>
+          </tr>
+        {{/if}}
+      </table>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-1 col-md-offset-4">
+      <button class="btn btn-primary btn-edit"><i class="fa fa-edit"></i> Editar</button>
+    </div>
+    <div class="col-md-1 col-md-offset-1">
+      <button class="btn btn-danger btn-delete"><i class="fa fa-trash-o"></i> Eliminar</button>
+    </div>
+  </div>
 {{/if}}
