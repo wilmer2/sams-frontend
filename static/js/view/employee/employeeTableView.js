@@ -7,6 +7,7 @@ var EmployeeView = require('./employeeRowView');
 
 module.exports = Backbone.View.extend({
   template: 'employee/templates/employeeTable.html',
+  className: 'employeeTableView',
   boxError: Handlebars.compile($('#error-employee').html()),
 
   events: {

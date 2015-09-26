@@ -1,13 +1,9 @@
 <td>
-  {{#if image_url}}
-  <figure>
-    <img src="{{image_url}}">
-  </figure>
-  {{else}}
-  <figure>
-    <img src="http://localhost/image/geriatric/default/profile_default_man.png">
-  </figure>
-  {{/if}}
+    {{#if image_url}}
+      <img class="img-responsive img-rounded" src="{{image_url}}">
+    {{else}}
+      <img class="img-responsive img-rounded" src="http://localhost/image/geriatric/default/profile_default_man.png">
+    {{/if}}
 </td>
 <td>{{identity_card}}</td>
 <td>{{first_name}} {{last_name}}</td>
@@ -18,4 +14,6 @@
    No activo
    {{/if}}
 </td>
-<td><button class="btn btn-primary btn-show">Ver</button></td>
+<td>
+  <button class="btn btn-primary btn-show"><i class="fa fa-eye"></i></button>
+</td>

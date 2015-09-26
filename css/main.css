@@ -67,6 +67,12 @@
 .header ul {
   display: flex;
 }
+.employeeTableView .employeeTable img {
+  width: 4em;
+}
+.employeeTableView .employeeTable td {
+  line-height: 4em;
+}
 .u-disabled {
   display: none;
 }
