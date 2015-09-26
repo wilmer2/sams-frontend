@@ -10,8 +10,8 @@ module.exports = Backbone.View.extend({
   events: {
     'click .btn-edit': 'edit',
     'click .btn-cancel': 'cancel',
-    'click .btn-config': 'confirm',
-    'click .btn-delete': 'confirmDelete',
+    'click #confirm-button': 'confirm',
+    'click #delete-button': 'confirmDelete',
     'submit #instance-waitingEdit': 'submit'
   },
 

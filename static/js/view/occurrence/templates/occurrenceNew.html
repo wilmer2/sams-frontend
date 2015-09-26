@@ -1,20 +1,36 @@
 
-<div>
-  <h3>
-    Registro de Inicidencia
-  </h3>
-</div>
-{{#if activiti}}
-<form id="form-occurrence">
-  <label for="data">Fecha de incidencia</label>
-  <input type="date" name="date">
-  <label for="case_situation">Situacion del caso</label>
-  <textarea name="case_situation"></textarea>
-  <button class="Form-btnCamera btn btn-info" type="button">Tomar foto</button>
-  <button type="submit" class="btn btn-success">enviar</button>
-</form>
+<h3 class="text-center">Registro de Inicidencia</h3>
 
-<canvas class="Lienzo"></canvas>
+<hr>
+
+
+{{#if activiti}}
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <form id="form-occurrence" class="form-horizontal">
+
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-4 control-label">Fecha de incidencia</label>
+          <div class="col-sm-8">
+            <input type="date" name="date">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-4 control-label">Situación del caso</label>
+          <div class="col-sm-8">
+            <textarea name="case_situation"></textarea>
+          </div>
+        </div>
+
+        <button class="Form-btnCamera btn btn-info center-block" type="button"><i class="fa fa-camera" ></i> Tomar foto</button>
+        <button type="submit" class="btn btn-success center-block">enviar</button>
+      </form>
+
+      <canvas class="Lienzo"></canvas>
+    </div>
+  </div>
+
   <div class="Modal u-disabled u-modal">
       <div class="modal-dialog">
           <div class="modal-content">
@@ -38,9 +54,13 @@
           </div>
       </div>
   </div>
-{{else}}
 
-<div>
-  <p>Adulto no residente no puede registrar incidencias</p>
-</div>
+{{else}}
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3">
+      <div class="alert alert-warning center-block" role="alert">
+        Adulto no residente, no puede registrar incidencias
+      </div>
+    </div>
+  </div>
 {{/if}}

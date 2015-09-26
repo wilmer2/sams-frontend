@@ -1,63 +1,74 @@
   {{#if instance}}
-    <div class="alert alert-warning" role="alert">
-      Adulto mayor tiene notificacion de entrada pendiente
-      <a href="#elder/{{id}}/instance-waiting">Ver</a>
+    <div class="row">
+      <div class="col-md-6 col-md-offset-3">
+        <div class="alert alert-warning center-block" role="alert">
+          Adulto mayor tiene notificacion de entrada pendiente
+          <a href="#elder/{{id}}/instance-waiting">Ver</a>
+        </div>
+      </div>
     </div>
   {{/if}}
-  <div>
-    <h3>
-      Datos de Adulto Mayor
-    </h3>
+
+<h3 class="text-center">Datos de Adulto Mayor</h3>
+
+<hr>
+
+<div class="row">
+  <div class="col-md-8 col-md-offset-2">
+    <table class="table">
+      <tr>
+        <td><strong>Nombre</strong></td> 
+        {{#if full_name}}
+        <td>{{full_name}}</td>
+        {{else}}
+        <td>No aplica</td>
+        {{/if}}
+      </tr>
+      <tr>
+        <td><strong>Cedula</strong></td> 
+        <td>{{identity_card}}</td>
+      </tr>
+      <tr>
+        <td><strong>Direccion</strong></td> 
+        {{#if address}}
+        <td>{{address}}</td>
+        {{else}}
+        <td>No aplica</td>
+        {{/if}}
+      </tr>
+      <tr>
+        <td><strong>Genero</strong></td>
+        {{#if gender}}
+          <td>{{gender}}</td>
+        {{else}}
+        <td>No aplica</td>
+        {{/if}}
+      </tr>
+      <tr>
+        <td><strong>Fecha de Nacimiento</strong></td> 
+        {{#if date_birth}}
+        <td>{{date_birth}}</td>
+        {{else}}
+        <td>No aplica</td>
+        {{/if}}
+      </tr>
+      <tr>
+        <td><strong>Estado Civil</strong></td>
+        {{#if civil_status}}
+         <td>{{civil_status}}</td>
+        {{else}}
+         <td>No aplica</td>
+        {{/if}}
+      </tr>
+    </table>
   </div>
-  <div>
-  <table class="table">
-    <tr>
-      <td><strong>Nombre</strong></td> 
-      {{#if full_name}}
-      <td>{{full_name}}</td>
-      {{else}}
-      <td>No aplica</td>
-      {{/if}}
-    </tr>
-    <tr>
-      <td><strong>Cedula</strong></td> 
-      <td>{{identity_card}}</td>
-    </tr>
-    <tr>
-      <td><strong>Direccion</strong></td> 
-      {{#if address}}
-      <td>{{address}}</td>
-      {{else}}
-      <td>No aplica</td>
-      {{/if}}
-    </tr>
-    <tr>
-      <td><strong>Genero</strong></td>
-      {{#if gender}}
-        <td>{{gender}}</td>
-      {{else}}
-      <td>No aplica</td>
-      {{/if}}
-    </tr>
-    <tr>
-      <td><strong>Fecha de Nacimiento</strong></td> 
-      {{#if date_birth}}
-      <td>{{date_birth}}</td>
-      {{else}}
-      <td>No aplica</td>
-      {{/if}}
-    </tr>
-    <tr>
-      <td><strong>Estado Civil</strong></td>
-      {{#if civil_status}}
-       <td>{{civil_status}}</td>
-      {{else}}
-       <td>No aplica</td>
-      {{/if}}
-    </tr>
-  </table>
-  <div class="buttonsRow">
-    <button class="btn btn-primary btn-edit"><i class="fa fa-edit"></i> Editar</button>
-    <button class="btn btn-danger btn-delete"><i class="fa fa-trash-o"></i> Eliminar</button>
+</div>
+  <div class="row">
+    <div class="col-md-1 col-md-offset-4">
+      <button class="btn btn-primary btn-edit"><i class="fa fa-edit"></i> Editar</button>
+    </div>
+    <div class="col-md-1 col-md-offset-1">
+      <button class="btn btn-danger btn-delete"><i class="fa fa-trash-o"></i> Eliminar</button>
+    </div>
   </div>
 </div>
