@@ -1,19 +1,27 @@
-<div>
-  <h3>
-    Lista de Permisos
-  </h3>
-</div>
+<h3 class="text-center">Lista de Permisos</h3>
+
+<hr>
+
 {{#if message}}
-<div>
-  {{message}}
-</div>
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3">
+      <div class="alert alert-warning center-block" role="alert">
+        {{message}}
+      </div>
+    </div>
+  </div>
 {{else}}
-<table>
-  <thead>
-    <th>Fecha</th>
-    <th>Ver</th>
-    <th>Eliminar</th>
-  </thead>
-  <tbody></tbody>
-</table>
+
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+    <table class="table">
+      <thead>
+        <th>Fecha</th>
+        <th>Ver</th>
+        <th>Eliminar</th>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
 {{/if}}
