@@ -5,6 +5,7 @@ var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
   template: 'output/templates/outputNew.html',
+  className: 'outputNewView',
   events: {
     'submit #output-register': 'register'
   },

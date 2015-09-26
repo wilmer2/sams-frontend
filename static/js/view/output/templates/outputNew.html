@@ -1,20 +1,24 @@
-<div>
-  <h3>Registrar Salida</h3>
-</div>
+<h3 class="text-center">Registrar Salida</h3>
 
+<hr>
 {{#if activiti}}
 
-<form id="output-register">
-  <label for="info">Agregar informacion (opcional)</label>
-  <textarea name="info"></textarea>
-  <input type="hidden" name="type" value="normal">
-  <button class="btn btn-primary">Registrar</button>
+<form class="form-horizontal" id="output-register">
+  <input class="hidden" type="hidden" name="type" value="normal">
+  <div class="form-group">
+    <label for="inputEmail3" class="col-sm-4 control-label">Informacion Adicional (opcional)</label>
+    <div class="col-sm-8">
+      <textarea class="form-control" name="info"></textarea>
+    </div>
+  </div>
+
+  <button class="btn btn-primary center-block">Registrar Salida</button>
 </form>
 
 {{else}}
 
-<div>
-  <p>Adulto no residente no puede registar salidas</p>
+<div class="alert alert-warning " role="alert">
+  Adulto no residente, no puede registrar salida.
 </div>
 
 {{/if}}
