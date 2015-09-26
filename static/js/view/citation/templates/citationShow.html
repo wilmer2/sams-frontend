@@ -1,40 +1,51 @@
-<div>
-  <h3>Datos de cita</h3>
-</div>
+<h3 class="text-center">Datos de cita</h3>
 
 <hr>
 
 {{#if notFound}}
-<div class="alert alert-danger" role="alert">
-  Cita no encontrada
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+    <div class="alert alert-warning center-block" role="alert">
+      Cita no encontrada
+    </div>
+  </div>
 </div>
 {{else}}
-<table class="table">
-  <tr>
-    <td><strong>Fecha</strong></td>
-     <td><span>{{date_day}}</span></td>
-  </tr>
-  <tr>
-    <td><strong>Hora</strong></td>
-     <td><span>{{hour}}</span></td>
-  </tr>
-  <tr>
-    <td><strong>Razon</strong></td>
-     <td><div>{{reason}}</div></td>
-  </tr>
-  <tr>
-    <td><strong>Estado</strong></td>
-     <td><span>{{state}}</span></td>
-  </tr>
-</table>
-<div class="buttonsRow">
-  {{#if waiting}}
-  <button class="btn btn-primary btn-edit"><i class="fa fa-edit"></i> Editar</button>
-  {{/if}}
-  <button class="btn btn-danger btn-delete"><i class="fa fa-trash-o"></i> Eliminar</button>
-</div>
+
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+    <table class="table">
+      <tr>
+        <td><strong>Fecha</strong></td>
+         <td><span>{{date_day}}</span></td>
+      </tr>
+      <tr>
+        <td><strong>Hora</strong></td>
+         <td><span>{{hour}}</span></td>
+      </tr>
+      <tr>
+        <td><strong>Razon</strong></td>
+         <td><div>{{reason}}</div></td>
+      </tr>
+      <tr>
+        <td><strong>Estado</strong></td>
+         <td><span>{{state}}</span></td>
+      </tr>
+    </table>
+
+    <div class="row">
+      <div class="col-md-1 col-md-offset-4">
+      {{#if waiting}}
+        <button class="btn btn-primary btn-edit"><i class="fa fa-edit"></i> Editar</button>
+      {{/if}}
+      </div>
+      <div class="col-md-1 col-md-offset-1">
+        <button class="btn btn-danger btn-delete"><i class="fa fa-trash-o"></i> Eliminar</button>
+      </div>
+    </div>
+    </div>
+  </div>
 
 {{/if}}
-
 
 

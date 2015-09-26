@@ -1,107 +1,123 @@
   
-<div class="panel panel-primary">
-  <div class="panel-heading">
-    <h3 class="panel-title">Notificacion de Entrada</h3>
-  </div>
-
-  <div class="panel-body">
-    {{#if notFound}}
-       <div class="alert alert-warning">
-        No hay entrada por confirmar
-       </div>
-    {{else}}
-      <div class="centerButtonsRows">
-        <button id="confirm-button" class="btn btn-success"><i class="fa fa-check"></i> Confirmar</button>
-        <button id="delete-button" class="btn btn-danger"><i class="fa fa-times"></i> Rechazar</button>
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <h3 class="panel-title">Notificacion de Entrada</h3>
       </div>
+
+      <div class="panel-body">
+        {{#if notFound}}
+           <div class="alert alert-warning">
+            No hay entrada por confirmar
+           </div>
+        {{else}}
+          <div class="centerButtonsRows">
+          </div>
+
+          <div class="row">
+            <div class="col-md-2 col-md-offset-2">
+              <button id="confirm-button" class="btn btn-success"><i class="fa fa-check"></i> Confirmar</button>
+            </div>
+            <div class="col-md-2 col-md-offset-2">
+              <button id="delete-button" class="btn btn-danger"><i class="fa fa-times"></i> Rechazar</button>
+            </div>
+          </div>
+      </div>
+    </div>
   </div>
 </div>
+ 
+<h3 class="text-center"> Informacion de visita</h3>
 
-  <div>
-    <h3>
-      Informacion de visita
-    </h3>
+<hr>
+
+<div class="row">
+  <div class="col-md-8 col-md-offset-2">
+    <form id="instance-waitingEdit">
+      <table class="table">
+        <tr>
+          <td>
+            <strong>Cedula</strong> 
+          </td>
+          <td>
+            <span class="u-data">{{identity_card}}</span>
+            <input type="text" name="identity_card" value="{{identity_card}}" class="u-submit u-disabled form-control">
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <strong>Referido por</strong> 
+          </td>
+          <td>
+            <span class="u-data">{{referred}}</span>
+            <select name="referred" class="Select u-submit u-disabled form-control" >
+              <option value="presidency_inass" {{selected referred "presidency_inass"}}>Presidencia del Inass</option>
+              <option value="social_welfare" {{selected referred "social_welfare"}}>Gerencia de Bienestar Social</option>
+              <option value="health" {{selected referred "health"}}>Gerencia de Salud</option>
+              <option value="cssr" {{selected referred "cssr"}}>Director del C.S.S.R</option>
+              <option value="other" {{selected referred "other"}}>Otros</option>
+            </select>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <strong>Direccion</strong> 
+          </td>
+          <td>
+            <div class="u-data">{{address}}</div>
+            <textarea name="address" class="u-submit u-disabled form-control">{{address}}</textarea>
+          </td> 
+        </tr>
+
+        <tr>
+          <td>
+            <strong>Descripcion</strong>
+          </td>
+          <td>
+            {{#if description}}
+              <div class="u-data">{{description}}</div>
+            {{else}}
+              <span class="u-data">No aplica</span>
+            {{/if}}
+            <textarea name="description" class="u-submit u-disabled form-control">{{description}}</textarea>
+          </td> 
+        </tr>
+
+        <tr>
+          <td>
+            <strong>Fecha de Visita</strong> 
+          </td>
+          <td>
+            <span class="u-data"> {{visit_date}}</span>
+            <input type="date" name="visit_date" value="{{old_date}}" class="u-submit u-disabled form-control">
+          </td>
+        </tr>
+
+        <tr>
+          <td colspan="2">
+            <center>
+              <div class="u-submit u-disabled">
+                <button class="btn btn-primary" type="submit"><i class="fa fa-save"></i> Guardar</button>
+                <button class="btn btn-danger btn-cancel" type="button"><i class="fa fa-times"></i> Cancelar</button>
+              </div>    
+            </center>
+          </td>
+        <tr>
+      </table>
+    </form>
+
+    <div class="row u-data">
+      <div class="col-md-1 col-md-offset-4">
+        <button class="btn btn-primary btn-edit"><i class="fa fa-edit"></i> Editar</button>
+      </div>
+      <div class="col-md-1 col-md-offset-1">
+        <button class="btn btn-danger btn-delete"><i class="fa fa-trash-o"></i> Eliminar</button>
+      </div>
+    </div>
   </div>
-  <form id="instance-waitingEdit">
-    <table class="table">
-      <tr>
-        <td>
-          <strong>Cedula</strong> 
-        </td>
-        <td>
-          <span class="u-data">{{identity_card}}</span>
-          <input type="text" name="identity_card" value="{{identity_card}}" class="u-submit u-disabled form-control">
-        </td>
-      </tr>
-
-      <tr>
-        <td>
-          <strong>Referido por</strong> 
-        </td>
-        <td>
-          <span class="u-data">{{referred}}</span>
-          <select name="referred" class="Select u-submit u-disabled form-control" >
-            <option value="presidency_inass" {{selected referred "presidency_inass"}}>Presidencia del Inass</option>
-            <option value="social_welfare" {{selected referred "social_welfare"}}>Gerencia de Bienestar Social</option>
-            <option value="health" {{selected referred "health"}}>Gerencia de Salud</option>
-            <option value="cssr" {{selected referred "cssr"}}>Director del C.S.S.R</option>
-            <option value="other" {{selected referred "other"}}>Otros</option>
-          </select>
-        </td>
-      </tr>
-
-      <tr>
-        <td>
-          <strong>Direccion</strong> 
-        </td>
-        <td>
-          <div class="u-data">{{address}}</div>
-          <textarea name="address" class="u-submit u-disabled form-control">{{address}}</textarea>
-        </td> 
-      </tr>
-
-      <tr>
-        <td>
-          <strong>Descripcion</strong>
-        </td>
-        <td>
-          {{#if description}}
-            <div class="u-data">{{description}}</div>
-          {{else}}
-            <span class="u-data">No aplica</span>
-          {{/if}}
-          <textarea name="description" class="u-submit u-disabled form-control">{{description}}</textarea>
-        </td> 
-      </tr>
-
-      <tr>
-        <td>
-          <strong>Fecha de Visita</strong> 
-        </td>
-        <td>
-          <span class="u-data"> {{visit_date}}</span>
-          <input type="date" name="visit_date" value="{{old_date}}" class="u-submit u-disabled form-control">
-        </td>
-      </tr>
-
-      <tr>
-        <td colspan="2">
-          <center>
-            <div class="u-submit u-disabled">
-              <button class="btn btn-primary" type="submit"><i class="fa fa-save"></i> Guardar</button>
-              <button class="btn btn-danger btn-cancel" type="button"><i class="fa fa-times"></i> Cancelar</button>
-            </div>    
-          </center>
-        </td>
-      <tr>
-    </table>
-
-</form>
-<center>
-  <div class="u-data">
-    <button class="btn btn-primary btn-edit"><i class="fa fa-edit"></i> Editar</button>
-    <button class="btn btn-danger btn-delete"><i class="fa fa-trash-o"></i> Eliminar</button>
-  </div>
-</center>
+</div>
 
 {{/if}}
