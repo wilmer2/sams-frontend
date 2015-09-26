@@ -1,0 +1,12 @@
+<div>Editar Cuenta</div>
+
+<form id="form-editUser">
+  <input type="email" name="email" value="{{email}}" placeholder="Nombre de usuario">
+  <input type="password" name="password" placeholder="Contraseña">
+  <label for="role">Rol</label>
+   <select name="rol">
+    <option value="1" {{selected role 'Admin'}}>administrador</option>
+    <option value="2" {{selected role 'User'}}>usuario</option>
+   </select>
+   <button>Enviar</button>
+</form>

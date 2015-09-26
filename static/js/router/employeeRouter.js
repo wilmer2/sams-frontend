@@ -8,7 +8,9 @@ var util = require('../util/util');
 
 module.exports = Subroute.extend({
   routes: {
-    ':employeeId': 'show'
+    ':employeeId': 'show',
+    ':employeeId/user': 'showUser',
+    ':employeeId/user/edit': 'editUser'
   },
 
   initialize: function () {
@@ -50,8 +52,15 @@ module.exports = Subroute.extend({
     }
   },
 
+  showUser: function (employeeId) {
+    this.employeeCtrl.showUser(employeeId);
+  },
+
+  editUser: function (employeeId) {
+    this.employeeCtrl.editUser(employeeId);
+  },
+
   show: function () {
-    console.log('show')
     this.employeeCtrl.show(this.employee);
   }
 })
