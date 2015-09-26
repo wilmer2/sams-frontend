@@ -1,49 +1,125 @@
-<div>
-  <h3>Editar Empleado</h3>
+
+<h3 class="text-center">Editar Empleado</h3>
+
+<hr>
+
+<div class="row">
+  <div class="col-md-8 col-md-offset-2">
+    <form id="form-editEmployee" class="form-horizontal">
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-4 control-label">Cedula</label>
+        <div class="col-sm-8">
+          <input class="form-control" type="text" name="identity_card" value="{{identity_card}}">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-4 control-label">Nombre</label>
+        <div class="col-sm-8">
+          <input class="form-control" type="text" name="first_name" value="{{first_name}}">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-4 control-label">Apellido</label>
+        <div class="col-sm-8">
+          <input class="form-control" type="text" name="last_name" value="{{last_name}}">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-4 control-label">Fecha de Nacimiento</label>
+        <div class="col-sm-8">
+          <input class="form-control" type="data" name="date_birth" value="{{date_birth}}">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-4 control-label">Telefono</label>
+        <div class="col-sm-8">
+          <input class="form-control" type="text" name="phone" value="{{phone}}">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-4 control-label">Direccion</label>
+        <div class="col-sm-8">
+          <textarea class="form-control" name="address">{{address}}</textarea>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-4 control-label">Genero</label>
+        <div class="col-sm-8">
+          <label class="radio-inline">
+            <input type="radio" name="gender" value="m"> Masculino
+          </label>
+          <label class="radio-inline">
+            <input type="radio" name="gender" value="f"> Femenino
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-4 control-label">Grado de Instruccion</label>
+        <div class="col-sm-8">
+          <select class="form-control" name="degree_instruction">
+            <option value="primary" {{selected degree_instruction "primary"}}>Educacion Basica</option>
+            <option value="secondary" {{selected degree_instruction "secondary"}}>Educacion Segundaria</option>
+            <option value="university" {{selected degree_instruction "university"}}>Educacion Superior</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-4 control-label">Estado Civil</label>
+        <div class="col-sm-8">
+          <select class="form-control" name="civil_status">
+            <option value="married" {{selected civil_status "married"}}>Casado</option>
+            <option value="single" {{selected civil_status "single"}}>Soltero</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-4 control-label">Cargo</label>
+        <div class="col-sm-8">
+          <input class="form-control" type="text" name="office" value="{{office}}">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-4 control-label">Descanso para Almuerzo</label>
+        <div class="col-sm-8">
+          <input type="checkbox" name="break_out" {{#if break_out}} checked {{/if}} >
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-4 control-label">Activo</label>
+        <div class="col-sm-8">
+          <input type="checkbox" name="activiti"  {{#if activiti}} checked {{/if}}>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-4 control-label">Foto</label>
+        <div class="col-sm-8">
+         <input class="form-control" type="file" class="Form-file">
+        </div>
+      </div>
+
+      <br>
+      <button type="button" class="Form-btnCamera btn btn-info center-block"><i class="fa fa-camera"></i> Tomar Foto</button> 
+      <br>
+      <canvas class="Lienzo center-block"></canvas>
+      <br>
+      <button type="submit" class="btn btn-primary center-block">Actualizar Información</button>
+
+    </form>
+  </div>
 </div>
-<form id="form-editEmployee">
-  <label for="identity_card">Cedula</label>
-  <input type="text" name="identity_card" value="{{identity_card}}">
-  <label for="first_name">Nombre</label>
-  <input type="text" name="first_name" value="{{first_name}}">
-  <label for="last_name">Apellido</label>
-  <input type="text" name="last_name" value="{{last_name}}">
-  <label for="date_birth">Fecha de nacimiento</label>
-  <input type="data" name="date_birth" value="{{date_birth}}">
-  <label for="phone">Telefono</label>
-  <input type="text" name="phone" value="{{phone}}">
-  <label for="address"></label>
-  <textarea name="address">
-    {{address}}
-  </textarea> 
-  <label for="gender"></label>
-  <span>Masculino <input type="radio" name="gender" value="m"></span>
-  <span>Femenino <input type="radio" name="gender" value="f"></span>
-  <label for="degree_instruction">Grado de instruccion</label>
-  <select name="degree_instruction">
-    <option value="primary" {{selected degree_instruction "primary"}}>Educacion Basica</option>
-    <option value="secondary" {{selected degree_instruction "secondary"}}>Educacion Segundaria</option>
-    <option value="university" {{selected degree_instruction "university"}}>Educacion Superior</option>
-  </select>
-  <label for="civil_status">Estado civil</label>
-  <select name="civil_status">
-    <option value="married" {{selected civil_status "married"}}>Casado</option>
-    <option value="single" {{selected civil_status "single"}}>Soltero</option>
-  </select>
-  <label for="office">Cargo</label>
-  <input type="text" name="office" value="{{office}}">
-  <label for="break_out">
-   Descanso para almuerzo
-   <input type="checkbox" name="break_out" {{#if break_out}} checked {{/if}} >
-  </label>
-  <label for="activiti">Activo</label>
-  <input type="checkbox" name="activiti"  {{#if activiti}} checked {{/if}}>
-   <input type="file" class="Form-file">
-   <button type="button" class="Form-btnCamera">Tomar Foto</button> 
-   <button type="submir">Enviar</button>
- </form>
  
- <canvas class="Lienzo"></canvas>
    <div  class="Modal u-disabled u-modal">
     <div class="modal-dialog">
       <div class="modal-content">
