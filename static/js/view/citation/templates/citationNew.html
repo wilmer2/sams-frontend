@@ -1,42 +1,44 @@
-<div>
-  <h3>
-    Registro de Cita
-  </h3>
-</div>
+<h3 class="text-center">Registrar cita</h3>
 
 <hr>
 {{#if activiti}}
 
-<form class="form-horizontal" id="citation-register">
+<div class="row">
+  <div class="col-md-8 col-md-offset-2">
+    <form class="form-horizontal" id="citation-register">
 
-  <div class="form-group">
-    <label class="control-label col-sm-2">Fecha</label>
-    <div class="col-sm-10">
-      <input class="form-control" type="date" name="date_day">
-    </div>
-  </div>
+      <div class="form-group">
+        <label class="control-label col-sm-2">Fecha</label>
+        <div class="col-sm-10">
+          <input class="form-control" type="date" name="date_day">
+        </div>
+      </div>
 
-  <div class="form-group">
-    <label class="control-label col-sm-2">Hora</label>
-    <div class="col-sm-10">
-      <input class="form-control" type="time" name="hour">
-    </div>
-  </div>
+      <div class="form-group">
+        <label class="control-label col-sm-2">Hora</label>
+        <div class="col-sm-10">
+          <input class="form-control" type="time" name="hour">
+        </div>
+      </div>
 
-  <div class="form-group">
-    <label class="control-label col-sm-2">Motivo</label>
-    <div class="col-sm-10">
-      <textarea class="form-control" name="reason"></textarea>
-    </div>
-  </div>
+      <div class="form-group">
+        <label class="control-label col-sm-2">Motivo</label>
+        <div class="col-sm-10">
+          <textarea class="form-control" name="reason"></textarea>
+        </div>
+      </div>
 
-  <div class="submitRow">
-    <button class="btn btn-primary" type="submit">Registrar Cita</button>
+      <button class="btn btn-primary center-block" type="submit">Registrar Cita</button>
+    </form>
   </div>
-</form>
+</div>
 {{else}}
 
-<div class="alert alert-warning" role="alert">
-  Adulto no residente, no puede registrar cita.
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+    <div class="alert alert-warning center-block" role="alert">
+      Adulto no residente, no puede registrar cita.
+    </div>
+  </div>
 </div>
 {{/if}}
