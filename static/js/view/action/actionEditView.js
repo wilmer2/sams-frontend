@@ -15,7 +15,7 @@ module.exports = Backbone.View.extend({
       var data = this.model.toJSON();
       var html = template(data);
 
-      this.el.html(html);
+      this.$el.html(html);
     }.bind(this))
   },
 
