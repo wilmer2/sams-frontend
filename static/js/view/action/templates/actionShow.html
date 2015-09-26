@@ -1,20 +1,79 @@
  {{#if notFound}}
-    <p> Actividad no encontrada</p>
-  {{else}}
-  <button class="btn btn-success btn-addHour">+ Agregar Horario</button>
-  <h3>{{name}}</h3>
-  {{#if description}}
-    <p>{{description}}</p>
-  {{/if}}
-  <div>
-    <button class="btn btn-primary btn-edit">Editar</button>
-    <button class="btn btn-danger btn-delete">Eliminar</button>
-  </div>
-  <div id="action-content">
-    <div>
-     <h3> Horarios </h3>
+    <div class="row">
+      <div class="col-md-6 col-md-offset-3">
+        <div class="alert alert-warning center-block" role="alert">
+          Actividad no encontrada
+        </div>
+      </div>
     </div>
-    <ul id="action-listHour">
-    </ul>
+  {{else}}
+
+  <h3 class="text-center">Informacion de Actividad</h3>
+
+  <hr>
+
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3">
+      <table class="table">
+        <tr>
+          <td>
+            <strong>Nombre</strong>
+          </td>
+          <td>
+            {{name}}
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <strong>Descripción</strong>
+          </td>
+
+          <td>
+            {{description}}
+          </td>
+        </tr>
+      </table>
+    </div>
   </div>
-  {{/if}}
+
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+
+      <div class="row">
+        <div class="col-md-1 col-md-offset-4">
+          <button class="btn btn-primary btn-edit"><i class="fa fa-edit"></i> Editar</button>
+        </div>
+        <div class="col-md-1 col-md-offset-1">
+          <button class="btn btn-danger btn-delete"><i class="fa fa-trash-o"></i> Eliminar</button>
+        </div>
+      </div>
+
+      <br>
+      <br>
+
+      <h3 class="text-center"> Horarios <button class="btn btn-primary btn-xs btn-addHour"><i class="fa fa-plus"></i> Agregar</button> </h3>
+
+      <hr>
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th>
+              Dias
+            </th>
+            <th>
+              Hora de entrada
+            </th>
+            <th>
+              Hora de salida
+            </th>
+          </tr>
+        </thead>
+
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+{{/if}}

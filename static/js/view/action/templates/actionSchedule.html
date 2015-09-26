@@ -1,25 +1,113 @@
-  {{#if notFound}}
-  <div>
-    <p>Actividad no encontrada</p>
+{{#if notFound}}
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3">
+      <div class="alert alert-warning center-block" role="alert">
+        Actividad no encontrada
+      </div>
+    </div>
   </div>
-  {{else}}
-  <div>
-   <h3>Registrar Horario de Actividad</h3>
+{{else}}
+
+  <h3 class="text-center">Registrar Horario de Actividad</h3>
+
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <form id="form-actionSchedule" class="form-horizontal">
+
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-4 control-label">Lunes</label>
+          <div class="col-sm-8">
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" name="monday"> 
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-4 control-label">Martes</label>
+          <div class="col-sm-8">
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" name="tuesday"> 
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-4 control-label">Miercoles</label>
+          <div class="col-sm-8">
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" name="wednesday"> 
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-4 control-label">Jueves</label>
+          <div class="col-sm-8">
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" name="thursday"> 
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-4 control-label">Viernes</label>
+          <div class="col-sm-8">
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" name="friday"> 
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-4 control-label">Sabado</label>
+          <div class="col-sm-8">
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" name="saturday"> 
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-4 control-label">Domingo</label>
+          <div class="col-sm-8">
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" name="sunday"> 
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-4 control-label">Hora de entrada</label>
+          <div class="col-sm-8">
+            <input class="form-control" type="time" name="entry_time">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-4 control-label">Hora de salida</label>
+          <div class="col-sm-8">
+            <input class="form-control" type="time" name="departure_time">
+          </div>
+        </div>
+
+
+        <button class="btn btn-primary center-block" type="submit">Registrar Horario</button>
+      </form>
+    </div>
   </div>
-  <form id="form-actionSchedule">
-    <h4>Seleccione Dias</h4>
-    <label>Lunes <input type="checkbox" name="monday"> </label>
-    <label>Martes <input type="checkbox" name="tuesday"> </label>
-    <label>Miercoles<input type="checkbox" name="wednesday"> </label>
-    <label>Jueves <input type="checkbox" name="thursday"> </label>
-    <label>Viernes <input type="checkbox" name="friday"> </label>
-    <label>Sabado <input type="checkbox" name="saturday"> </label>
-    <label>Domingo <input type="checkbox" name="sunday"> </label>
-    <h4>Selecciones Horas</h4>
-    <label for="entry_tiem">Hora de entrada</label>
-    <input type="time" name="entry_time">
-    <label for="departure_time">Hora de salida </label>
-   <input type="time" name="departure_time">
-   <button type="submit">Enviar</button>
-  </form>
-  {{/if}}
+{{/if}}
