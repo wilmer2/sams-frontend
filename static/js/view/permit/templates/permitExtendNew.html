@@ -1,21 +1,45 @@
-<div>
-    <h3>Registrar Permiso extendido</h3>
-</div>
+<h3 class="text-center">Registrar Permiso extendido</h3>
+
+<hr>
+
 {{#if activiti}}
-<form id="form-permitExtend">
-    <label for="reason">Razon</label>
-    <textarea name="reason" required></textarea>
-    <label for="date_start">Desde</label>
-    <input type="date" name="date_start" required>
-    <label for="date_end">Hasta</label>
-    <input type="date" name="date_end" required>
-    <input type="hidden" name="type" value="extend" required>
-    <button type="submit">Enviar</button>
-</form>
+
+<div class="row">
+  <div class="col-md-8 col-md-offset-2">
+    <form id="form-permitExtend" class="form-horizontal">
+      <input class="hidden" type="hidden" name="type" value="extend" required>
+
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-4 control-label">Razon</label>
+        <div class="col-sm-8">
+          <textarea class="form-control" name="reason" required></textarea>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-4 control-label">Desde</label>
+        <div class="col-sm-8">
+          <input class="form-control" type="date" name="date_start" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-4 control-label">Hasta</label>
+        <div class="col-sm-8">
+          <input class="form-control" type="date" name="date_end" required>
+        </div>
+      </div>
+
+      <button class="btn btn-primary center-block" type="submit">Registrar Permiso</button>
+    </form>
+  </div>
+</div>
 {{else}}
-<div>
-  <p>
-    Empleado no activo no se pueden registrar permisos
-  </p>
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+    <div class="alert alert-warning center-block" role="alert">
+      Empleado no activo, no puede registrar permisos
+    </div>
+  </div>
 </div>
 {{/if}}
