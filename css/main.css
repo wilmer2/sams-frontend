@@ -60,6 +60,7 @@
   width: 100%;
   background-color: #467abf;
   color: #fff;
+  z-index: 50;
 }
 .header a {
   color: #fff;
@@ -83,12 +84,6 @@
   right: 0;
   bottom: 0;
   background-color: rgba(1,1,1,0.5);
-}
-.Notify {
-  border: solid 1px #f00;
-  height: 90px;
-  overflow-y: scroll;
-  width: 900px;
 }
 .paginationView {
   display: flex;
