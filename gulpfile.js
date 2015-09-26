@@ -64,7 +64,8 @@ gulp.task('default', ['bundle', 'css', 'fonts', 'stylus'], function () {
     browserSync.init({
         server: "./"
     });
-    gulp.watch('stylus/**/*.styl', ['stylus']);
+    gulp.watch(['stylus/**/*.styl', 'static/**/*.html'], ['stylus']);
+
 });
 
 gulp.task('fonts', function () {
