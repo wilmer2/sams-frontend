@@ -1,21 +1,53 @@
-  <div>
-    <h3>Notificacion de Ingreso</h3>
+<h3 class="text-center">Notificacion de Ingreso</h3>
+
+<hr>
+
+<div class="row">
+  <div class="col-md-8 col-md-offset-2">
+     <form id="form-instance" class="form-horizontal">
+
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-4 control-label">Cedula</label>
+        <div class="col-sm-8">
+          <input class="form-control" type="text" placeholder="Cedula" name="identity_card">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-4 control-label">Direccion</label>
+        <div class="col-sm-8">
+          <textarea class="form-control" name="address"></textarea>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-4 control-label">Referido por </label>
+        <div class="col-sm-8">
+          <select class="form-control" name="referred">
+            <option value="presidency_inass">Presidencia del Inass</option>
+            <option value="social_welfare">Gerencia de Bienestar Social</option>
+            <option value="health">Gerencia de Salud</option>
+            <option value="cssr">Director del C.S.S.R</option>
+            <option value="other">Otros</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-4 control-label">Fecha de Visita</label>
+        <div class="col-sm-8">
+          <input class="form-control" type="date" name="visit_date">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-4 control-label">Descripcion</label>
+        <div class="col-sm-8">
+          <textarea class="form-control" name="description" cols="30" rows="10"></textarea>
+        </div>
+      </div>
+
+        <button type="submit" class="btn btn-primary center-block">Registrar Notificacion</button>
+     </form>
   </div>
- <form id="form-instance">
-    <input type="text" placeholder="Cedula" name="identity_card">
-    <label for="address">Direccion de visita</label>
-    <textarea name="address"></textarea>
-    <label for="referred">Referido por</label>
-    <select name="referred">
-      <option value="presidency_inass">Presidencia del Inass</option>
-      <option value="social_welfare">Gerencia de Bienestar Social</option>
-      <option value="health">Gerencia de Salud</option>
-      <option value="cssr">Director del C.S.S.R</option>
-      <option value="other">Otros</option>
-    </select>
-    <label for="visit_date">Fecha de visita social</label>
-    <input type="date" name="visit_date">
-    <label for="description">Descripcion</label>
-    <textarea name="description" cols="30" rows="10"></textarea>
-    <button type="submit">Registrar</button>
- </form>
+</div>
