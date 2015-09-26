@@ -1,24 +1,52 @@
-<div>
-  <h3>Registrar Permiso</h3>
-</div>
+<h3 class="text-center">Registrar Permiso</h3>
+
+<hr>
+
 {{#if activiti}}
-<form id="form-permit">
-  <label for="reason">Razon</label>
-  <textarea name="reason" required></textarea>
-  <label for="date_start">Dia</label>
-  <input type="date" name="date_start" required>
-  <label for="turn">Turno</label>
-  <select name="turn" required>
-    <option value="morning">Mañana</option>
-    <option value="afternoon">Tarde</option>
-    <option value="night">Noche</option>
-    <option value="complete">Todos</option>
-  </select>
-  <input type="hidden" name="type" value="normal">
-  <button type="submit">Enviar</button>
-</form>
-{{else}}
-<div>
-  <p>Empleado no activo no se pueden registrar permisos</p>
+
+<div class="row">
+  <div class="col-md-8 col-md-offset-2">
+    <form id="form-permit" class="form-horizontal">
+      <input class="hidden" type="hidden" name="type" value="normal">
+
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-4 control-label">Razon</label>
+        <div class="col-sm-8">
+          <textarea class="form-control" name="reason" required></textarea>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-4 control-label">Día</label>
+        <div class="col-sm-8">
+          <input class="form-control" type="date" name="date_start" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-4 control-label">Turno</label>
+        <div class="col-sm-8">
+          <select class="form-control" name="turn" required>
+            <option value="morning">Mañana</option>
+            <option value="afternoon">Tarde</option>
+            <option value="night">Noche</option>
+            <option value="complete">Todos</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn btn-primary center-block" type="submit">Registrar Permiso</button>
+    </form>
+  </div>
 </div>
+
+{{else}}
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+    <div class="alert alert-warning center-block" role="alert">
+      Empleado no activo, no puede registrar permisos
+    </div>
+  </div>
+</div>
+
 {{/if}}
