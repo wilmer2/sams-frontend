@@ -4,6 +4,7 @@ var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
   template: 'output/templates/outputPernotNew.html',
+  className: 'outputPernotNewView',
   events: {
     'submit #outputPernot-register': 'register'
   },

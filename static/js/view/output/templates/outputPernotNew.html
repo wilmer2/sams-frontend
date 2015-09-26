@@ -1,15 +1,35 @@
-<div>
-  <h3>Registrar Salida con Pernocta</h3>
+<h3 class="text-center">Registrar Salida con Pernocta</h3>
+
+<hr>
+
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <form class="form-horizontal" id="outputPernot-register">
+        <input class="hidden" type="hidden" name="type" value="pernot">
+
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-4 control-label">Fecha de salida</label>
+          <div class="col-sm-8">
+            <input class="form-control" type="date" name="date_start">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-4 control-label">Fecha de llegada</label>
+          <div class="col-sm-8">
+            <input class="form-control" type="date" name="date_end">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-4 control-label">Informacion</label>
+          <div class="col-sm-8">
+            <textarea class="form-control" name="info" rows="5"></textarea>
+          </div>
+        </div>
+
+        <button class="btn btn-primary center-block">Registrar Salida</button>
+      </form>
+      
+    </div>
 </div>
-
-
-<form id="outputPernot-register">
-  <label for="date_start">Fecha de ida</label>
-  <input type="date" name="date_start">
-  <label for="date_end">Fecha de llegada</label>
-  <input type="date" name="date_end">
-  <label for="info">Registrar Informacion</label>
-  <textarea name="info"></textarea>
-  <input type="hidden" name="type" value="pernot">
-  <button class="btn btn-primary">Registrar</button>
-</form>
