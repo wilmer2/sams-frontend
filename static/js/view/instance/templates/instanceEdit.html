@@ -1,25 +1,43 @@
-<div>
-  <h3>
-    Editar Visita Social
-  </h3>
+<h3 class="text-center"> Editar Visita Social </h3>
+
+<hr>
+
+<div class="row">
+  <div class="col-md-8 col-md-offset-2">
+    <form id="instance-edit" class="form-horizontal">
+
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-4 control-label">Direccion de visita</label>
+        <div class="col-sm-8">
+          <textarea class="form-control" name="address">{{address}}</textarea>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-4 control-label">Referido por</label>
+        <div class="col-sm-8">
+          <select class="form-control" name="referred">
+            <option value="presidency_inass" {{selected referred "presidency_inass"}}>Presidencia del Inass</option>
+            <option value="social_welfare" {{selected referred "social_welfare"}}>Gerencia de Bienestar Social</option>
+            <option value="health" {{selected referred "health"}}>Gerencia de Salud</option>
+            <option value="cssr" {{selected referred "cssr"}}>Director del C.S.S.R</option>
+            <option value="other" {{selected referred "other"}}>Otros</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-4 control-label">Descripción</label>
+        <div class="col-sm-8">
+          <textarea class="form-control" name="description" cols="30" rows="6">{{description}}</textarea>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary center-block">Actualizar Visita</button>
+    </form>
+
+  </div>
 </div>
-<form id="instance-edit">
-  <label for="address">Direccion de visita</label>
-  <textarea name="address">{{address}}</textarea>
-  <label for="referred">Referido por</label>
-  <select name="referred">
-    <option value="presidency_inass" {{selected referred "presidency_inass"}}>Presidencia del Inass</option>
-    <option value="social_welfare" {{selected referred "social_welfare"}}>Gerencia de Bienestar Social</option>
-    <option value="health" {{selected referred "health"}}>Gerencia de Salud</option>
-    <option value="cssr" {{selected referred "cssr"}}>Director del C.S.S.R</option>
-    <option value="other" {{selected referred "other"}}>Otros</option>
-  </select>
-  <label for="description">Descripcion</label>
-  <textarea name="description" cols="30" rows="10">
-    {{description}}
-  </textarea>
-  <button type="submit">Editar</button>
-</form>
 
 
 
