@@ -1,29 +1,62 @@
-<div>
-  <h3>
-    Notificacion de entrada
-  </h3>
-</div>
+<h3 class="text-center"> Notificacion de entrada </h3> 
+
+<hr>
+
 {{#if notFound}}
-<div>
-  <p>
-    Notificacion de entrada no encontrada
-  </p>
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+    <div class="alert alert-warning center-block" role="alert">
+      Notificacion no encontrada
+    </div>
+  </div>
 </div>
 {{else}}
-<ul>
-  <li><strong>Referido por</strong> <span class="u-data">{{referred}}</span></li>
-  <li><strong>Direccion</strong> <div class="u-data">{{address}}</div></li>
-  <li><strong>Descripcion</strong> 
-      {{#if description}}
-        <div class="u-data">{{description}}</div>
-      {{else}}
-        <span class="u-data">No aplica</span>
-      {{/if}}
-  </li>
-  <li><strong>Fecha de Visita</strong><span class="u-data">{{visit_date}}</span></li>
-</ul>
-<div>
-  <button class="btn btn-primary btn-edit">Editar</button>
-  <button class="btn btn-danger btn-delete">Eliminar</button>
+<div class="row">
+  <div class="col-md-8 col-md-offset-2">
+    <table class="table">
+      <tr>
+        <td>
+          <strong>Referido por</strong>
+        </td>
+        <td>
+          <span class="u-data">{{referred}}</span></tr>
+        </td>
+      <tr>
+        <td>
+          <strong>Direccion</strong>
+        </td>
+        <td>
+         <div class="u-data">{{address}}</div></tr>
+        </td>
+      <tr>
+        <td>
+          <strong>Descripcion</strong>
+        </td>
+        <td>
+          {{#if description}}
+            <div class="u-data">{{description}}</div>
+          {{else}}
+            <span class="u-data">No aplica</span>
+          {{/if}}
+         </td>
+      </tr>
+      <tr>
+        <td>
+          <strong>Fecha de Visita</strong>
+        </td>
+        <td>
+          <span class="u-data">{{visit_date}}</span></tr>
+        </td>
+    </table>
+
+    <div class="row">
+      <div class="col-md-1 col-md-offset-4">
+        <button class="btn btn-primary btn-edit"><i class="fa fa-edit"></i> Editar</button>
+      </div>
+      <div class="col-md-1 col-md-offset-1">
+        <button class="btn btn-danger btn-delete"><i class="fa fa-trash-o"></i> Eliminar</button>
+      </div>
+    </div>
+  </div>
 </div>
 {{/if}}
