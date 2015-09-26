@@ -51,6 +51,7 @@ module.exports = Subroute.extend({
   },
 
   show: function () {
+    console.log('show')
     this.employeeCtrl.show(this.employee);
   }
 })

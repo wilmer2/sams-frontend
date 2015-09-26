@@ -24,6 +24,6 @@ module.exports = Backbone.View.extend({
   },
 
   close: function () {
-    this.close();
+    this.remove();
   }
 })

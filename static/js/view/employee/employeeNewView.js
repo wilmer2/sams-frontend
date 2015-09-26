@@ -9,6 +9,7 @@ module.exports = Backbone.View.extend({
 
   initialize: function () {
     this.photoSource = '';
+
   },
 
   events: {

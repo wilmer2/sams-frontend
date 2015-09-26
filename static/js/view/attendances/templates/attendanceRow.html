@@ -1,0 +1,27 @@
+  <td><span>{{state}}</span></td>
+  <td><span>{{identity_card}}</span></td>
+  <td><span>{{first_name}} {{last_name}}</span></td>
+  <td><span>{{start_time}}-{{departure_time}}</span></td>
+  <td>
+    {{#if hour_in}}
+    <span class="u-data">{{hour_in}}</span>
+    {{else}}
+    <span class="u-data">No aplica</span>
+    {{/if}}
+    <input type="time" class="Table-hourIn u-disabled u-submit" value="{{hour_in}}">
+  </td>
+  <td>
+    {{#if hour_out}}
+    <span class="u-data">{{hour_out}}</span>
+    {{else}}
+    <span class="u-data">No aplica</span>
+    {{/if}}
+    <input type="time" class="Table-hourOut u-disabled u-submit" value="{{hour_out}}">
+  </td>
+  <td>
+    <button type="button" class="Table-btnEdit btn btn-success u-data">editar</button>
+    <div class="Table-btnContent u-submit u-disabled">
+      <button type="submit" class="Table-btnSubmit btn btn-primary">Guardar</button>
+      <button type="button" class="Table-btnCancel btn btn-danger">Cancelar</button>
+    </div>
+  </td>

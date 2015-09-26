@@ -2,6 +2,7 @@ var $ = require('jquery');
 var Attendances = require('../collection/attendances');
 var AttendanceEntryTable = require('../view/attendances/attendanceEntryTableView');
 var AttendanceOutTable = require('../view/attendances/attendanceOutTableView');
+var AttendanceContent = require('../view/attendances/attendanceContentView');
 /*var AttendanceTableOut = require('../view/attendanceTableOutView');
 var AttendanceTableEmp = require('../view/attendanceTableEmployeeView');
 var AttendancesContent = require('../view/attendanceContentView');*/
@@ -28,6 +29,12 @@ function AttendanceCtrl () {
     .done(function () {
       appView.showUserView(attendanceOut);
     });
+  },
+
+  this.dateAttendance = function () {
+    var attendanceContent = new AttendanceContent();
+
+    appView.showAdminView(attendanceContent);
   }
 
   /*this.allAttendance = function () {
