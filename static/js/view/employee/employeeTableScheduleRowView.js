@@ -5,7 +5,8 @@ var alertify = require('alertifyjs');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: 'employee/templates/employeeScheduleItem.html',
+  tagName: 'tr',
+  template: 'employee/templates/employeeTableScheduleRow.html',
   events: {
     'click #employeeSchedule-btn': 'confirmRemove'
   },

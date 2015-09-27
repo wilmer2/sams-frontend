@@ -1,9 +1,14 @@
- <input type="text" class="Search" placeholder="Adulto Mayor">
   <div>
     <h3>
       Salidas con Pernocta
     </h3>
   </div>
+  {{#if message}}
+    <div>
+      {{message}}
+    </div>
+  {{else}}
+  <input type="text" class="Search" placeholder="Adulto Mayor">
   <table>
     <thead>
       <th>Cedula</th>
@@ -15,3 +20,4 @@
     
     </tbody>
   </table>
+  {{/if}}

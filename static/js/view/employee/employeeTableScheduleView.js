@@ -2,10 +2,10 @@ var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('underscore');
 var Handlebars = require('handlebars');
-var ScheduleItem = require('./employeeScheduleItemView');
+var ScheduleItem = require('./employeeTableScheduleRowView');
 
 module.exports = Backbone.View.extend({
-  template: 'employee/templates/employeeScheduleList.html',
+  template: 'employee/templates/employeeTableSchedule.html',
 
   initialize: function () {
     this.collection.on('destroy', this.scheduleDestroy, this);
@@ -23,9 +23,10 @@ module.exports = Backbone.View.extend({
       this.$el.html(html);
 
       if (_.isEmpty(this.message)) {
-        this.$list = this
+        this.$tbody = this
                       .$el
-                      .find('#employeeSchedule-list');
+                      .find('table')
+                      .children('tbody')
 
         this.addAll();
       } 
@@ -43,7 +44,7 @@ module.exports = Backbone.View.extend({
     var scheduleItem = new ScheduleItem(modelData);
 
     this
-      .$list
+      .$tbody
       .append(scheduleItem.render().el);
   },
 

@@ -13,6 +13,7 @@ module.exports = Backbone.View.extend({
     'click .Modal-repeat': 'repeat',
     'click .Modal-btnPic': 'showPic',
     'click .close': 'closeModal',
+    'change .Form-file': 'uploadPic',
     'submit #form-occurrence': 'register'
   },
 
@@ -36,6 +37,7 @@ module.exports = Backbone.View.extend({
       this.$canvasForm = this.$el.find('.Lienzo');
       this.$containerBtn = this.$el.find('.Modal-btn');
       this.$close = this.$el.find('.close');
+      this.$typeFile = this.$el.find('input[type="file"]');
 
     }.bind(this))
   },
@@ -100,6 +102,46 @@ module.exports = Backbone.View.extend({
       this.optBtn();
     }
    
+  },
+
+  uploadPic: function (e) {
+    var file = e.target.files[0];
+    var imageType = /image.*/;
+    var canvasFile = this.$canvasForm;
+    var ctxFile = canvasFile[0].getContext('2d');
+    var fileCanvas = this.$typeFile.val();
+    var dropImg = function () {
+      ctxFile.clearRect(0, 0, 150 , 150)
+    };
+
+    if (_.isEmpty(fileCanvas)) {
+      dropImg();
+    } else {
+      if (file.type.match(imageType)) {
+        var reader = new FileReader();
+
+        reader.onloadend = function (e) {
+          var source = e.target.result;
+          var imgFile = $('<img>', {src: source});
+
+          canvasFile.attr({'width': 150, 'height': 150});
+          imgFile.load(function () {
+            ctxFile.drawImage(this, 0, 0, 150, 150);
+          });
+
+          this.photoSource = source;
+
+        }.bind(this)
+      } else {
+        this.$typeFile.val('');
+        var message = 'Ha ingresado un formato de archivo no valido';
+      
+        util.showError(message);
+        dropImg();
+      }
+    }
+   
+    reader.readAsDataURL(file);
   },
 
   showPic: function () {

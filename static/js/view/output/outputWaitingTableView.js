@@ -8,7 +8,6 @@ var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
   template: 'output/templates/outputWaitingTable.html',
-  boxError: Handlebars.compile($('#error-output').html()),
   events: {
     'keyup .Search': 'search'
   },
@@ -27,16 +26,20 @@ module.exports = Backbone.View.extend({
   
    render: function () {
     $.get(rootView + this.template, function (template) {
-      var template = template;
+      var template = Handlebars.compile(template);
+      var errorMessage = {message: this.message};
+      var html = template(errorMessage);
+
+      this.$el.html(html);
+      
       if (_.isEmpty(this.message)) {
-        this.$el.html(template);
         this.getPaginateView();
 
-        this.$tbody = this.$el.find('table').children('tbody');
+        this.$tbody = this
+                       .$el.find('table')
+                       .children('tbody');
 
         this.addAll();
-      } else {
-        this.emptyOutput(this.message);
       }
     }.bind(this))
   },
@@ -83,16 +86,6 @@ module.exports = Backbone.View.extend({
     this.$el.append(this.paginateView.render().el);
   },
 
-  countOutput: function () {
-    var countAssitance = this.collection.length;
-
-    if (countAssitance == 0) {
-      var message = 'No se espera la llega de adultos mayores';
-
-      this.emptyOutput(message);
-    }
-  },
-
   updateUrl: function () {
     var url = Backend_url + 'outputs/waiting';
 
@@ -101,13 +94,6 @@ module.exports = Backbone.View.extend({
 
   emptyList: function () {
     this.$tbody.empty()
-  },
-
-  emptyOutput: function (message) {
-    var erroMessage = {message: message};
-    var boxError = this.boxError(erroMessage);
-
-    this.$el.html(boxError);
   },
 
   close: function () {

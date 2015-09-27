@@ -10,7 +10,7 @@ var EmployeeEdit = require('../view/employee/employeeEditView');
 var EmployeeList = require('../view/employee/employeeTableView');
 var EmployeeShow = require('../view/employee/employeeShowView');
 var EmployeeSchedule = require('../view/employee/employeeScheduleNewView');
-var EmployeeScheduleList = require('../view/employee/employeeScheduleListView');
+var EmployeeScheduleList = require('../view/employee/employeeTableScheduleView');
 
 function EmployeeCtrl () {
 

@@ -15,6 +15,8 @@ module.exports = Backbone.View.extend({
   initialize: function (opt) {
   	this.$main = $('#main-content');
   	this.config = opt.config;
+
+  	this.config.on('change', this.renderHeader, this);
   },
 
 	render: function () {

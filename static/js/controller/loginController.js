@@ -1,6 +1,7 @@
 var $ = require('jquery');
 var MenuUser = require('../view/menu/menuUserView');
 var MenuAdmin = require('../view/menu/menuAdminView');
+var Configuration = require('../view/configuration/configurationEditView');
 var util = require('../util/util');
 
 function LoginCtrl () {
@@ -42,6 +43,12 @@ function LoginCtrl () {
         }
        })
     })
+  },
+
+  this.editConfigurations = function (config) {
+    var configurations = new Configuration({model:config});
+
+    appView.showAdminView(configurations);
   },
 
   this.menuUserRender = function (user) {

@@ -9,6 +9,16 @@ module.exports = Subroute.extend({
     'waiting': 'outputsWaiting',
     ':outputId/elder/:elderId/confirm': 'outputConf'
   },
+  
+  before: {
+    '*any': 'loadMenu'
+  },
+
+  loadMenu: function (fragment, args, next) {
+    Backbone.Main
+             .renderMenuUser()
+             .then(next);
+  },
 
   initialize: function () {
     this.outputCtrl = new OutputCtrl();

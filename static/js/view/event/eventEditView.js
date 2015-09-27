@@ -73,6 +73,7 @@ module.exports = Backbone.View.extend({
 
   toggle: function () {
     this.$data.toggleClass('u-disabled');
+    $('#eventEdit_date_end').val('');
   },
 
   close: function () {

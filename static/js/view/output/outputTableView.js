@@ -8,7 +8,6 @@ var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
   template: 'output/templates/outputTable.html',
-  boxError: Handlebars.compile($('#error-output').html()),
   events: {
     'keyup .Search': 'search'
   },
@@ -28,17 +27,20 @@ module.exports = Backbone.View.extend({
   
    render: function () {
     $.get(rootView + this.template, function (template) {
+      var template = Handlebars.compile(template);
+      var errorMessage = {message: this.message};
+      var html = template(errorMessage);
+
+      this.$el.html(html);
+
       if (_.isEmpty(this.message)) {
-        var template = template
-
-        this.$el.html(template);
         this.getPaginateView();
-
-        this.$tbody = this.$el.find('table').children('tbody');
+        this.$tbody = this
+                        .$el
+                        .find('table')
+                        .children('tbody');
 
         this.addAll();
-      } else {
-        this.emptyOutput(this.message);
       }
     }.bind(this))
 
@@ -95,13 +97,6 @@ module.exports = Backbone.View.extend({
 
   emptyList: function () {
     this.$tbody.empty()
-  },
-
-  emptyOutput: function (message) {
-    var erroMessage = {message: message};
-    var boxError = this.boxError(erroMessage);
-
-    this.$el.html(boxError);
   },
 
   close: function () {

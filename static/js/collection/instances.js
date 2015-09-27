@@ -23,7 +23,7 @@ module.exports = Backbone.Collection.extend({
 
   search: function (letters) {
     var letters = letters.trim();
-    var searchFor = ['identity_card'];
+    var searchFor = ['identity_card', 'address'];
 
     if (letters != '') {
       return this.filter(function (model) {

@@ -118,32 +118,41 @@ module.exports = Backbone.View.extend({
   },
 
   uploadPic: function (e) {
-    console.log('change');
+    console.log('test');
     var file = e.target.files[0];
     var imageType = /image.*/;
+    var canvasFile = this.$canvasForm;
+    var ctxFile = canvasFile[0].getContext('2d');
+    var fileCanvas = this.$typeFile.val();
+    var dropImg = function () {
+      ctxFile.clearRect(0, 0, 150 , 150)
+    };
 
-    if (file.type.match(imageType)) {
-      var reader = new FileReader();
-
-      reader.onloadend = function (e) {
-        var source = e.target.result;
-        var imgFile = $('<img>', {src: source});
-        var canvasFile = this.$canvasForm;
-
-        canvasFile.attr({'width': 150, 'height': 150});
-        var ctxFile = canvasFile[0].getContext('2d');
-        imgFile.load(function () {
-           ctxFile.drawImage(this, 0, 0, 150, 150);
-        });
-
-        this.photoSource = source;
-
-      }.bind(this)
+    if (_.isEmpty(fileCanvas)) {
+      dropImg();
     } else {
-      this.$typeFile.val('');
+      if (file.type.match(imageType)) {
+        var reader = new FileReader();
 
-      var message = 'Ha ingresado un formato de archivo no valido';
-      util.showInfo(message);
+        reader.onloadend = function (e) {
+          var source = e.target.result;
+          var imgFile = $('<img>', {src: source});
+
+          canvasFile.attr({'width': 150, 'height': 150});
+          imgFile.load(function () {
+            ctxFile.drawImage(this, 0, 0, 150, 150);
+          });
+
+          this.photoSource = source;
+
+        }.bind(this)
+      } else {
+        this.$typeFile.val('');
+        var message = 'Ha ingresado un formato de archivo no valido';
+      
+        util.showError(message);
+        dropImg();
+      }
     }
    
     reader.readAsDataURL(file);

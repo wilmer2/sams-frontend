@@ -38,6 +38,7 @@ module.exports = Backbone.Router.extend({
 		'elders/notResident': 'eldersNotResident',
 		'citations': 'citations',
 		'audit': 'audit',
+		'config': 'config',
 		'notFound': 'notFound',
 		// 'logout':'logout',
 		
@@ -205,10 +206,19 @@ module.exports = Backbone.Router.extend({
 	},
 
 	citations: function () {
-		this.renderMenuUser()
-		    .then(function () {
-		    	this.citationCtrl.currentDay();
-		    }.bind(this))
+		this
+		  .renderMenuUser()
+		  .then(function () {
+		    this.citationCtrl.currentDay();
+		  }.bind(this))
+	},
+
+	config: function () {
+		this
+		  .renderMenuAdmin()
+		  .then(function () {
+		  	this.loginCtrl.editConfigurations(this.config);
+		  }.bind(this))
 	},
 
 	notFound: function () {
@@ -366,8 +376,6 @@ module.exports = Backbone.Router.extend({
 	},
 
 	invokeOutputModule: function (subroute) {
-		this.renderMenuUser();
-
 		if (!Backbone.Main.Output) {
 			Backbone.Main.Output = new OutputRouter('output/');
 		}

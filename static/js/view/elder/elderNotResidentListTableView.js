@@ -78,7 +78,7 @@ module.exports = Backbone.View.extend({
   },
 
   search: function (e) {
-    var letters = $('#searchElder').val();
+    var letters = $('.Search').val();
     var filter = this.collection.search(letters);
 
     if (_.isUndefined(filter)) {

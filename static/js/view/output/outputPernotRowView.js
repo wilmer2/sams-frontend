@@ -7,7 +7,7 @@ module.exports = Backbone.View.extend({
   tagName: 'tr',
   template: 'output/templates/outputPernotRow.html',
   events: {
-    'click .btn-show': 'show'
+    'click  #outputPernotShow': 'redirectShow'
   },
 
   render: function () {
@@ -17,8 +17,15 @@ module.exports = Backbone.View.extend({
       var html = template(data);
 
       this.$el.html(html);
-    })
+    }.bind(this))
     
     return this;
+  },
+
+  redirectShow: function () {
+    var elderId = this.model.get('elder_id');
+    var outputId = this.model.get('id');
+
+    window.location.href = '#elder/' + elderId + '/output/' + outputId;
   }
 })
