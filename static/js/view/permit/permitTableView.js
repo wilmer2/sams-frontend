@@ -12,7 +12,6 @@ module.exports = Backbone.View.extend({
     var collectionData = {collection: this.collection};
     this.paginateView = new PaginateView(collectionData);
 
-    this.collection.on('destroy', this.permitDestroy, this);
     this.listenTo(this.collection, 'notPermit', function (message) {
       this.message = message;
     });
@@ -73,15 +72,6 @@ module.exports = Backbone.View.extend({
     this
       .$el
       .append(this.paginateView.render().el);
-  },
-
-  permitDestroy: function () {
-    var totalPermit = this.collection.length;
-
-    if (totalPermit == 0) {
-      this.message = 'Empleado no tiene registro de permisos';
-      this.render();
-    }
   },
 
   emptyList: function () {

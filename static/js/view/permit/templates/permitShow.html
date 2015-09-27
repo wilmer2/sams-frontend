@@ -1,0 +1,40 @@
+<div>
+  <h3>Informacion de Permiso</h3>
+</div>
+
+{{#if notFound}}
+<div>
+  <p>
+    Permiso no encontrado
+  </p>
+</div>
+{{else}}
+<div>
+ {{#if date_end}}
+    <div>
+      <strong>Desde</strong> <span>{{date_start}}</span>
+    </div>
+    <div>
+      <strong>Hasta</strong> <span>{{date_end}}</span>
+    </div>
+    {{#if date_cancel}}
+      <div>
+        <strong>Fecha de Cancelacion</strong> <span>{{date_cancel}}</span>
+      </div>
+    {{/if}}
+ {{else}}
+ <div>
+   <strong>Fecha</strong> <span>{{date_start}}</span>
+ </div>
+ <div>
+   <strong>Turno</strong> <span>{{turn}}</span>
+ </div>
+ {{/if}}
+ <div>
+   <strong>Estado</strong> <span>{{state}}</span>
+ </div>
+ {{#if isWaiting}}
+  <button class="btn btn-danger" id="permitShow-cancel">Cancelar</button>
+ {{/if}}
+</div>
+{{/if}}

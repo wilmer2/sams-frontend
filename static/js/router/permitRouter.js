@@ -7,7 +7,8 @@ module.exports = Subroute.extend({
   routes: {
     '': 'register',
     'extend': 'registerExtend',
-    'list': 'list'
+    'list': 'list',
+    ':permitId': 'show'
   },
 
   initialize: function () {
@@ -16,6 +17,10 @@ module.exports = Subroute.extend({
 
   register: function () {
     this.permitCtrl.showForm();
+  },
+
+  show: function (employeeId, permitId) {
+    this.permitCtrl.show(employeeId, permitId);
   },
 
   registerExtend: function () {

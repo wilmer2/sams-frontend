@@ -3,6 +3,7 @@ var $ = require('jquery');
 var Permit = require('../model/permit');
 var Permits = require('../collection/permits');
 var PermitForm = require('../view/permit/permitNewView');
+var PermitShow = require('../view/permit/permitShowView');
 var PermitFormExtend = require('../view/permit/permitExtendNewView');
 var PermitList = require('../view/permit/permitTableView');
 
@@ -36,6 +37,39 @@ function PermitCtrl () {
       appView.showEmployeeView(permitList);
     })
 
+  },
+
+  this.show = function (employeeId, permitId) {
+    var permit = new Permit();
+    var permitShow = new PermitShow({model: permit});
+
+    this.getPermit(employeeId, permitId)
+    .then(function (data) {
+      permit.set(data, silentData);
+      appView.showEmployeeView(permitShow);
+    })
+    .catch(function (err) {
+      permit.set(notFound, silentData);
+      appView.showEmployeeView(permitShow);
+    })
+  },
+
+  this.getPermit = function (employeeId, permitId) {
+    return new Promise(function (resolve, reject) {
+      $.get(Backend_url + 'employee/' + employeeId + '/permit/' + permitId)
+       .done(function (res) {
+        if (res.status == 'success') {
+          var data = res.data;
+
+          resolve(data);
+        }
+       })
+       .fail(function (err) {
+        if (err.status == 404) {
+          reject(err);
+        }
+       })
+    })
   },
 
   this.getEmployee = function () {
