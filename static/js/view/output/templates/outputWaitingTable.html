@@ -1,25 +1,40 @@
+<h3 class="text-center"> Se Espera que LLeguen </h3>
 
-  <div>
-    <h3>
-      Se Espera que LLeguen
-    </h3>
-  </div>
   {{#if message}}
-    <div>
-      {{message}}
+    <div class="row">
+      <div class="col-md-6 col-md-offset-3 text-center">
+        <div class="alert alert-warning center-block" role="alert">
+          {{message}}
+        </div>
+      </div>
     </div>
   {{else}}
-  <input type="text" class="Search">
-  <table>
-    <thead>
-      <th>Cedula</th>
-      <th>Nombre</th>
-      <th>Fecha de LLegada</th>
-      <th>Ver</th>
-      <th>Confirmar</th>
-    </thead>
-    <tbody>
-    
-    </tbody>
-  </table>
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3">
+      <div class="input-group">
+        <span class="input-group-addon" id="basic-addon1"><i class="fa fa-search"></i></span>
+        <input type="text" class="Search form-control" placeholder="Buscar..." aria-describedby="basic-addon1">
+      </div>
+    </div>
+  </div>
+
+  <br>
+
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <table class="table">
+        <thead>
+          <th>Cedula</th>
+          <th>Nombre</th>
+          <th>Fecha de LLegada</th>
+          <th class="col-fit">Ver</th>
+          <th class="col-fit">Confirmar</th>
+        </thead>
+        <tbody>
+        
+        </tbody>
+      </table>
+    </div>
+  </div>
+
   {{/if}}
