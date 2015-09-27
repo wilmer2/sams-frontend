@@ -1,14 +1,19 @@
 <h3 class="text-center"> Lista de Notificacion de Entrada </h3>
 
+<hr>
+
 {{#if message}}
 
-<div>
-  {{message}}
-</div>
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3 text-center">
+      <div class="alert alert-warning center-block" role="alert">
+        {{message}}
+      </div>
+    </div>
+  </div>
 
 {{else}}
 
-<hr>
 
 <div class="row">
   <div class="col-md-8 col-md-offset-2">
@@ -23,7 +28,7 @@
         <th>
           Estado
         </th>
-        <th>
+        <th class="col-fit">
           Ver
         </th>
       </thead>

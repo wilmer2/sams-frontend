@@ -1,7 +1,12 @@
 {{#if message}}
- <div>
-   {{message}}
- </div>
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3 text-center">
+      <div class="alert alert-warning center-block" role="alert">
+        {{message}}
+      </div>
+    </div>
+  </div>
+
 {{else}}
  {{#if image_url}}
   <td>

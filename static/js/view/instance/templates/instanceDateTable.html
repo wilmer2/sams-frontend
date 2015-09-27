@@ -1,22 +1,29 @@
-<div>
-  <h3>
-    Visitas Sociales
-  </h3>
-</div>
+<h3 class="text-center"> Visitas Sociales </h3>
+
+<hr>
+
 {{#if message}}
- <div>
-   {{message}}
- </div>
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3 text-center">
+      <div class="alert alert-warning center-block" role="alert">
+        {{message}}
+      </div>
+    </div>
+  </div>
 {{else}}
- <table>
-  <thead>
-   <th>Cedula</th>
-   <th>Referido</th>
-   <th>Fecha</th>
-   <th>Estado</th>
-   <th>Ver</th>
-  </thead>
-  <tbody>
-  </tbody>
-</table>
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+     <table class="table">
+      <thead>
+       <th>Cedula</th>
+       <th>Referido</th>
+       <th>Fecha</th>
+       <th>Estado</th>
+       <th class="col-fit">Ver</th>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+    </div>
+  </div>
 {{/if}}
