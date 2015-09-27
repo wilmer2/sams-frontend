@@ -18,7 +18,6 @@ module.exports = Backbone.View.extend({
     this.paginateView = new PaginateView(collectionData);
 
     this.collection.on('goTo', this.changePage, this);
-    
     this.listenTo(this.collection, 'notAction', function (message) {
       this.message = message;
     });

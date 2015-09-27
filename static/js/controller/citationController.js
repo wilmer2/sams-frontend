@@ -12,6 +12,9 @@ var CitationWaiting = require('../view/citation/citationWaitingTableView');
 function CitationCtrl() {
   this.showForm = function () {
     var elder = Backbone.Main.Elder.elder;
+
+    console.log(elder.toJSON())
+
     var citationForm = new CitationForm({model: elder});
 
     appView.showElderView(citationForm);

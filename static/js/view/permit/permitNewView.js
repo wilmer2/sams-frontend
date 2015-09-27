@@ -5,32 +5,33 @@ var alertify = require('alertifyjs');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: 'action/templates/actionItemHour.html',
+  template: 'permit/templates/permitNew.html',
+  className: 'permitNewView',
   events: {
-    'click .btn-remove': 'confirmRemove'
+    'submit #form-permit': 'confirmedRegister'
   },
 
   initialize: function (opt) {
-    this.action = opt.action;
+    this.employee = opt.employee;
   },
 
   render: function () {
     $.get(rootView + this.template, function (template) {
       var template = Handlebars.compile(template);
-      var data = this.model.toJSON();
+      var data = this.employee.toJSON();
       var html = template(data);
 
       this.$el.html(html);
     }.bind(this))
-
-    return this;
   },
 
-  confirmRemove: function () {
-    var title = 'Eliminar horario de actividad';
-    var message = 'Esta seguro de eliminar este horario';
+  confirmedRegister: function (e) {
+    e.preventDefault();
+
+    var title = 'Registrar Permiso extendido';
+    var message = 'Asegurese de que los datos son correctos porque no podran ser editados en el futuro';
     var callback = function () {
-      this.removeHour();
+      this.register();
     }.bind(this);
 
     alertify.confirm(message, callback)
@@ -43,23 +44,31 @@ module.exports = Backbone.View.extend({
     });
   },
 
-  removeHour: function () {
-    var actionId = this.action.get('id');
-    var scheduleId = this.model.get('id');
+  register: function (e) {
+    var employeeId = this.employee.get('id');
+    var data = $('#form-permit').serialize();
+    var url = 'employee/' + employeeId + '/permit';
 
-    $.get(Backend_url + 'action/' + actionId + '/schedule/' + scheduleId + '/remove')
+    $.post(Backend_url + url, data)
      .done(function (res) {
       if (res.status == 'success') {
         var successMessage = res.message;
+        var permitData = res.data;
 
+        this.model.set(permitData);
         util.showSuccess(successMessage);
-        this.close();
+
+        var permitId = this.model.get('id');
+        window.location.href = '#employee/' + employeeId + '/permit/' + permitId;
+      } else {
+        var errorMessage = res.message;
+
+        util.showError(errorMessage);
       }
      }.bind(this))
   },
 
   close: function () {
-    this.model.trigger('destroy', this.model);
     this.remove();
   }
 })

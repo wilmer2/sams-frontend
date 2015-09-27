@@ -2,13 +2,15 @@ var $ = require('jquery');
 var Employee = require('../model/employee');
 var User = require('../model/user');
 var Employees = require('../collection/employees');
+var Schedules = require('../collection/schedules');
 var UserView = require('../view/user/userShowView');
 var UserEdit = require('../view/user/userEditView');
 var EmployeeForm = require('../view/employee/employeeNewView');
+var EmployeeEdit = require('../view/employee/employeeEditView');
 var EmployeeList = require('../view/employee/employeeTableView');
 var EmployeeShow = require('../view/employee/employeeShowView');
-// var EmployeeData = require('../view/employeeDataView');
-// var EmployeeEdit = require('../view/employeeEditView');
+var EmployeeSchedule = require('../view/employee/employeeScheduleNewView');
+var EmployeeScheduleList = require('../view/employee/employeeScheduleListView');
 
 function EmployeeCtrl () {
 
@@ -17,6 +19,18 @@ function EmployeeCtrl () {
     var employeeForm = new EmployeeForm({model:employee});
 
     appView.showAdminView(employeeForm);
+  },
+
+  this.show = function (employee) {
+    var employeeShow = new EmployeeShow({model: employee});
+
+    appView.showEmployeeView(employeeShow);
+  },
+
+  this.edit = function (employee) {
+    var employeeEdit = new EmployeeEdit({model: employee});
+
+    appView.showEmployeeView(employeeEdit);
   },
 
   this.showList = function () {
@@ -29,10 +43,23 @@ function EmployeeCtrl () {
     })
   },
 
-  this.show = function (employee) {
-    var employeeShow = new EmployeeShow({model: employee});
+ 
+  this.formSchedule = function (employee) {
+    var employeeSchedule = new EmployeeSchedule({model: employee});
 
-    appView.showEmployeeView(employeeShow);
+    appView.showEmployeeView(employeeSchedule);
+  },
+
+  this.listSchedule = function (employeeId) {
+    var schedules = new Schedules();
+    var scheduleList = new EmployeeScheduleList({collection: schedules});
+    var url = Backend_url + 'employee/' + employeeId + '/schedules';
+
+    schedules.updateUrl(url);
+    schedules.fetch(fetchData)
+    .done(function () {
+      appView.showEmployeeView(scheduleList);
+    })
   },
 
   this.showUser = function (employeeId) {

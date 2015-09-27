@@ -78,7 +78,6 @@ module.exports = Backbone.View.extend({
   },
 
   countSchedule: function () {
-    console.log('test');
     var countSchedule = this.schedules.length;
 
     if (countSchedule == 0) {

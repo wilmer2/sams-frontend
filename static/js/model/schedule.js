@@ -16,12 +16,12 @@ module.exports = Backbone.Model.extend({
     var times = _.pick(data, 'entry_time', 'departure_time');
     
     _.mapObject(times, function (val, key) {
-      if (!_.isNull(val)) {
-        var newHour = utilHour.hourStandar(val);
+      var newHour = utilHour.hourStandar(val);
 
-        this.set(key, newHour , silentData);
-      }
+      this.set(key, newHour , silentData);
+
     }.bind(this))
 
   }
+
 });

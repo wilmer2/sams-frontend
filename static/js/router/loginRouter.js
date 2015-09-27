@@ -170,7 +170,6 @@ module.exports = Backbone.Router.extend({
 	},
 
 	employees: function () {
-		console.log('test')
 		this
 		  .renderMenuAdmin()
 		  .then(function () {

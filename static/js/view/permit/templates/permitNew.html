@@ -1,0 +1,24 @@
+<div>
+  <h3>Registrar Permiso</h3>
+</div>
+{{#if activiti}}
+<form id="form-permit">
+  <label for="reason">Razon</label>
+  <textarea name="reason" required></textarea>
+  <label for="date_start">Dia</label>
+  <input type="date" name="date_start" required>
+  <label for="turn">Turno</label>
+  <select name="turn" required>
+    <option value="morning">Mañana</option>
+    <option value="afternoon">Tarde</option>
+    <option value="night">Noche</option>
+    <option value="complete">Todos</option>
+  </select>
+  <input type="hidden" name="type" value="normal">
+  <button type="submit">Enviar</button>
+</form>
+{{else}}
+<div>
+  <p>Empleado no activo no se pueden registrar permisos</p>
+</div>
+{{/if}}

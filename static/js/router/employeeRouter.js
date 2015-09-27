@@ -3,14 +3,18 @@ var Subroute = require('../../dependencies/backboneSubroutes/backboneSubroutes')
 var Employee = require('../model/employee');
 var EmployeeMenu = require('../view/menu/menuEmployeeView');
 var EmployeeCtrl = require('../controller/employeeController');
+var PermitRouter = require('./permitRouter');
 var util = require('../util/util');
-
 
 module.exports = Subroute.extend({
   routes: {
     ':employeeId': 'show',
+    ':employeeId/edit': 'edit',
+    ':employeeId/schedule': 'registerSchedule',
+    ':employeeId/schedule/list': 'listSchedule',
     ':employeeId/user': 'showUser',
-    ':employeeId/user/edit': 'editUser'
+    ':employeeId/user/edit': 'editUser',
+    ':employeeId/permit/*subroute': 'invokePermit'
   },
 
   initialize: function () {
@@ -52,6 +56,14 @@ module.exports = Subroute.extend({
     }
   },
 
+  show: function () {
+    this.employeeCtrl.show(this.employee);
+  },
+
+  edit: function () {
+    this.employeeCtrl.edit(this.employee);
+  },
+
   showUser: function (employeeId) {
     this.employeeCtrl.showUser(employeeId);
   },
@@ -60,9 +72,21 @@ module.exports = Subroute.extend({
     this.employeeCtrl.editUser(employeeId);
   },
 
-  show: function () {
-    this.employeeCtrl.show(this.employee);
+  registerSchedule: function () {
+    this.employeeCtrl.formSchedule(this.employee);
+  },
+
+  listSchedule: function (employeeId) {
+    this.employeeCtrl.listSchedule(employeeId);
+  },
+
+  invokePermit: function (subroute)  {
+    if (!Backbone.Main.Permit) {
+      Backbone.Main.Permit = new PermitRouter('employee/:employeeId/permit/');
+    }
   }
+
+
 })
 
 

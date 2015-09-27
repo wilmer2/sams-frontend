@@ -28,6 +28,8 @@ module.exports = Backbone.View.extend({
     var url = 'elder/' + elderId + '/output/' + outputId + '/edit?_method=PUT';
     var data = $('#formOutput-edit').serialize();
 
+    console.log(data);
+
     $.post(Backend_url + url, data)
      .done(function (res) {
       if (res.status == 'success') {

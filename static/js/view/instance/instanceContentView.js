@@ -15,7 +15,9 @@ module.exports = Backbone.View.extend({
 
     this.$el.html(this.template);
 
-    this.$contentInstance = this.$el.find('#content-instance');
+    this.$contentInstance = this
+                              .$el
+                              .find('#content-instance');
 
     this.showInstance(currentDate);
   },

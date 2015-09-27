@@ -1,12 +1,12 @@
-var Backbone   = require('backbone');
-var $          = require('jquery');
-var _          = require('underscore');
+var Backbone = require('backbone');
+var $ = require('jquery');
+var _ = require('underscore');
 var Hanblebars = require('handlebars');
-var util       = require('../../util/util');
-
+var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: Hanblebars.compile($('#employeeEdit-view').html()),
+  template: 'employee/templates/employeeEdit.html',
+  className: 'employeeEditView',
 
   initialize: function () {
     this.photoSource = '';
@@ -18,33 +18,38 @@ module.exports = Backbone.View.extend({
     'click .Modal-repeat': 'repeat',
     'click .Modal-btnPic': 'showPic',
     'change .Form-file': 'uploadPic',
+    'click .close': 'closeModal',
     'submit #form-editEmployee': 'edit'
   },
 
   render: function () {
-    var data = this.model.toJSON();
-    var html = this.template(data);
-    var gender = this.model.get('gender');
+    $.get(rootView + this.template, function (template) {
+      var template = Hanblebars.compile(template);
+      var data = this.model.toJSON();
+      var html = template(data);
+      var gender = this.model.get('gender');
 
-    this.$el.html(html);
-    this.$modalPic = this.$el.find('.Modal');
-    this.$camera = this.$el.find('.Modal-camera');
-    this.$canvas = this.$el.find('.Modal-lienzo');
-    this.$confirmBtn = this.$el.find('.Modal-btnConf');
-    this.$snap = this.$el.find('.Modal-snap');
-    this.$canvasForm = this.$el.find('.Lienzo');
-    this.$containerBtn = this.$el.find('.Modal-btn');
-    this.$typeFile = this.$el.find('input[type="file"]');
+      this.$el.html(html);
+      this.$modalPic = this.$el.find('.Modal');
+      this.$camera = this.$el.find('.Modal-camera');
+      this.$canvas = this.$el.find('.Modal-lienzo');
+      this.$confirmBtn = this.$el.find('.Modal-btnConf');
+      this.$snap = this.$el.find('.Modal-snap');
+      this.$canvasForm = this.$el.find('.Lienzo');
+      this.$containerBtn = this.$el.find('.Modal-btn');
+      this.$typeFile = this.$el.find('input[type="file"]');
+      this.$close = this.$el.find('.close');
+      var radio = this.$el.find('input[value=' + gender + ']:radio');
 
-    var radio = this.$el.find('input[value=' + gender + ']:radio');
-    radio.prop('checked', true);
+      radio.prop('checked', true);
 
-    this.loadPic();
-
+      this.loadPic();
+    }.bind(this))
   },
 
   showModal: function () {
     this.$modalPic.show();
+    this.$close.hide();
     this.$containerBtn.hide();
     this.showCamera();
   },
@@ -89,12 +94,12 @@ module.exports = Backbone.View.extend({
 
       var canvas = this.$canvas;
       var camera = this.$camera;
-      this.pickCam = camera[0];
+      this.picCam = camera[0];
 
       canvas.attr({'width': 150,'height': 150});
 
       var ctx = canvas[0].getContext('2d');
-      ctx.drawImage(this.pickCam, 0 , 0, 150, 150);
+      ctx.drawImage(this.picCam, 0 , 0, 150, 150);
       this.photoSource = canvas[0].toDataURL('image/png')
       this.closeCamera();
       this.optBtn();
@@ -108,7 +113,7 @@ module.exports = Backbone.View.extend({
     canvasForm.attr({'width': 150, 'height': 150});
 
     var ctxForm = canvasForm[0].getContext('2d');
-    ctxForm.drawImage(this.pickCam, 0, 0, 150, 150);
+    ctxForm.drawImage(this.picCam, 0, 0, 150, 150);
     this.closeModal();
   },
 
@@ -163,6 +168,7 @@ module.exports = Backbone.View.extend({
 
   showBtn: function () {
     this.$snap.show();
+    this.$close.show();
     this.$confirmBtn.hide();
   },
 
@@ -176,7 +182,7 @@ module.exports = Backbone.View.extend({
     var imageUrl = this.model.get('image_url');
 
     if (!_.isUndefined(imageUrl)) {
-      var defaultUrl = 'http://localhost/image/geriatric/profile_default_man.jpg';
+      var defaultUrl = 'http://localhost/image/geriatric/default/profile_default_man.png';
 
       if (imageUrl != defaultUrl) {
         var image = new Image();
@@ -207,18 +213,18 @@ module.exports = Backbone.View.extend({
 
   edit: function (e) {
     e.preventDefault();
-    var id = this.model.get('id');
+    var employeeId = this.model.get('id');
     var formData = new FormData($('#form-editEmployee')[0]);
 
     if (!_.isEmpty(this.photoSource)) {
       var mime = util.extractMime(this.photoSource);
 
       formData.append('photo', this.photoSource);
-      formData.append('mime', mime);
+      formData.append('mime_request', mime);
     }
       
     $.ajax({
-      url: Backend_url + 'employee/' + id + '/edit?_method=PUT',
+      url: Backend_url + 'employee/' + employeeId + '/edit?_method=PUT',
       type: 'POST',
       data: formData,
       processData : false, 
@@ -228,7 +234,7 @@ module.exports = Backbone.View.extend({
       if (res.status == 'success') {
         this.model.clear({silent:true});
         util.showSuccess(res.message);
-        Backbone.Main.navigate('employee/' + id, {trigger: true});
+        window.location.replace('#employee/' + employeeId);
       } else {
         util.showError(res.message);
       }

@@ -26,8 +26,6 @@ module.exports = Subroute.extend({
     ':elderId/record/*subroute': 'invokeRecord',
     ':elderId/citation/*subroute': 'invokeCitation',
     ':elderId/occurrence/*subroute': 'invokeOccurrence'
-   /* ':id/edit'             : 'edit',
-    ':id/record/*subroute' : 'invokeRecord',*/
   },
 
   initialize: function () {

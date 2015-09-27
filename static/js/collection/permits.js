@@ -1,8 +1,8 @@
 var PageableCollection = require('backbone.paginator');
-var Citation = require('../model/citation');
+var Permit = require('../model/Permit');
 
 module.exports = PageableCollection.extend({
-  model: Citation,
+  model: Permit,
   mode: 'client',
   state: {
     firstPage: 1,
@@ -19,7 +19,7 @@ module.exports = PageableCollection.extend({
     } else {
       var message = res.message;
 
-      this.trigger('notCitation', message);
+      this.trigger('notPermit', message);
     }
   },
 
@@ -34,4 +34,5 @@ module.exports = PageableCollection.extend({
   updateUrl: function (url) {
     this.url = url;
   }
+
 })

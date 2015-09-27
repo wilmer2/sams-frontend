@@ -6,11 +6,10 @@ var PaginateView = require('../paginate/paginationView');
 var CitationView = require('./citationElderRowView');
 var util = require('../../util/util');
 
-
 module.exports = Backbone.View.extend({
   template: 'citation/templates/citationElderTable.html',
   className: 'citationElderTableView',
-  boxError: $('#error-citation').html(),
+  boxError: Handlebars.compile($('#error-citation').html()),
 
   initialize: function () {
     var collectionData = {collection: this.collection};
@@ -79,8 +78,8 @@ module.exports = Backbone.View.extend({
   },
 
   emptyCitation: function (message) {
-    var erroMessage = {message: message};
-    var boxError = this.boxError(erroMessage);
+    var errorMessage = {message: message};
+    var boxError = this.boxError(errorMessage);
 
     this.$el.html(boxError);
   },

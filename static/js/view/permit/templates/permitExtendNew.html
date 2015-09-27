@@ -1,0 +1,21 @@
+<div>
+    <h3>Registrar Permiso extendido</h3>
+</div>
+{{#if activiti}}
+<form id="form-permitExtend">
+    <label for="reason">Razon</label>
+    <textarea name="reason" required></textarea>
+    <label for="date_start">Desde</label>
+    <input type="date" name="date_start" required>
+    <label for="date_end">Hasta</label>
+    <input type="date" name="date_end" required>
+    <input type="hidden" name="type" value="extend" required>
+    <button type="submit">Enviar</button>
+</form>
+{{else}}
+<div>
+  <p>
+    Empleado no activo no se pueden registrar permisos
+  </p>
+</div>
+{{/if}}
