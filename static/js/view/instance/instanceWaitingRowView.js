@@ -25,6 +25,6 @@ module.exports = Backbone.View.extend({
 
   redirectShow: function () {
     var elderId = this.model.get('elder_id');
-    window.location.href = '#elder/' + elderId + '/instanceWaiting';
+    window.location.href = '#elder/' + elderId + '/instance-waiting';
   }
 })

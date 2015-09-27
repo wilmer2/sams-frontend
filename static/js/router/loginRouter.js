@@ -315,14 +315,7 @@ module.exports = Backbone.Router.extend({
 		if (!Backbone.Main.Admin) {
 			Backbone.Main.Admin = new AdminRouter('admin/');
 		}
-	},
-
-	invokeActiveModule: function (subroute) {
-		if (!Backbone.Main.Activity) {
-			Backbone.Main.Activity = new ActivityRouter('activity/');
-		}
 	},*/
-
 	
 	invokeEmployeeModule: function (subroute) {
 		if (!Backbone.Main.Employee) {
@@ -337,12 +330,9 @@ module.exports = Backbone.Router.extend({
 	},
 
   invokeInstanceModule: function (subroute) {
-  	this.renderMenuUser()
-  	  .then(function () {
-  	  	if (!Backbone.Main.Instance) {
-  				Backbone.Main.Instance = new InstanceRouter('instance/')
-  			}
-  	  })
+  	if (!Backbone.Main.Instance) {
+  	  Backbone.Main.Instance = new InstanceRouter('instance/')
+  	}
   },
 
   invokeEventModule: function (subroute) {

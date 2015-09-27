@@ -13,6 +13,16 @@ module.exports = Subroute.extend({
     this.instanceCtrl = new InstanceCtrl();
   },
 
+  before: {
+    '*any': 'loadMenu'
+  },
+
+  loadMenu: function (fragment, args, next) {
+    Backbone.Main
+             .renderMenuUser()
+             .then(next);
+  },
+
   register: function () {
     this.instanceCtrl.showForm();
   },
