@@ -1,65 +1,106 @@
-$sidebarColor = #467ABF;
-$menu_color_hover = #2870D0;
+$borderLeftWidth = 5px;
 
 .leftSidebar {
-  width: 22em;
+  width: 20em;
   position:fixed;
   bottom: 0;
-  top: 4.35em
-  background-color: $sidebarColor;
+  top: 4em
+  background-color: #467abf
   color: white;
-  padding: 1.5em;
   overflow-y: scroll;
-  font-size: 0.9em;
+  font-size: 1em;
+  border-right: 1px solid rgba(255,255,255,0.35);  
   
-  a {
-    color: white;
-    text-decoration: none;
-  }
-
-  ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    margin: auto;
+  .mini-header {
+    padding: 0.50em;
+    background-color: #2768BF;
     
-    &>li {
-      padding: 0.5em 0em;
+    img {
+      width: 7em;
+      margin: 1em auto;
+    }
+    
+    .name {
       font-weight: 600;
-     
-     //sub-menu 
-      &>ul {
-        margin-left: 1em;
-        
-        &>li{
-          cursour: pointer;
-          padding-left: 1em;
-
-          &:hover {
-            background-color: $menu_color_hover;
-            font-weight: 600;
-          }
-        }
-      }
+      padding: 0.25em 0em;
+      background-color: rgba(0,0,0,0.25)
     }
   }
   
   .searchRow {
-    margin: 1em 0em
+    width: 80%;
+    margin: 1em auto;
   }
   
-  .buttonHomeRow {
-    display: flex;
-    justify-content: center;
-    margin: 1em 0em
-    
-    button {
-      width: 80%
+  .menu {
+    list-style: none;
+    padding: 0;
+  
+    ul {
+      list-style: none;
+      padding: 0; 
+      
     }
-  }
-  
-  .imageRow {
-    display: flex;
-    justify-content: center;
+    
+    &>li:last-child {
+      border-bottom: 1px solid rgba(255,255,255,0.35);
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+    
+    li {
+      border-top: 1px solid rgba(255,255,255,0.35);    
+    }
+    
+    .item {
+      display: flex;
+      padding: 0.50em 0.75em;
+      font-weight: 600;
+      font-size: 1.1em;
+      border-left: $borderLeftWidth solid rgba(255,255,255,0.35);
+
+      .icon {
+        margin-right: 0.75em;
+      }
+    }
+    
+    .sub-menu {
+      li {
+        padding: 0em 1.35em;
+        border-left $borderLeftWidth solid rgba(255,255,255,0.35);
+        font-size: 1em;
+        
+        a {
+          display: block;
+          border-left: 1px dashed rgba(255,255,255,0.35);
+          padding: 0.50em 1.5em;
+          position: relative;
+          
+          i {
+            margin-right: 0.75em;
+          }
+          
+          &:hover {
+            font-weight: 600;
+            
+            &:before {
+              content: "";
+              display: block;
+              width: 0;
+              height: 0;
+              border-style: solid;
+              border-width: 3px 0 3px 6px;
+              border-color: transparent transparent transparent white;
+              position:absolute;
+              top: 44%;
+              left: -1px;
+            }
+          }
+        }
+      }
+    }
   }
 }

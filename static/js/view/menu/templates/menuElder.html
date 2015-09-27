@@ -1,89 +1,188 @@
 <nav class="leftSidebar">
-  <div class="imageRow">
+  <div class="mini-header">
     {{#if image_url}}
-    <img src="{{image_url}}">
+    <img class="img-responsive img-circle center-block" src="{{image_url}}">
     {{else}}
-    <img src="http://localhost/image/geriatric/default/profile_default_man.png">
+    <img class="img-responsive img-circle center-block" src="http://localhost/image/geriatric/default/profile_default_man.png">
     {{/if}}
+
+    <div class="text-center name">
+      <span>NOMBRE</span>
+    </div>
   </div>
-  <div class="buttonHomeRow">
-    <button class="btn btn-primary">
-      Inicio
-    </button>
-  </div>
-  
-  <ul>
-    <li> Informacion 
-      <ul>
+
+  <ul class="menu">
+    <li> 
+      <div class="item">
+        <div class="icon">
+          <i class="fa fa-user"></i>
+        </div>
+        <div class="title">
+          Perfil
+        </div>
+        <div class="arrow">
+        </div>
+      </div>
+
+       <ul class="sub-menu">
+         <li>
+            <a href="#elder/{{id}}">
+              <i class="fa fa-info"></i>
+              <span>Información</span>
+            </a>
+          </li>
+       </ul>
+    </li>
+
+    <li> 
+      <div class="item">
+        <div class="icon">
+          <i class="fa fa-user-md"></i>
+        </div>
+        <div class="title">
+          Citas Médicas
+        </div>
+        <div class="arrow">
+        </div>
+      </div>
+
+       <ul class="sub-menu">
+         <li>
+            <a href="#elder/{{id}}/citation/register">
+              <i class="fa fa-plus"></i>
+              <span>Registrar</span>
+            </a>
+          </li>
+         <li>
+            <a href="#elder/{{id}}/citation/waiting">
+              <i class="fa fa-hourglass-2"></i>
+                Citas por Confirmar 
+                {{#if citation}}
+                <label for="">
+                  {{citation}}
+                </label>
+                {{/if}}
+            </a>
+          </li>
+       </ul>
+    </li>
+
+    <li> 
+      <div class="item">
+        <div class="icon">
+          <i class="fa fa-road"></i>
+        </div>
+        <div class="title">
+          Salidas
+        </div>
+        <div class="arrow">
+        </div>
+      </div>
+
+      <ul class="sub-menu">
         <li>
-          <a href="#elder/{{id}}">Ver informacion</a>
-        </li>
-      </ul>
-    <li> Citas
-      <ul>
-        <li>
-          <a href="#elder/{{id}}/citation/register">Registrar Cita</a>
-        </li>
-        <li>
-          <a href="#elder/{{id}}/citation/waiting">
-            Citas por Confirmar 
-            {{#if citation}}
-            <label for="">
-            {{citation}}
-            </label>
-            {{/if}}
+          <a href="#elder/{{id}}/output/register">
+            <i class="fa fa-plus"></i>
+            <span>Registrar</span>
           </a>
         </li>
+
         <li>
-          <a href="#elder/{{id}}/citation/list">Todas las Citas</a>
+          <a href="#elder/{{id}}/output-pernot/register">
+            <i class="fa fa-plus"></i>
+            <span>Registrar (Pernocta)</span>
+          </a>
         </li>
-      </ul>   
+
+        <li>
+          <a href="#elder/{{id}}/output/list">
+            <i class="fa fa-list"></i>
+            <span>Listar</span>
+          </a>
+        </li>  
+       </ul>
     </li>
-    <li> Salidas
-      <ul>
+
+    <li> 
+      <div class="item">
+        <div class="icon">
+          <i class="fa fa-exclamation-triangle"></i>
+        </div>
+        <div class="title">
+          Incidencias
+        </div>
+        <div class="arrow">
+        </div>
+      </div>
+
+      <ul class="sub-menu">
         <li>
-          <a href="#elder/{{id}}/output/register">Registar Salida</a>
+          <a href="#elder/{{id}}/occurrence/register">
+            <i class="fa fa-plus"></i>
+            <span>Registrar</span>
+          </a>
         </li>
-        <li>
-          <a href="#elder/{{id}}/output-pernot/register">Registrar Salida con Pernocta</a>
-        </li>
-        <li>
-          <a href="#elder/{{id}}/output/list">Lista de Salidas</a>
-        </li>
-      </ul>
-    </li>
-    <li> Incidencia
-      <ul>
-        <li>
-          <a href="#elder/{{id}}/occurrence/register">Registrar incidencia</a>
-        </li>
+
         <li>
           <a href="#elder/{{id}}/occurrence/list">
-            Lista de incidencias
+            <i class="fa fa-list"></i>
+            <span>Listar</span>
+          </a>
+        </li> 
+       </ul>
+    </li>
+
+    <li> 
+      <div class="item">
+        <div class="icon">
+          <i class="fa fa-stethoscope"></i>
+        </div>
+        <div class="title">
+          Historias Clínicas
+        </div>
+        <div class="arrow">
+        </div>
+      </div>
+
+      <ul class="sub-menu">
+        <li>
+          <a href="#elder/{{id}}/record/register">
+            <i class="fa fa-plus"></i>
+            <span>Registrar</span>
           </a>
         </li>
-      </ul>
-    </li>
-    <li> Historias clinicas
-      <ul>
+
         <li>
-          <a href="#elder/{{id}}/record/register">Registar Historia</a>
-        </li>
-        <li>
-          <a href="#elder/{{id}}/record/list">Lista de Historias</a>
-        </li>
-      </ul>     
-    </li> 
+          <a href="#elder/{{id}}/record/list">
+            <i class="fa fa-list"></i>
+            <span>Listar</span>
+          </a>
+        </li> 
+       </ul>
     </li>
-    <li> Notificacion de Ingreso
-      <ul>
+
+    <li> 
+      <div class="item">
+        <div class="icon">
+          <i class="fa fa-check"></i>
+        </div>
+        <div class="title">
+          Notificacion de Ingreso
+        </div>
+        <div class="arrow">
+        </div>
+      </div>
+
+      <ul class="sub-menu">
         <li>
           <a href="#elder/{{id}}/instances">
-           Lista de Notificacion de Ingreso
+            <i class="fa fa-list"></i>
+            <span>Listar</span>
           </a>
-        </li>
-      </ul>
+        </li> 
+       </ul>
     </li>
   </ul>
+
 </nav>
 <div id="content-elder" class="mainContent"></div>

@@ -1,39 +1,114 @@
 <nav class="leftSidebar">
-  <div class="imageRow">
-    <figure>
-      <img src="{{image_url}}">
-    </figure>
+
+  <div class="mini-header">
+    <img class="img-circle center-block" src="{{image_url}}">
+
+    <div class="text-center name">
+      <span>{{first_name}} {{last-name}}</span>
+    </div>
   </div>
-  <div>
-    <button class="btn btn-primary">Inicio</button>
-  </div>
-  <div>
-    <span>{{first_name}} {{last-name}}</span>
-  </div>
+
   <ul class="menu">
-    <li> Informacion
-     <ul>
-       <li><a href="#employee/{{id}}">Ver informacion</a></li>
-     </ul>
+    <li> 
+      <div class="item">
+        <div class="icon">
+          <i class="fa fa-user"></i>
+        </div>
+        <div class="title">
+          Perfil
+        </div>
+        <div class="arrow">
+        </div>
+      </div>
+
+       <ul class="sub-menu">
+         <li>
+            <a href="#employee/{{id}}">
+              <i class="fa fa-info"></i>
+              <span>Información</span>
+            </a>
+          </li>
+       </ul>
     </li>
-    <li> Horario
-     <ul>
-       <li><a href="#employee/{{id}}/schedule">Registrar Horario</a></li>
-       <li><a href="#employee/{{id}}/schedule/list">Lista de Horario</a></li>
-     </ul>
+
+    <li> 
+      <div class="item">
+        <div class="icon">
+          <i class="fa fa-calendar-o"></i>
+        </div>
+        <div class="title">
+          Horarios
+        </div>
+        <div class="arrow">
+        </div>
+      </div>
+
+       <ul class="sub-menu">
+         <li>
+            <a href="#employee/{{id}}/schedule">
+              <i class="fa fa-calendar-plus-o"></i>
+              <span>Registrar</span>
+            </a>
+          </li>
+
+          <li>
+            <a href="#employee/{{id}}/schedule/list">
+              <i class="fa fa-calendar"></i>
+              <span>Horarios</span>
+            </a>
+          </li>
+       </ul>
     </li>
-    <li> Permisos
-      <ul>
-        <li><a href="#employee/{{id}}/permit/">Registrar Permiso</a>
-        </li>
-        <li><a href="#employee/{{id}}/permit/extend">Registrar Permiso Extendido</a></li>
-        <li><a href="#employee/{{id}}/permit/list">Lista de Permisos</a></li>
-      </ul>
+
+    <li> 
+      <div class="item">
+        <div class="icon">
+          <i class="fa fa-life-saver"></i>
+        </div>
+        <div class="title">
+          Permisos
+        </div>
+        <div class="arrow">
+        </div>
+      </div>
+
+       <ul class="sub-menu">
+         <li>
+            <a href="#employee/{{id}}/permit/extend">
+              <i class="fa fa-plus"></i>
+              <span>Registrar</span>
+            </a>
+          </li>
+
+          <li>
+            <a href="#employee/{{id}}/permit/list">
+              <i class="fa fa-list"></i>
+              <span>Listar</span>
+            </a>
+          </li>
+       </ul>
     </li>
-    <li> Usuario
-      <ul>
-        <li><a href="">Cuenta Usuario</a></li>
-      </ul>
+
+    <li> 
+      <div class="item">
+        <div class="icon">
+          <i class="fa fa-cog"></i>
+        </div>
+        <div class="title">
+          Configuracion
+        </div>
+        <div class="arrow">
+        </div>
+      </div>
+
+       <ul class="sub-menu">
+         <li>
+            <a href="#employee/{{id}}/permit/extend">
+              <i class="fa fa-file-text"></i>
+              <span>Cuenta</span>
+            </a>
+          </li>
+       </ul>
     </li>
   </ul>
 </nav>
