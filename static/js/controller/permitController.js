@@ -27,7 +27,6 @@ function PermitCtrl () {
 
   this.showList = function (employeeId) {
     var permits = new Permits();
-    console.log('test')
     var permitList = new PermitList({collection: permits});
     var url = Backend_url + 'employee/' + employeeId + '/permits';
 
