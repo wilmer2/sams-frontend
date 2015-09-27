@@ -1,10 +1,16 @@
 <h3 class="text-center">Empleados</h3>
-{{#if message}}
- <div>
-   {{message}}
- </div>
-{{else}}
+
 <hr>
+
+{{#if message}}
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3 text-center">
+      <div class="alert alert-info center-block" role="alert">
+        No hay empleados registrados.
+      </div>
+    </div>
+  </div>
+{{else}}
 
 <div class="row">
   <div class="col-md-6 col-md-offset-3">
@@ -19,7 +25,7 @@
 
 <div class="row">
   <div class="col-md-8 col-md-offset-2">
-    <table class="table employeeTable">
+    <table class="table employeeTable table-hover">
       <thead>
         <th>Foto</th>
         <th>Cedula</th>
