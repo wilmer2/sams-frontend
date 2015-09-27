@@ -23,7 +23,7 @@
             {{name}}
           </td>
         </tr>
-
+        
         <tr>
           <td>
             <strong>Descripción</strong>
@@ -55,7 +55,11 @@
       <h3 class="text-center"> Horarios <button class="btn btn-primary btn-xs btn-addHour"><i class="fa fa-plus"></i> Agregar</button> </h3>
 
       <hr>
-
+      {{#if message}}
+       <div id="error-scheduleAction">
+         {{message}}
+       </div>
+      {{else}}
       <table class="table">
         <thead>
           <tr>
@@ -68,12 +72,16 @@
             <th>
               Hora de salida
             </th>
+            <th>
+              Eliminar
+            </th>
           </tr>
         </thead>
 
         <tbody>
         </tbody>
       </table>
+      {{/if}}
     </div>
   </div>
 {{/if}}

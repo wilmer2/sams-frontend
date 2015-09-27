@@ -1,8 +1,9 @@
 var Backbone = require('backbone');
 var $ = require('jquery');
+var _ = require('underscore');
 var Handlebars = require('handlebars');
 var Schedules = require('../../collection/schedules');
-var ActionItemHour = require('./actionItemHourView');
+var ActionScheduleRow = require('./actionShowRowView');
 var alertify = require('alertifyjs');
 var util = require('../../util/util');
 
@@ -18,7 +19,7 @@ module.exports = Backbone.View.extend({
   initialize: function () {
     this.schedules = new Schedules();
 
-    this.schedules.on('destroy', this.countSchedule, this);
+    this.schedules.on('destroy', this.destroySchedule, this);
 
     this.listenTo(this.schedules, 'notSchedule', function (message) {
       this.message = message;
@@ -29,39 +30,42 @@ module.exports = Backbone.View.extend({
   render: function () {
     $.get(rootView + this.template, function (template) {
       var template = Handlebars.compile(template);
-      var data = this.model.toJSON();
-      var html = template(data);
+      var actionId = this.model.get('id');
+      var url = Backend_url + 'action/' + actionId + '/schedules';
 
-      this.$el.html(html);
+      this
+        .schedules
+        .updateUrl(url);
 
-      this.$contentHours = this
+      this
+        .schedules
+        .fetch(triggerData)
+        .done(function () {
+          if (!_.isEmpty(this.message)) {
+            this.model.set('message' , this.message, silentData);
+          }
+
+          var data = this.model.toJSON();
+          var html = template(data);
+
+          this.$el.html(html);
+
+          if (!this.model.has('message')) {
+            this.$tbody = this
                             .$el
-                            .find('#action-content');
+                            .find('table')
+                            .children('tbody');
+            this.addAll();
+          }
+        }.bind(this))
 
-      this.showHours();
     }.bind(this))
   },
 
-  showHours: function () {
-    var actionId = this.model.get('id');
-    var schedules = this.schedules;
-    var url = Backend_url + 'action/' + actionId +'/schedules';
-
-    schedules.updateUrl(url);
-    schedules.fetch(triggerData)
-    .done(function () {
-      this.addAll();
-    }.bind(this));
-  },
-
   addAll: function () {
-    var count = this.schedules.length;
-
-    if (count > 0) {
-      this.schedules.forEach(this.addOne, this);
-    } else {
-      this.emptySchedule(this.message);
-    }
+    this
+      .schedules
+      .forEach(this.addOne, this);
   },
 
   addOne: function (schedule) {
@@ -69,29 +73,19 @@ module.exports = Backbone.View.extend({
     schedule.hourStandar();
 
     var action = this.model;
-    var itemData = {model:schedule, action: action}
-    var actionItemHour = new ActionItemHour(itemData);
+    var scheduleData = {model:schedule, action: action}
+    var scheduleRow = new ActionScheduleRow(scheduleData);
 
-    this.$contentHours
-    .children('#action-listHour')
-    .append(actionItemHour.render().el);
+    this.$tbody
+         .append(scheduleRow.render().el);
   },
 
-  countSchedule: function () {
-    var countSchedule = this.schedules.length;
+  destroySchedule: function () {
+    var totalSchedule = this.schedules.length;
 
-    if (countSchedule == 0) {
-      var message = 'Actividad no posee horarios';
-
-      this.emptySchedule(message);
+    if (totalSchedule == 0) {
+      this.render();
     }
-  },
-
-  emptySchedule: function (message) {
-    var errorMessage = {message: message};
-    var boxError = this.boxError(errorMessage);
-
-    this.$contentHours.html(boxError);
   },
 
   redirectEdit: function () {
