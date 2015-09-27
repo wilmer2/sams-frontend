@@ -104,3 +104,7 @@
 .text-center {
   text-align: center;
 }
+.col-fit {
+  width: 1%;
+  white-space: nowrap;
+}
