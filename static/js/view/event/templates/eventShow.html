@@ -1,32 +1,80 @@
 {{#if notFound}}
-    <div>
-      <p>Evento no encontrado</p>
-    </div>
-  {{else}}
-  <div>
-    <div>
-      <h3>Informacion de Evento</h3>
-    </div>
-    <ul>
-      <li><strong>Nombre de eventos</strong> <span>{{name}}</span></li>
-      <li><strong>Fecha</strong> <span>{{date_start}}</span></li>
-      {{#if entry_time}}
-      <li><strong>Hora de inicio</strong> <span>{{entry_time}}</span></li>
-      {{/if}}
-      {{#if date_end}}
-      <li><strong>Hasta</strong> <span>{{date_end}}</span></li>
-      {{/if}}
-      {{#if departure_time}}
-      <li><strong>Hora de Fin</strong> <span>{{departure_time}}</span></li>
-      {{/if}}
-    </ul>
-    {{#if description}}
-      <strong>Descripcion</strong>
-      <p>{{description}}</p>
-    {{/if}}
-    <div>
-      <button class="btn btn-primary btn-edit">Editar</button>
-      <button class="btn btn-danger btn-delete">Eliminar</button>
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3">
+      <div class="alert alert-warning center-block" role="alert">
+        Evento no encontrado
+      </div>
     </div>
   </div>
-  {{/if}}
+{{else}}
+  <h3 class="text-center">Informacion de Evento</h3>
+  
+  <hr>
+
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <table class="table">
+        <tr>
+          <td>
+            <strong>Nombre de evento</strong>
+          </td>
+          <td>
+            <span>{{name}}</span></tr>
+          </td>
+        <tr>
+          <td>
+            <strong>Fecha</strong>
+          </td>
+          <td>
+            <span>{{date_start}}</span></tr>
+          </td>
+        {{#if entry_time}}
+        <tr>
+          <td>
+            <strong>Hora de inicio</strong>
+          </td>
+          <td>
+            <span>{{entry_time}}</span></tr>
+          </td>
+        {{/if}}
+        {{#if date_end}}
+        <tr>
+          <td>
+            <strong>Hasta</strong>
+          </td>
+          <td>
+            <span>{{date_end}}</span></tr>
+          </td>
+        {{/if}}
+        {{#if departure_time}}
+        <tr>
+          <td>
+            <strong>Hora de Fin</strong>
+          </td>
+          <td>
+            <span>{{departure_time}}</span></tr>
+          </td>
+        {{/if}}
+
+        {{#if description}}
+            <td>
+              <strong>Descripcion</strong>
+            </td>
+            <td>
+              {{description}}
+             </td>
+        {{/if}}
+      </table class="table">
+
+      <div class="row">
+        <div class="col-md-1 col-md-offset-4">
+          <button class="btn btn-primary btn-edit"><i class="fa fa-edit"></i> Editar</button>
+        </div>
+        <div class="col-md-1 col-md-offset-1">
+          <button class="btn btn-danger btn-delete"><i class="fa fa-trash-o"></i> Eliminar</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+{{/if}}
