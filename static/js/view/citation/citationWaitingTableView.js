@@ -8,7 +8,6 @@ var util = require('../../util/util');
 module.exports = Backbone.View.extend({
   template: 'citation/templates/citationWaitingTable.html',
   className: 'citationWaitingTableView',
-  boxError: Handlebars.compile($('#error-citation').html()),
 
   initialize: function () {
     this.collection.on('destroy', this.countCitation, this);
@@ -20,14 +19,19 @@ module.exports = Backbone.View.extend({
 
   render: function () {
     $.get(rootView + this.template, function (template) {
-      if (_.isEmpty(this.message)) {
-        this.$el.html(template);
+      var template = Handlebars.compile(template);
+      var errorMessage = {message: this.message};
+      var html = template(errorMessage);
 
-        this.$tbody = this.$el.find('table').children('tbody');
+      this.$el.html(html);
+      
+      if (_.isEmpty(this.message)) {
+        this.$tbody = this
+                        .$el
+                        .find('table')
+                        .children('tbody');
 
         this.addAll();
-      } else {
-        this.emptyCitation(this.message);
       }
 
     }.bind(this))
@@ -47,17 +51,10 @@ module.exports = Backbone.View.extend({
     var countCitation = this.collection.length;
 
     if (countCitation == 0) {
-      var message = 'Adulto mayor no tiene citas pendientes';
+      this.message = 'Adulto mayor no tiene citas pendientes';
 
-      this.emptyCitation(message);
+      this.render();
     }
-  },
-
-  emptyCitation: function (message) {
-    var errorMessage = {message: message};
-    var boxError = this.boxError(errorMessage);
-
-    this.$el.html(boxError);
   },
 
   close: function () {

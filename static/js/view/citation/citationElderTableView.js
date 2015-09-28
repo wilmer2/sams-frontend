@@ -9,7 +9,6 @@ var util = require('../../util/util');
 module.exports = Backbone.View.extend({
   template: 'citation/templates/citationElderTable.html',
   className: 'citationElderTableView',
-  boxError: Handlebars.compile($('#error-citation').html()),
 
   initialize: function () {
     var collectionData = {collection: this.collection};
@@ -24,10 +23,13 @@ module.exports = Backbone.View.extend({
 
   render: function () {
     $.get(rootView + this.template, function (template) {
-      if (_.isEmpty(this.message)) {
-        var template = template;
+      var template = Handlebars.compile(template);
+      var errorMessage = {message: this.message};
+      var html = template(errorMessage);
 
-        this.$el.html(template);
+      this.$el.html(html);
+
+      if (_.isEmpty(this.message)) {
         this.getPaginateView();
 
         this.$tbody = this.$el
@@ -35,9 +37,7 @@ module.exports = Backbone.View.extend({
                           .children('tbody');
 
         this.addAll();
-      } else {
-        this.emptyCitation(this.message);
-      }
+      } 
     }.bind(this))
   },
 
@@ -75,13 +75,6 @@ module.exports = Backbone.View.extend({
 
   emptyList: function () {
     this.$tbody.empty()
-  },
-
-  emptyCitation: function (message) {
-    var errorMessage = {message: message};
-    var boxError = this.boxError(errorMessage);
-
-    this.$el.html(boxError);
   },
 
   close: function () {
