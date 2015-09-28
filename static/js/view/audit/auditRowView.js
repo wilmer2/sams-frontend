@@ -4,6 +4,7 @@ var Handlebars = require('handlebars');
 
 
 module.exports = Backbone.View.extend({
+  tagName: 'tr',
   template: 'audit/templates/auditRow.html',
 
   render: function () {
