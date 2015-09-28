@@ -1,5 +1,9 @@
 <h3 class="text-center">Empleados Activos</h3>
-
+{{#if message}}
+ <div>
+   {{message}}
+ </div>
+{{else}}
 <hr>
 
 <div class="row">
@@ -27,3 +31,4 @@
     </table>
   </div>
 </div>
+{{/if}}

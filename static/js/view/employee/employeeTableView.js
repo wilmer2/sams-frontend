@@ -8,7 +8,6 @@ var EmployeeView = require('./employeeRowView');
 module.exports = Backbone.View.extend({
   template: 'employee/templates/employeeTable.html',
   className: 'employeeTableView',
-  boxError: Handlebars.compile($('#error-employee').html()),
 
   events: {
     'keyup .Search': 'search',
@@ -27,18 +26,22 @@ module.exports = Backbone.View.extend({
 
   render: function () {
     $.get(rootView + this.template, function (template) {
-      if (_.isEmpty(this.message)) {
-        var template = template;
+      var template = Handlebars.compile(template);
+      var errorMessage = {message: this.message};
+      var html = template(errorMessage);
 
-        this.$el.html(template);
+      this.$el.html(html);
+
+      if (_.isEmpty(this.message)) {
         this.getPaginateView();
 
-        this.$tbody = this.$el.find('table').children('tbody');
+        this.$tbody = this
+                       .$el
+                       .find('table')
+                       .children('tbody');
 
         this.addAll();
-      } else {
-        this.emptyEmployee(this.message);
-      }
+      } 
     }.bind(this))
   },
 
