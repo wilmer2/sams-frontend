@@ -9,13 +9,6 @@ var EmployeeCtrl = require('../controller/employeeController');
 var AttendanceCtrl = require('../controller/attendanceController');
 var AuditCtrl = require('../controller/auditController');
 var CitationCtrl = require('../controller/citationController');
-// var Citations       = require('../collection/citations');
-// var CitationsNotify = require('../view/citationNotifyView');
-// var LoginView       = require('../view/loginView');
-// var MenuUser        = require('../view/menuView');
-// var MenuAdmin       = require('../view/menuAdminView');
-// var HomeRouter      = require('./homeRouter');
-// var AdminRouter     = require('./adminRouter');
 var EmployeeRouter  = require('./employeeRouter');
 var ElderRouter = require('./elderRouter');
 var InstanceRouter = require('./instanceRouter');
@@ -40,10 +33,6 @@ module.exports = Backbone.Router.extend({
 		'audit': 'audit',
 		'config': 'config',
 		'notFound': 'notFound',
-		// 'logout':'logout',
-		
-		// 'home/*subroute': 'invokeHomeModule',
-		// 'admin/*subroute': 'invokeAdminModule',
 		'employee/*subroute': 'invokeEmployeeModule',
 		'elder/*subroute': 'invokeElderModule',
 		'action/*subroute': 'invokeActionModule',
@@ -109,7 +98,7 @@ module.exports = Backbone.Router.extend({
 	},
 
 	login: function () {
-
+    console.log(this.userLogin.toJSON());
 		if (this.userLogin.has('role')) {
 			this.selectMenu();
 		} else {
@@ -225,107 +214,6 @@ module.exports = Backbone.Router.extend({
 		this.renderHeader();
 		appView.showNotFound();
 	},
-/*
-	closeNotify: function () {
-		this.citNotify.hideList();
-	},
-
-	selectMenu: function () {
-		var group = this.userLogin.get('group');
-
-		if (group.name == 'User') {
-			this.navigate('home/', {trigger: true});
-		} else {
-			this.navigate('admin/', {trigger: true});
-		}
-	},
-
-	login: function () {
-		if (this.userLogin.has('group')) {
-			this.selectMenu();
-		} else {
-			  if (!this.userLogin.has('name_institution')) {
-			  	 this.getConfiguration()
-			  	 	.then(function (config) {       
-			  	 	 	this.userLogin.set(config, {silent: true});
-             	this.login();
-			  	 	}.bind(this))
-			  	 	.catch(function (err) {
-			  	 		this.interceptor(err);
-			  	 	}.bind(util))
-			  } else {
-					this.closeNotify();  	
-					this.loginView.render();
-			  }
-		}
-	},
-
-	getConfiguration: function () {
-		return new Promise(function (resolve, reject) {
-				$.get(Backend_url + 'configuration')
-					.done(function (res) {
-						 resolve(res.config);
-					})
-					.fail(function (err) {
-						reject(err);
-					})
-		})
-	},
-
-	getUser: function () {
-		return new Promise(function (resolve, reject) {
-				$.get(Backend_url + 'user/authenticate')
-					.done(function (res) {
-							resolve(res.data);
-					})
-					.fail(function (err) {
-							reject(err);
-					})
-		})
-	},
-
-	logout: function () {
-		$.get(Backend_url + 'logout')
-			.done(function () {
-				this.unSetUser();
-				this.navigate('login', {trigger: true});
-			}.bind(this));
-	},
-
-	unSetUser: function () {
-		  var defaults = this.userLogin.pick(['viewVisited', 'viewOutputs',
-		  	                                  'viewCitation', 'before']);
-		 this.userLogin.clear({silent: true});
-		 this.userLogin.set(defaults, {silent: true});
-	},
-
-	renderHeader: function () {
-		this.closeNotify();
-		this.loginView.renderHeader();
-	},
-
-	renderAdmin: function () {
-		this.renderHeader();
-		this.menuAdmin.render();
-	},
-
-	renderMenu: function () {
-		this.renderHeader();
-		this.menuView.render();
-	},
-
-	invokeHomeModule: function (subroute) {
-		
-		if (!Backbone.Main.Home) {
-			Backbone.Main.Home = new HomeRouter('home/');
-		}
-	},
-
-	invokeAdminModule: function (subroute) {
-		if (!Backbone.Main.Admin) {
-			Backbone.Main.Admin = new AdminRouter('admin/');
-		}
-	},*/
 	
 	invokeEmployeeModule: function (subroute) {
 		if (!Backbone.Main.Employee) {

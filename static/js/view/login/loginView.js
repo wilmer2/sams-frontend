@@ -7,10 +7,11 @@ module.exports = Backbone.View.extend({
 	el:  $('#header-content'),
 	template: 'login/templates/login.html',
 	templateMain: 'login/templates/main.html',
-
   events: {
 		'submit #login' : 'login',
+		'click #logout': 'logout'
 	},
+
 
   initialize: function (opt) {
   	this.$main = $('#main-content');
@@ -60,6 +61,17 @@ module.exports = Backbone.View.extend({
 		 }.bind(this))
 		 .fail(function (err) {
 		 	util.interceptor(err);
+		 })
+	},
+
+	logout: function (e) {
+		e.preventDefault();
+
+		$.get(Backend_url + 'user/logout')
+		 .done(function (res) {
+		 	Backbone.Main.config.clear();
+			Backbone.Main.userLogin.clear();
+			Backbone.Main.navigate('login', triggerData);
 		 })
 	}
 
