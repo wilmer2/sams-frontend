@@ -7,7 +7,6 @@ var ProductView = require('./productRowView');
 
 module.exports = Backbone.View.extend({
   template: 'product/templates/productTable.html',
-  boxError: Handlebars.compile($('#error-product').html()),
   events: {
     'keyup .Search': 'serch'
   },
@@ -26,18 +25,22 @@ module.exports = Backbone.View.extend({
 
   render: function () {
     $.get(rootView + this.template, function (template) {
+      var template = Handlebars.compile(template);
+      var errorMessage = {message: this.message};
+      var html = template(errorMessage);
+
+      this.$el.html(html);
+
        if (_.isEmpty(this.message)) {
-         var template = template;
-
-         this.$el.html(template);
          this.getPaginateView();
-
-         this.$tbody = this.$el.find('table').children('tbody');
+    
+         this.$tbody = this
+                         .$el
+                         .find('table')
+                         .children('tbody');
 
          this.addAll();
-       } else {
-        this.emptyProduct(this.message);
-       }
+       } 
     }.bind(this))
   },
 
@@ -83,9 +86,9 @@ module.exports = Backbone.View.extend({
     var countProduct = this.collection.length;
 
     if (countProduct == 0) {
-      var message = 'No hay productos registrados';
+      this.message = 'No hay productos registrados';
 
-      this.emptyProduct(message);
+      this.render();
     }
   },
 
@@ -95,13 +98,6 @@ module.exports = Backbone.View.extend({
 
   emptyList: function () {
     this.$tbody.empty()
-  },
-
-  emptyProduct: function (message) {
-    var erroMessage = {message: message};
-    var boxError = this.boxError(erroMessage);
-
-    this.$el.html(boxError);
   },
 
   close: function () {

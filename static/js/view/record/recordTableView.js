@@ -6,7 +6,6 @@ var RecordRow = require('./recordRowView');
 
 module.exports = Backbone.View.extend({
   template: 'record/templates/recordTable.html',
-  boxError: Handlebars.compile($('#error-record').html()),
 
   initialize: function () {
     this.listenTo(this.collection, 'notRecord', function (message) {
@@ -16,17 +15,17 @@ module.exports = Backbone.View.extend({
 
   render: function () {
     $.get(rootView + this.template, function (template) {
+      var template = Handlebars.compile(template);
+      var errorMessage = {message: this.message};
+      var html = template(errorMessage);
+
+      this.$el.html(html);
+      
       if (_.isEmpty(this.message)) {
-        var template = template;
-
-        this.$el.html(template);
-
         this.$tbody = this.$el
                           .find('table')
                           .children('tbody');
         this.addAll();
-      } else {
-        this.emptyRecord(this.message);
       }
 
     }.bind(this))
@@ -41,13 +40,6 @@ module.exports = Backbone.View.extend({
     var recordView = new RecordRow({model: record});
 
     this.$tbody.append(recordView.render().el);
-  },
-
-  emptyRecord: function (message) {
-    var errorMessage = {message: message};
-    var boxError = this.boxError(errorMessage);
-
-    this.$el.html(boxError);
   },
 
   close: function () {
