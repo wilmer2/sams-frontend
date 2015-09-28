@@ -1,21 +1,71 @@
-<span>{{config.name_institution}}</span>
-  {{#if user.role}}
-    <span>{{user.first_name}}</span> 
-    <span>{{user.last_name}}</span> 
-    <span>{{user.email}}</span>
-    {{#if user.isSuperAdmin}}
-      <ul>
-        <li><a href="#">Menu user</a></li>
-        <li><a href="#">Menu administrador</a></li>
-        <li><a href="#">Configuracion</a></li>
-      </ul>
-    {{/if}}
-  {{else}}
-  <div>
-    <form id="login">
-      <input type="email" name="email">
-      <input type="password" name="password"> 
-      <button class="btn btn-primay" type="submit">Iniciar sesión</button>
-    </form>
+{{#if user.role}}
+  <div class="logedHeader">
+    <div class="sysName">
+      S.A.M.S
+    </div>
+
+    <div class="flexer">
+    </div>
+
+    <div class="icon-noty">
+      <a href="#">
+        <i class="fa fa-user"></i>
+      </a>
+      <span class="mini-badge">
+        50
+      </span>
+    </div>
+
+    <div class="icon-noty">
+      <a href="#">
+        <i class="fa fa-user-md"></i>
+      </a>
+      <span class="mini-badge">
+        50
+      </span>
+    </div>
+
+    <div class="icon-noty">
+      <a href="#">
+        <i class="fa fa-car"></i>
+      </a>
+      <span class="mini-badge">
+        50
+      </span>
+    </div>
+
+    <div class="accountSettings">
+      <div class="btn-group">
+        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        {{user.email}} <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+          <li><a href="#"><i class="fa fa-power-off"></i> Cerrar Session</a></li>
+        </ul>
+      </div>
+    </div>
   </div>
-  {{/if}}
+{{else}}
+<div class="loginHeader">
+  <div class="sysName">
+    S.A.M.S
+  </div>
+
+  <form id="login" class="form-inline">
+
+    <div class="form-group">
+      <label for="inputEmail3" class="sr-only">Email</label>
+        <input class="form-control" type="email" name="email">
+    </div>
+    
+    <div class="form-group">
+      <label for="inputEmail3" class="sr-only">Contraseña</label>
+      <div class="col-sm-8">
+        <input class="form-control" type="password" name="password"> 
+      </div>
+    </div>
+
+    <button class="btn btn-primary" type="submit">Iniciar sesión</button>
+  </form>
+</div>
+{{/if}}

@@ -1,17 +1,59 @@
 .header {
   height: 4em;
-  display: flex;
   position: fixed;
   width: 100%;
-  background-color: #467abf;
+  background-color: #335F9A;
   color: white;
   z-index: 50;
   
-  a {
-    color: white;
+
+  .sysName {
+    font-size: 2.5em;
+    font-weight: 600;
+    font-style: italic;
   }
   
-  ul {
+  .loginHeader
+  .logedHeader {
     display: flex;
+    height: 100%;
+    padding: 0em 2em;
+    justify-content: space-between;
+    align-items: center;
+    
+    .flexer {
+      flex: 1;
+    }
+    
+    .icon-noty {
+      width: 2.5em;
+      height: 2.5em;
+      text-align: center;
+      position: relative;
+      margin: 0em 0.50em;
+      
+      a {
+        height: 100%;
+        color: white;
+        font-size: 2em;
+        display: block;
+      }
+      
+      .mini-badge {
+        background-color: red;
+        position: absolute;
+        top: 0;
+        right: 0;
+        border-radius: 0.25em;
+        font-size: 0.8em;
+        font-weight: 600;
+        padding: 0.10em;
+      }
+    }
+    
+    .accountSettings {
+      margin-left: 2em;
+    }
   }
+  
 }

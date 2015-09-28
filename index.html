@@ -1941,27 +1941,22 @@
 
 <!-- View login -->
 <script id="login-view" type="text/x-handlebars-template">
-	<span>{{config.name_institution}}</span>
-  {{#if user.role}}
-		<span>{{user.first_name}}</span> 
-    <span>{{user.last_name}}</span> 
-    <span>{{user.email}}</span>
-		{{#if user.isSuperAdmin}}
-			<ul>
-				<li><a href="#">Menu user</a></li>
-				<li><a href="#">Menu administrador</a></li>
-				<li><a href="#">Configuracion</a></li>
-			</ul>
-		{{/if}}
-  {{else}}
-  <div>
-		<form id="login">
-			<input type="email" name="email">
-			<input type="password" name="password">	
-      <button class="btn btn-primay" type="submit">Iniciar sesión</button>
-  	</form>
+    {{#if user.role}}
+    <div class="logedHeader">
+      <div class="institutionName">
+        {{config.name_institution}}
+      </div>
+    </div>
+    {{else}}
+      <div>
+    		<form id="login">
+    			<input type="email" name="email">
+    			<input type="password" name="password">	
+          <button class="btn btn-primay" type="submit">Iniciar sesión</button>
+      	</form>
+      </div>
+    {{/if}}
   </div>
-  {{/if}}
 </script>
 
 <script src="bundle.js"></script>
