@@ -17,7 +17,10 @@ module.exports = Backbone.View.extend({
          var html = template(data);
 
          this.$el.html(html);
+         this.$typeHead = this.$el.find('.typeahead');
+
          this.initTypehead();
+
 
          resolve();
       }.bind(this));
@@ -25,16 +28,17 @@ module.exports = Backbone.View.extend({
 	},
    
   initTypehead: function (e) {
+    console.log(this.$type);
     var elders = new Bloodhound({
         datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         remote: {
-          url: 'http://localhost/search/elders?q=%QUERY',
+          url: 'http://localhost/elders/search?q=%QUERY',
           wildcard: '%QUERY'
         }
     });
 
-    $('#remote .typeahead').typeahead({
+    this.$typeHead.typeahead({
         hint: true,
         minLength: 2
       },
