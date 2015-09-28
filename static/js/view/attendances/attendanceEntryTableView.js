@@ -29,21 +29,22 @@ module.exports = Backbone.View.extend({
 
   render: function () {
     $.get(rootView + this.template, function (template) {
-       if (_.isEmpty(this.message)) {
-         var template = template;
+      var template = Handlebars.compile(template);
+      var errorMessage = {message: this.message};
+      var html = template(errorMessage);
 
-         this.$el.html(template);
-         this.getPaginateView();
+      this.$el.html(html);
 
-         this.$tbody = this
+      if (_.isEmpty(this.message)) {
+        this.getPaginateView();
+
+        this.$tbody = this
                         .$el
                         .find('table')
                         .children('tbody');
 
-         this.addAll();
-       } else {
-         this.emptyAssistance(this.message);
-       }
+        this.addAll();
+      } 
     }.bind(this))
    
   },
@@ -94,9 +95,9 @@ module.exports = Backbone.View.extend({
     var countAssitance = this.collection.length;
 
     if (countAssitance == 0) {
-      var message = 'No hay asistencias en este momento';
+      this.message = 'No hay asistencias en este momento';
 
-      this.emptyAssistance(message);
+      this.render();
     }
   },
 
@@ -110,13 +111,6 @@ module.exports = Backbone.View.extend({
 
   emptyList: function () {
     this.$tbody.empty()
-  },
-
-  emptyAssistance: function (message) {
-    var erroMessage = {message: message};
-    var boxError = this.boxError(erroMessage);
-
-    this.$el.html(boxError);
   },
 
   close: function () {

@@ -94,9 +94,9 @@ module.exports = Backbone.View.extend({
     var countAssitance = this.collection.length;
 
     if (countAssitance == 0) {
-      var message = 'No hay salidas por confirmar en este momento';
+      this.message = 'No hay salidas por confirmar en este momento';
 
-      this.emptyAssistance(message);
+      this.render();
     }
   },
 

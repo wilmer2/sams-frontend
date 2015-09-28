@@ -1,8 +1,13 @@
-<input type="text" class="Search" placeholder="Buscar empleado">
   <div>
     <h3>Asistencias</h3>
   </div>
+  {{#if message}}
+    <div>
+      {{message}}
+    </div>
+  {{else}}
   <table>
+   <input type="text" class="Search" placeholder="Buscar empleado">
     <thead>
       <tr>
         <th>Cedula</th>
@@ -15,3 +20,4 @@
     <tbody>
     </tbody>
   </table>
+  {{/if}}
