@@ -23,10 +23,13 @@ module.exports = Backbone.View.extend({
 
   render: function () {
     $.get(rootView + this.template, function (template) {
-      if (_.isEmpty(this.message)) {
-        var template = template;
+      var template = Handlebars.compile(template);
+      var errorMessage = {message: this.message};
+      var html = template(errorMessage);
+      
+      this.$el.html(html);
 
-        this.$el.html(template);
+      if (_.isEmpty(this.message)) {
         this.getPaginateView();
 
         this.$tbody = this.$el
@@ -34,8 +37,6 @@ module.exports = Backbone.View.extend({
                           .children('tbody');
 
         this.addAll();
-      } else {
-        this.emptyOccurrence(this.message);
       }
     }.bind(this))
   },
@@ -74,13 +75,6 @@ module.exports = Backbone.View.extend({
 
   emptyList: function () {
     this.$tbody.empty()
-  },
-
-  emptyOccurrence: function (message) {
-    var erroMessage = {message: message};
-    var boxError = this.boxError(erroMessage);
-
-    this.$el.html(boxError);
   },
 
   close: function () {
