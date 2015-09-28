@@ -2,6 +2,7 @@ var Backbone = require('backbone');
 var $ = require('jquery');
 var Handlebars = require('handlebars');
 var util = require('../../util/util');
+var utilHour = require('../../util/utilHour');
 
 module.exports = Backbone.View.extend({
   template: 'configuration/templates/configurationEdit.html',
@@ -26,23 +27,34 @@ module.exports = Backbone.View.extend({
   edit: function (e) {
     e.preventDefault();
     
-    var data = $('#configuration').serialize();
+    var formData = new FormData($('#configuration')[0]);
     var url = 'config/edit?_method=PUT';
+    var maxHour = $('#maxHour').val();
+    maxHour = utilHour.hourFormat(maxHour);
 
-    $.post(Backend_url + url, data)
-     .done(function (res) {
+    formData.append('max_hours', maxHour);
+
+    $.ajax({
+      url: Backend_url + url,
+      type:'POST',
+      data: formData,
+      processData : false, 
+      contentType : false,
+    })
+    .done(function (res) {
       if (res.status == 'success') {
         var successMessage = res.message;
-        var configData = res.data;
+        var configurationData = res.data;
 
         util.showSuccess(successMessage);
-        this.model.set(configData);
+        this.model.set(configurationData);
+        this.render();
       } else {
         var errorMessage = res.message;
 
         util.showError(errorMessage);
       }
-     }.bind(this))
+    }.bind(this))
   },
 
   close: function () {
