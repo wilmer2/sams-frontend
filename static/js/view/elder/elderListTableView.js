@@ -1,3 +1,4 @@
+
 var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('underscore');
@@ -30,25 +31,29 @@ module.exports = Backbone.View.extend({
 
 	render: function () {
     $.get(rootView + this.template, function (template) {
-      if (_.isEmpty(this.message)) {
-        var template = template;
+      var template = Handlebars.compile(template);
+      var errorMessage = {message: this.message};
+      var html = template(errorMessage);
 
-        this.$el.html(template);
+      this.$el.html(html);
+      
+      if (_.isEmpty(this.message)) {
         this.getPaginateView();
 
-        this.$tbody = this.$el.find('table').children('tbody');
+        this.$tbody = this
+                        .$el
+                        .find('table')
+                        .children('tbody');
 
         this.addAll();
-      } else {
-        this.emptyElder(this.message);
       }
     }.bind(this))
 	},
 
 	addAll: function () {
-		this.message = '';
-
-	  this.collection.forEach(this.addOne, this);
+	  this
+      .collection
+      .forEach(this.addOne, this);
 	},
 
 	addOne: function (elder) {
@@ -96,13 +101,6 @@ module.exports = Backbone.View.extend({
 
 	emptyList: function () {
     this.$tbody.empty()
-  },
-
-  emptyElder: function (message) {
-  	var errorMessage = {message: message};
-  	var boxError = this.boxError(errorMessage);
-
-  	this.$el.html(boxError);
   },
 
 	close: function () {

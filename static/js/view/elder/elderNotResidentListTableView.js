@@ -9,7 +9,6 @@ var util = require('../../util/util');
 module.exports = Backbone.View.extend({
   template: 'elder/templates/elderNotResidentListTable.html',
   className: 'elderNotResidentListTableView',
-  boxError: Handlebars.compile($('#error-elderDeactive').html()),
 
   events: {
     'keyup .Search': 'search',
@@ -30,17 +29,21 @@ module.exports = Backbone.View.extend({
 
   render: function () {
     $.get(rootView + this.template, function (template) {
-      var template = template;
+      var template = Handlebars.compile(template);
+      var errorMessage = {message: this.message};
+      var html = template(errorMessage);
+
+      this.$el.html(html);
 
       if (_.isEmpty(this.message)) {
-        this.$el.html(template);
         this.getPaginateView();
 
-        this.$tbody = this.$el.find('table').children('tbody');
+        this.$tbody = this
+                        .$el
+                        .find('table')
+                        .children('tbody');
 
         this.addAll();
-      } else {
-        this.emptyElder(this.message);
       }
     }.bind(this))
     
@@ -97,13 +100,6 @@ module.exports = Backbone.View.extend({
 
   emptyList: function () {
     this.$tbody.empty()
-  },
-
-  emptyElder: function (message) {
-    var errorMessage = {message: message};
-    var boxError = this.boxError(errorMessage);
-
-    this.$el.html(boxError);
   },
 
   close: function () {

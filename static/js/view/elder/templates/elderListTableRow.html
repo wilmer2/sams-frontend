@@ -1,3 +1,8 @@
+{{#if message}}
+ <div>
+   {{message}}
+ </div>
+{{else}}
  {{#if image_url}}
   <td>
     <img class="img-responsive img-rounded" src="{{image_url}}">
@@ -20,3 +25,4 @@
   <td>
     <button class="btn btn-primary btn-show"><i class="fa fa-eye"></i></button>
   </td>
+{{/if}}
