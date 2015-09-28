@@ -1,7 +1,13 @@
 <div>
   <h3>Auditoria</h3>
 </div>
+{{#if message}}
+ <div>
+   {{message}}
+ </div>
+{{else}}
 <table>
   <th>Informacion</th>
   <th>Fecha</th>
 </table>
+{{/if}}
