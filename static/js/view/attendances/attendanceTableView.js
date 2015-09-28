@@ -8,7 +8,6 @@ var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
   template: 'attendances/templates/attendanceTable.html',
-  boxError: 'attendances/templates/attendanceError.html',
   events: {
     'keyup .Search': 'serch'
   },

@@ -52,13 +52,20 @@
       <br>
       <br>
 
-      <h3 class="text-center"> Horarios <button class="btn btn-primary btn-xs btn-addHour"><i class="fa fa-plus"></i> Agregar</button> </h3>
+      <h3 class="text-center"> 
+        Horarios 
+        <button class="btn btn-primary btn-xs btn-addHour"><i class="fa fa-plus"></i> Agregar</button> 
+      </h3>
 
       <hr>
       {{#if message}}
-       <div id="error-scheduleAction">
-         {{message}}
-       </div>
+        <div class="row">
+          <div class="col-md-6 col-md-offset-3 text-center">
+            <div class="alert alert-info center-block" role="alert">
+              {{message}}
+            </div>
+          </div>
+        </div>
       {{else}}
       <table class="table">
         <thead>
