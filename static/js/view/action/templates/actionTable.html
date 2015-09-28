@@ -1,18 +1,31 @@
-<div>
-  <h3>Actividades</h3>
-</div>
+
+<h3 class="text-center">Actividades</h3>
+
 {{#if message}}
   <div>
     {{message}}
   </div>
 {{else}}
-  <input type="text" class="Search" placeholder="Nombre de actividad">
-  <table>
-    <thead>
-     <th>Nombre</th>
-     <th>Ver</th>
-    </thead>
-    <tbody>
-    </tbody>
-  </table>
+
+<hr>
+
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+    <div class="input-group">
+      <span class="input-group-addon" id="basic-addon1"><i class="fa fa-search"></i></span>
+      <input type="text" class="Search form-control" placeholder="Buscar..." aria-describedby="basic-addon1">
+    </div>
+
+    <br>
+
+    <table class="table">
+      <thead>
+       <th>Nombre</th>
+       <th>Ver</th>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+</div>
 {{/if}}

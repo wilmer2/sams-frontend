@@ -1,18 +1,39 @@
-<div>
-  <h3>Agregar Producto</h3>
+<h3 class="text-center">Agregar Producto</h3>
+
+<hr>
+
+<div class="row">
+  <div class="col-md-8 col-md-offset-2">
+    <form id="form-product" class="form-horizontal">
+
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-4 control-label">Descripcion</label>
+        <div class="col-sm-8">
+          <input class="form-control" type="text" name="description" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-4 control-label">Existencia</label>
+        <div class="col-sm-8">
+          <input class="form-control" type="number" name="stock" min=1 required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-4 control-label">Tipo de unidad</label>
+        <div class="col-sm-8">
+          <select class="form-control" name="unit" class="Select">
+            <option value="kg">kg</option>
+            <option value="und">unidad</option>
+            <option value="caja">cajas</option>
+            <option value="paq">paquetes</option>
+            <option value="bultos">bultos</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn btn-primary center-block" type="submit">Registrar Producto</button>
+    </form>
+  </div>
 </div>
- <form id="form-product">
-    <label for="description">Descripcion</label>
-    <input type="text" name="description" required>
-    <label for="stock">Existencia</label>
-    <input type="number" name="stock" min=1 required>
-    <label for="unit">Tipo de unidad</label>
-    <select name="unit" class="Select">
-      <option value="kg">kg</option>
-      <option value="und">unidad</option>
-      <option value="caja">cajas</option>
-      <option value="paq">paquetes</option>
-      <option value="bultos">bultos</option>
-    </select>
-    <button type="submit">Enviar</button>
-  </form>
