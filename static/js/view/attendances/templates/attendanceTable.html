@@ -1,5 +1,11 @@
+<div>
+  <h3>Asistencias</h3>
+</div>
+
+{{#if message}}
+  {{message}}
+{{else}}
 <input type="text" class="Search" placeholder="Buscar empleado">
-  <h2>Asistencias</h2>
   <table>
     <thead>
       <tr>
@@ -16,3 +22,4 @@
     
     </tbody>
   </table>
+{{/if}}

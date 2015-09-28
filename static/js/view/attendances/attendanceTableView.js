@@ -26,20 +26,21 @@ module.exports = Backbone.View.extend({
 
   render: function () {
     $.get(rootView + this.template, function (template) {
-      if (_.isEmpty(this.message)) {
-        var template = template;
+      var template = Handlebars.compile(template);
+      var errorMessage = {message: this.message};
+      var html = template(errorMessage);
 
-        this.$el.html(template);
+      this.$el.html(html);
+      if (_.isEmpty(this.message)) {
         this.getPaginateView();
 
         this.$tbody = this
-                        .$el.find('table')
+                        .$el
+                        .find('table')
                         .children('tbody');
 
         this.addAll();
-      } else {
-        this.emptyAssistance(this.message);
-      }
+      } 
     }.bind(this))
    
   },
@@ -89,17 +90,7 @@ module.exports = Backbone.View.extend({
 
   emptyList: function () {
     this.$tbody.empty()
-  },
-
-  emptyAssistance: function (message) {
-    $.get(rootView + this.boxError, function (template) {
-      var template =  Handlebars.compile(template);
-      var errorMessage = {message: message};
-      var boxError = template(errorMessage);
-
-      this.$el.html(boxError)
-
-    }.bind(this))
   }
+
 
 });
