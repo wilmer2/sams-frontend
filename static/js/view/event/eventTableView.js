@@ -7,7 +7,6 @@ var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
   template: 'event/templates/eventTable.html',
-  boxError: Handlbars.compile($('#error-event').html()),
 
   initialize: function () {
     this.listenTo(this.collection, 'notEvent', function (message) {
@@ -17,26 +16,33 @@ module.exports = Backbone.View.extend({
 
   render: function () {
     $.get(rootView + this.template, function (template) {
-      if (_.isEmpty(this.message)) {
-        var template = template;
+      var template = Handlbars.compile(template);
+      var errorMessage;
+      
+      if (!_.isEmpty(this.message)) {
+        if (_.isObject(this.message)) {
+          util.showError(this.message);
 
-        this.$el.html(template);
+          var message = 'No es posible encontrar eventos';
+          errorMessage = {message: message};
+        } else {
+          errorMessage = {message: this.message};
+        }
+      }
 
+      var html = template(errorMessage);
+
+      this.$el.html(html);
+
+      var totalEvent = this.collection.length;
+
+      if (totalEvent > 0) {
         this.$tbody = this
                         .$el
                         .find('table')
                         .children('tbody');
 
         this.addAll();
-      } else {
-          if (_.isObject(this.message)) {
-            var error = 'No es posible encontra eventos';
-
-            util.showError(this.message);
-            this.emptyEvents(error);
-          } else {
-            this.emptyEvents(this.message);
-          }
       }
     }.bind(this))
  
@@ -52,13 +58,6 @@ module.exports = Backbone.View.extend({
     var eventView = new EventView({model: eventModel});
 
     this.$tbody.append(eventView.render().el);
-  },
-
-  emptyEvents: function (message) {
-    var errorMessage = {message: message};
-    var boxError = this.boxError(errorMessage);
-
-    this.$el.html(boxError);
   },
 
   close: function () {

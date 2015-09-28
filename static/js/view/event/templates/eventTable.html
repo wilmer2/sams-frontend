@@ -1,6 +1,11 @@
 <div> 
     <h3>Eventos</h3>
-  </div>
+</div>
+{{#if message}}
+ <div>
+   {{message}}
+ </div>
+{{else}}
   <table>
    <thead>
     <th>Nombre</th>
@@ -12,3 +17,4 @@
     <tbody>
     </tbody>
   </table>
+{{/if}}

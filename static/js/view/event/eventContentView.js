@@ -18,8 +18,8 @@ module.exports = Backbone.View.extend({
       this.$el.html(template);
 
       this.$contentEvent = this
-                             .$el
-                             .find('#content-event');
+                            .$el
+                            .find('#content-event');
 
       this
         .showEvents(currentDate);
@@ -31,7 +31,8 @@ module.exports = Backbone.View.extend({
 
     var date = $('.Search-date').val();
     
-    this.showEvents(date);
+    this
+     .showEvents(date);
   },
 
   showEvents: function (date) {
