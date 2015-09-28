@@ -7,7 +7,6 @@ var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
   template: 'instance/templates/instanceElderTable.html',
-  boxError: Handlbars.compile($('#error-instance').html()),
   
   initialize: function () {
     this.listenTo(this.collection, 'notInstance', function (message) {
@@ -17,16 +16,19 @@ module.exports = Backbone.View.extend({
 
   render: function () {
     $.get(rootView + this.template, function (template) {
-      var template = template;
+      var template = Handlbars.compile(template);
+      var errorMessage = {message: this.message};
+      var html = template(errorMessage);
+
+      this.$el.html(html);
 
       if (_.isEmpty(this.message)) {
-        this.$el.html(template);
-
-        this.$tbody = this.$el.find('table').children('tbody');
+        this.$tbody = this
+                        .$el
+                        .find('table')
+                        .children('tbody');
 
         this.addAll();
-      } else {
-        this.emptyInstance(this.message);
       }
     }.bind(this))
   },
@@ -39,13 +41,6 @@ module.exports = Backbone.View.extend({
     var instanceView = new InstanceRow({model: instance});
 
     this.$tbody.append(instanceView.render().el);
-  },
-
-  emptyInstance: function (message) {
-    var errorMessage = {message: message};
-    var boxError = this.boxError(errorMessage);
-
-    this.$el.html(boxError);
   },
 
   close: function () {

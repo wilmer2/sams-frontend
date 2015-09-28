@@ -202,6 +202,7 @@ module.exports = Backbone.Router.extend({
 	},
 
 	notFound: function () {
+		this.renderHeader();
 		appView.showNotFound();
 	},
 /*
