@@ -8,13 +8,11 @@ var CitationEdit = require('../view/citation/citationEditView');
 var CitationForm = require('../view/citation/citationNewView');
 var CitationList = require('../view/citation/citationElderTableView');
 var CitationWaiting = require('../view/citation/citationWaitingTableView');
+var CitationCurrent = require('../view/citation/citationTableView');
 
 function CitationCtrl() {
   this.showForm = function () {
     var elder = Backbone.Main.Elder.elder;
-
-    console.log(elder.toJSON())
-
     var citationForm = new CitationForm({model: elder});
 
     appView.showElderView(citationForm);
@@ -71,6 +69,18 @@ function CitationCtrl() {
     citations.fetch(fetchData)
     .done(function () {
       appView.showElderView(citationWaiting);
+    })
+  },
+
+  this.currentDay = function () {
+    var citations = new Citations();
+    var citationCurrent = new CitationCurrent({collection: citations});
+    var url = Backend_url + 'citations/current';
+
+    citations.updateUrl(url);
+    citations.fetch(fetchData)
+    .done(function () {
+      appView.showUserView(citationCurrent);
     })
   },
 

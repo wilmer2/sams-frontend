@@ -8,6 +8,7 @@ var ElderCtrl = require('../controller/elderController');
 var EmployeeCtrl = require('../controller/employeeController');
 var AttendanceCtrl = require('../controller/attendanceController');
 var AuditCtrl = require('../controller/auditController');
+var CitationCtrl = require('../controller/citationController');
 // var Citations       = require('../collection/citations');
 // var CitationsNotify = require('../view/citationNotifyView');
 // var LoginView       = require('../view/loginView');
@@ -35,6 +36,7 @@ module.exports = Backbone.Router.extend({
 		'register': 'register',
 		'attendance-date': 'attendanceDate',
 		'elders/notResident': 'eldersNotResident',
+		'citations': 'citations',
 		'audit': 'audit',
 		'notFound': 'notFound',
 		// 'logout':'logout',
@@ -56,6 +58,7 @@ module.exports = Backbone.Router.extend({
 		this.config = new Config();
 		this.loginCtrl = new LoginCtrl();
 		this.elderCtrl = new ElderCtrl();
+		this.citationCtrl = new CitationCtrl();
 		this.employeeCtrl = new EmployeeCtrl();
 		this.auditCtrl = new AuditCtrl();
 		this.attendanceCtrl = new AttendanceCtrl();
@@ -199,6 +202,13 @@ module.exports = Backbone.Router.extend({
 		  .then(function () {
 		  	this.attendanceCtrl.dateAttendance();
 		  }.bind(this))
+	},
+
+	citations: function () {
+		this.renderMenuUser()
+		    .then(function () {
+		    	this.citationCtrl.currentDay();
+		    }.bind(this))
 	},
 
 	notFound: function () {
