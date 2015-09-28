@@ -5,21 +5,26 @@ var InstaceList = require('./instanceDateTableView');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
-  template: $('#instance-contentView').html(),
+  template: 'instance/templates/instanceContent.html',
   events: {
     'submit #date-instance': 'getInstances'
   },
 
   render: function () {
-    var currentDate = util.currentDate();
+    $.get(rootView + this.template, function (template) {
+      var currentDate = util.currentDate();
+      var template = template;
 
-    this.$el.html(this.template);
+      this.$el.html(template);
 
-    this.$contentInstance = this
-                              .$el
-                              .find('#content-instance');
+      this.$contentInstance = this
+                                .$el
+                                .find('#content-instance');
 
-    this.showInstance(currentDate);
+      this.showInstance(currentDate);
+
+    }.bind(this))
+   
   },
 
   getInstances: function (e) {

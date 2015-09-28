@@ -1,16 +1,22 @@
 <div>
-    <h3>
-      Visitas Sociales
-    </h3>
-   </div>
-   <table>
-    <thead>
-      <th>Cedula</th>
-      <th>Referido</th>
-      <th>Fecha</th>
-      <th>Estado</th>
-      <th>Ver</th>
-    </thead>
-    <tbody>
-    </tbody>
-  </table>
+  <h3>
+    Visitas Sociales
+  </h3>
+</div>
+{{#if message}}
+ <div>
+   {{message}}
+ </div>
+{{else}}
+ <table>
+  <thead>
+   <th>Cedula</th>
+   <th>Referido</th>
+   <th>Fecha</th>
+   <th>Estado</th>
+   <th>Ver</th>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+{{/if}}

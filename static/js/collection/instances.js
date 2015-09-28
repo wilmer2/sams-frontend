@@ -8,7 +8,7 @@ module.exports = Backbone.Collection.extend({
   parse: function (res) {
     if (res.status == 'success') {
       var instanceData = res.data;
-      
+  
       return instanceData;
     } else {
       var message = res.message;
