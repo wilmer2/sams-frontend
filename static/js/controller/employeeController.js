@@ -18,7 +18,7 @@ function EmployeeCtrl () {
     var employee = new Employee();
     var employeeForm = new EmployeeForm({model:employee});
 
-    appView.showAdminView(employeeForm);
+    appView.showUserView(employeeForm);
   },
 
   this.show = function (employee) {
@@ -39,7 +39,7 @@ function EmployeeCtrl () {
 
     employees.getFirstPage(fetchData)
     .done(function () {
-      appView.showAdminView(employeeList);
+      appView.showUserView(employeeList);
     })
   },
 

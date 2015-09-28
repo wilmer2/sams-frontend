@@ -48,7 +48,7 @@ function LoginCtrl () {
   this.editConfigurations = function (config) {
     var configurations = new Configuration({model:config});
 
-    appView.showAdminView(configurations);
+    appView.showUserView(configurations);
   },
 
   this.menuUserRender = function (user) {

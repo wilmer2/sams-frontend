@@ -34,13 +34,13 @@ function AttendanceCtrl () {
   this.dateAttendance = function () {
     var attendanceContent = new AttendanceContent();
 
-    appView.showAdminView(attendanceContent);
+    appView.showUserView(attendanceContent);
   }
 
   /*this.allAttendance = function () {
     var attendancesContent = new AttendancesContent();
 
-    appView.showAdminView(attendancesContent);
+    appView.showUserView(attendancesContent);
   },
 
   this.employeeAttendance = function (employeeId) {

@@ -115,13 +115,7 @@ module.exports = Backbone.Router.extend({
 	},
 
 	selectMenu: function () {
-		var role = this.userLogin.get('role');
-
-		if (role == 'User') {
-			this.navigate('elders', triggerData);
-		} else {
-			this.navigate('employees', triggerData);
-		}
+		this.navigate('elders', triggerData);
 	},
 
 	renderHeader: function () {
@@ -143,7 +137,7 @@ module.exports = Backbone.Router.extend({
 			this.renderHeader();
 			this
 				.loginCtrl
-				.menuAdminRender(this.userLogin)
+				.menuUserRender(this.userLogin)
 				.then(resolve) 
 		}.bind(this));
 	},
@@ -164,7 +158,7 @@ module.exports = Backbone.Router.extend({
 
 	employees: function () {
 		this
-		  .renderMenuAdmin()
+		  .renderMenuUser()
 		  .then(function () {
 				this.employeeCtrl.showList();
 		  }.bind(this))
@@ -172,7 +166,7 @@ module.exports = Backbone.Router.extend({
 
 	audit: function () {
 		this
-		  .renderMenuAdmin()
+		  .renderMenuUser()
 		  .then(function () {
 		  	this.auditCtrl.getList();
 		  }.bind(this))
@@ -180,7 +174,7 @@ module.exports = Backbone.Router.extend({
 
 	register: function () {
 		this
-			.renderMenuAdmin()
+			.renderMenuUser()
 			.then(function () {
 				this.employeeCtrl.showForm();
 			}.bind(this))
@@ -188,7 +182,7 @@ module.exports = Backbone.Router.extend({
 
 	attendanceDate: function () {
 		this
-		  .renderMenuAdmin()
+		  .renderMenuUser()
 		  .then(function () {
 		  	this.attendanceCtrl.dateAttendance();
 		  }.bind(this))
@@ -204,7 +198,7 @@ module.exports = Backbone.Router.extend({
 
 	config: function () {
 		this
-		  .renderMenuAdmin()
+		  .renderMenuUser()
 		  .then(function () {
 		  	this.loginCtrl.editConfigurations(this.config);
 		  }.bind(this))

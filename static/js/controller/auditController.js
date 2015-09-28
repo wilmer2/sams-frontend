@@ -8,7 +8,7 @@ function AuditCtrl () {
 
     audits.getFirstPage(fetchData)
     .done(function () {
-      appView.showAdminView(auditList);
+      appView.showUserView(auditList);
     })
 
   }

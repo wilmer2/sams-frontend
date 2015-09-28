@@ -160,6 +160,14 @@
               <span>Salida</span>
             </a>
           </li>
+          {{#if Admin}}
+            <li>
+              <a href="#attendance-date">
+                <i class="fa fa-search"></i>
+                <span>Consultar</span>
+              </a>
+            </li>
+          {{/if}}
        </ul>
     </li>
 
@@ -256,6 +264,66 @@
           </li>
        </ul>
     </li>
+
+    {{#if Admin}}
+      <li> 
+        <div class="item">
+          <div class="icon">
+            <i class="fa fa-users"></i>
+          </div>
+          <div class="title">
+            Empleados
+          </div>
+          <div class="arrow">
+          </div>
+        </div>
+
+         <ul class="sub-menu">
+            <li>
+              <a href="#register">
+                <i class="fa fa-plus"></i>
+                <span>Registrar</span>
+              </a>
+            </li>
+
+            <li>
+              <a href="#employees">
+                <i class="fa fa-list"></i>
+                <span>Listar</span>
+              </a>
+            </li>
+         </ul>
+      </li>
+      
+      <li> 
+        <div class="item">
+          <div class="icon">
+            <i class="fa fa-dashboard"></i>
+          </div>
+          <div class="title">
+            Sistema
+          </div>
+          <div class="arrow">
+          </div>
+        </div>
+
+         <ul class="sub-menu">
+            <li>
+              <a href="#audit">
+                <i class="fa fa-database"></i>
+                <span>Auditoria</span>
+              </a>
+            </li>
+
+            <li>
+              <a href="#config">
+                <i class="fa fa-cog"></i>
+                <span>Configuración</span>
+              </a>
+            </li>
+         </ul>
+      </li>
+    {{/if}}
   </ul>
 </nav>
 
