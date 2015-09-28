@@ -1,7 +1,7 @@
 {{#if user.role}}
   <div class="logedHeader">
     <div class="sysName">
-      S.A.M.S
+      Sams
     </div>
 
     <div class="flexer">
@@ -11,27 +11,33 @@
       <a href="#">
         <i class="fa fa-user"></i>
       </a>
+      {{#if user.output}}
       <span class="mini-badge">
-        50
+        {{output}}
       </span>
+      {{/if}}
     </div>
 
     <div class="icon-noty">
       <a href="#">
         <i class="fa fa-user-md"></i>
       </a>
+      {{#if user.citation}}
       <span class="mini-badge">
-        50
+        {{user.citation}}
       </span>
+      {{/if}}
     </div>
 
     <div class="icon-noty">
       <a href="#">
         <i class="fa fa-car"></i>
       </a>
+      {{#if user.instance}}
       <span class="mini-badge">
-        50
+        {{user.instance}}
       </span>
+      {{/if}}
     </div>
 
     <div class="accountSettings">

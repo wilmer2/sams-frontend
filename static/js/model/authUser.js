@@ -8,13 +8,13 @@ module.exports = Backbone.Model.extend({
 
 	stateRole: function () {
 		var role = this.get('role');
-		var superAdmin = {isSuperAdmin: true};
-		var notSuperAdmin = {isSuperAdmin: false};
+		var isAdmin = {Admin: true};
+		var notAdmin = {Admin: false};
 
-		if (role == 'SuperAdmin') {
-			this.set(superAdmin, silentData);
+		if (role == 'User') {
+			this.set(notAdmin, silentData);
 		} else {
-			this.set(notSuperAdmin, silentData);
+			this.set(isAdmin, silentData);
 		}
 		
 	},
