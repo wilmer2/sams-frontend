@@ -1,7 +1,12 @@
- <input type="text" class="Search" placeholder="Nombre de actividad">
+<div>
+  <h3>Actividades</h3>
+</div>
+{{#if message}}
   <div>
-    <h3>Actividades</h3>
+    {{message}}
   </div>
+{{else}}
+  <input type="text" class="Search" placeholder="Nombre de actividad">
   <table>
     <thead>
      <th>Nombre</th>
@@ -10,3 +15,4 @@
     <tbody>
     </tbody>
   </table>
+{{/if}}
