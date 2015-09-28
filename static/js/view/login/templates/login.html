@@ -54,22 +54,26 @@
 {{else}}
 <div class="loginHeader">
   <div class="sysName">
-    S.A.M.S
+    {{config.name_institution}}
   </div>
 
   <form id="login" class="form-inline">
 
     <div class="form-group">
-      <label for="inputEmail3" class="sr-only">Email</label>
+      <label for="inputEmail3">Correo&nbsp;</label>
         <input class="form-control" type="email" name="email">
     </div>
     
+    &nbsp;
+    &nbsp;
+
     <div class="form-group">
-      <label for="inputEmail3" class="sr-only">Contraseña</label>
-      <div class="col-sm-8">
-        <input class="form-control" type="password" name="password"> 
-      </div>
+      <label for="inputEmail3">Contraseña&nbsp;</label>
+      <input class="form-control" type="password" name="password"> 
     </div>
+
+    &nbsp;
+    &nbsp;
 
     <button class="btn btn-primary" type="submit">Iniciar sesión</button>
   </form>
