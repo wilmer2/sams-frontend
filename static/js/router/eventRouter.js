@@ -14,6 +14,16 @@ module.exports = Subroute.extend({
     this.eventCtrl = new EventCtrl();
   },
 
+  before: {
+    '*any': 'loadMenu'
+  },
+
+  loadMenu: function (fragment, args, next) {
+    Backbone.Main
+             .renderMenuUser()
+             .then(next);
+  },
+
   register: function () {
     this.eventCtrl.showForm();
   },

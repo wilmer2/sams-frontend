@@ -8,7 +8,8 @@ module.exports = Backbone.View.extend({
   tagName: 'tr',
   template: 'citation/templates/citationWaitingRow.html',
   events: {
-    'click .btn-confirm': 'confirm'
+    'click #citationConfirm': 'confirm',
+    'click #citationCancel': 'reject'
   },
 
   render: function () {
@@ -27,18 +28,16 @@ module.exports = Backbone.View.extend({
     return this;
   },
 
-  confirm: function (e) {
-    var target = $(e.target);
-    var text = target.text();
-    var state;
+  confirm: function () {
+    var confirmedState = 'confirmed';
+    
+    this.submitState(confirmedState);
+  },
 
-    if (text == 'Realizada') {
-      state = 'confirmed';
-    } else {
-      state = 'reject';
-    }
+  reject: function () {
+    var confirmedReject = 'reject';
 
-    this.submitState(state);
+    this.submitState(confirmedReject);
   },
 
   submitState: function (state) {
@@ -53,6 +52,7 @@ module.exports = Backbone.View.extend({
 
         util.showSuccess(successMessage);
         this.close();
+        Backbone.Main.Elder.elder.clear();
       } else {
         var errorMessage = res.message;
 

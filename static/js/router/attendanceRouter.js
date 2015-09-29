@@ -7,35 +7,22 @@ module.exports = Subroute.extend({
   routes: {
     '': 'attendanceEntry',
     'outputs': 'attendanceOutputs',
-    // 'date': 'attendanceDay'
   },
 
-/*  before: {
-    'attendance/': 'renderMenuUser',
-    'attendance/outputs': 'renderMenuUser',
-    'attendance/date': 'renderMenuAdmin'
-  },*/
 
   initialize: function () {
     this.attendanceCtrl = new AttendanceCtrl();
   },
 
-  /*renderMenuAdmin: function (fragment, args, next) {
-    var user = Backbone.Main.userLogin;
-    var group = user.get('group');
-
-    if (group.name == 'User') {
-      window.location.replace('#home/');
-    } else {
-      Backbone.Main.renderAdmin();
-      next();
-    }
+  before: {
+    '*any': 'loadMenu'
   },
 
-  renderMenuUser: function (fragment, args, next) {
-    Backbone.Main.renderMenu();
-    next();
-  },*/
+  loadMenu: function (fragment, args, next) {
+    Backbone.Main
+             .renderMenuUser()
+             .then(next);
+  },
 
   attendanceEntry: function () {
     this.attendanceCtrl.entryAttendance();
@@ -43,10 +30,5 @@ module.exports = Subroute.extend({
 
   attendanceOutputs: function () {
     this.attendanceCtrl.outAttendance();
-  },
-
-  /*attendanceDay: function () {
-    this.attendanceCtrl.allAttendance();
-  },
-*/
+  }
 })

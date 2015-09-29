@@ -28,7 +28,6 @@ module.exports = Backbone.View.extend({
 	},
    
   initTypehead: function (e) {
-    console.log(this.$type);
     var elders = new Bloodhound({
         datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
         queryTokenizer: Bloodhound.tokenizers.whitespace,

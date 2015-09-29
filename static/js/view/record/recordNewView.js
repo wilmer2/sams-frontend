@@ -13,7 +13,7 @@ module.exports = Backbone.View.extend({
     'click .Modal-repeat': 'repeat',
     'click .Modal-btnPic': 'showPic',
     'click .close': 'closeModal',
-    'change .Form-file': 'uploadPic',
+    'change #recordFile': 'uploadPic',
     'submit #form-record': 'register',
   },
 
@@ -122,32 +122,39 @@ module.exports = Backbone.View.extend({
   uploadPic: function (e) {
     var file = e.target.files[0];
     var imageType = /image.*/;
+    var canvasFile = this.$canvasForm;
+    var ctxFile = canvasFile[0].getContext('2d');
+    var filePic = this.$typeFile.val();
+    var dropImg = function () {
+      this.photoSource = '';
+      ctxFile.clearRect(0, 0, 150 , 150)
+    }.bind(this);
 
-    if (file.type.match(imageType)) {
-      var reader = new FileReader();
-
-      reader.onloadend = function (e) {
-        var source = e.target.result;
-        var imgFile = $('<img>', {src: source});
-        var canvasFile = this.$canvasForm;
-
-        canvasFile.attr({'width': 150, 'height': 150});
-
-        var ctxFile = canvasFile[0].getContext('2d');
-
-        imgFile.load(function () {
-           ctxFile.drawImage(this, 0, 0, 150, 150);
-        });
-
-        this.photoSource = source;
-
-      }.bind(this)
+    if (_.isEmpty(filePic)) {
+      dropImg();
     } else {
-      this.$typeFile.val('');
+      if (file.type.match(imageType)) {
+        var reader = new FileReader();
 
-      var message = 'Ha ingresado un formato de archivo no valido';
+        reader.onloadend = function (e) {
+          var source = e.target.result;
+          var imgFile = $('<img>', {src: source});
+
+          canvasFile.attr({'width': 150, 'height': 150});
+          imgFile.load(function () {
+            ctxFile.drawImage(this, 0, 0, 150, 150);
+          });
+
+          this.photoSource = source;
+
+        }.bind(this)
+      } else {
+        this.$typeFile.val('');
+        var message = 'Ha ingresado un formato de archivo no valido';
       
-      util.showInfo(message);
+        util.showError(message);
+        dropImg();
+      }
     }
    
     reader.readAsDataURL(file);

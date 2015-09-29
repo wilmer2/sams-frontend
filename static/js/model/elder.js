@@ -7,6 +7,15 @@ module.exports = Backbone.Model.extend({
     this.on('change', function (model) {
       model.set({notFound: false}, silentData);
     });
+
+    this.on('confirmCitation', this.confirmCitation);
+  },
+
+  confirmCitation: function () {
+    var citation = this.get('citation');
+    citation = citation - 1;
+
+    this.set('citation', citation);
   },
 
   dateFormat: function () {

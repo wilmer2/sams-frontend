@@ -38,7 +38,14 @@ module.exports = Backbone.View.extend({
   },
 
   addAll: function () {
-    this.collection.forEach(this.addOne, this);
+    var sortByCitation = this 
+                          .collection
+                          .sortBy(function (citation) {
+                            return  citation.get('date_day');
+                          });
+
+    sortByCitation
+      .forEach(this.addOne, this);
   },
 
   addOne: function (citation) {

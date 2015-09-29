@@ -56,10 +56,6 @@ module.exports = Backbone.Router.extend({
 		var loginData = {model: this.userLogin, config: this.config};
 		
 		this.loginView = new LoginView(loginData);
-		/*this.menuView  = new MenuUser({model: this.userLogin});
-		this.menuAdmin = new MenuAdmin({model: this.userLogin});
-		this.citations = new Citations();
-		this.citNotify = new CitationsNotify({collection: this.citations});*/
 
 		Backbone.history.start();
 	},
@@ -85,6 +81,10 @@ module.exports = Backbone.Router.extend({
           } else {
             return next();
           }
+      	},
+
+      	307: function () {
+      		window.location.replace(' ');
       	}
     	}
     });
@@ -98,7 +98,6 @@ module.exports = Backbone.Router.extend({
 	},
 
 	login: function () {
-    console.log(this.userLogin.toJSON());
 		if (this.userLogin.has('role')) {
 			this.selectMenu();
 		} else {
@@ -228,33 +227,22 @@ module.exports = Backbone.Router.extend({
   },
 
   invokeEventModule: function (subroute) {
-		this.renderMenuUser()
-		  .then(function () {
-		  	if (!Backbone.Main.Event) {
-					Backbone.Main.Event = new EventRouter('event/');
-				}
-		  })
-
+		if (!Backbone.Main.Event) {
+			Backbone.Main.Event = new EventRouter('event/');
+		}
 		
 	},
 
 	invokeActionModule: function (subroute) {
-		this.renderMenuUser()
-		  .then(function () {
-		  	if (!Backbone.Main.Action) {
-					Backbone.Main.Action = new ActionRouter('action/');
-				}
-		  })
+		if (!Backbone.Main.Action) {
+			Backbone.Main.Action = new ActionRouter('action/');
+		}
 	},
 
-	invokeProductModule: function (subroute) {
-		this.renderMenuUser()
-		  .then(function () {  	     
-				if (!Backbone.Main.Product) {
-					Backbone.Main.Product = new ProductRouter('product/');
-				}
-		  })
-
+	invokeProductModule: function (subroute) { 	     
+		if (!Backbone.Main.Product) {
+			Backbone.Main.Product = new ProductRouter('product/');
+		}
 	},
 
 	invokeOutputModule: function (subroute) {
@@ -264,8 +252,6 @@ module.exports = Backbone.Router.extend({
 	},
 
 	invokeAttendanceModule: function (subroute) {
-		this.renderMenuUser();
-
 		if (!Backbone.Main.Attendance) {
 			Backbone.Main.Attendance = new AttendanceRouter('attendance/');
 		}

@@ -12,6 +12,17 @@ module.exports = Subroute.extend({
     this.productCtrl = new ProductCtrl();
   },
 
+  before: {
+    '*any': 'loadMenu'
+  },
+
+  loadMenu: function (fragment, args, next) {
+    Backbone.Main
+             .renderMenuUser()
+             .then(next);
+  },
+
+
   register: function () {
     this.productCtrl.showForm();
   },

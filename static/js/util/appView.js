@@ -26,18 +26,6 @@ function appView () {
     $('#main-content').html(notFoundView);
   },
 
-  this.showAdminView = function (view) {
-    if (this.currentAdminView) {
-       this.currentAdminView.close();
-    }
-
-    this.currentAdminView = view;
-
-    this.currentAdminView.render();
-
-    $('#container-admin').html(this.currentAdminView.el);
-  },
-
   this.showUserView = function (view) {
    if (this.currentUserView) {
      this.currentUserView.close();
