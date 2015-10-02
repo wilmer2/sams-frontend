@@ -46,7 +46,6 @@ module.exports = Backbone.View.extend({
   },
 
   addOne: function (audit) {
-    console.log(audit.toJSON())
     var auditView = new AuditView({model: audit});
 
     this.$tbody.append(auditView.render().el);
@@ -68,6 +67,11 @@ module.exports = Backbone.View.extend({
       this.paginateView.pagInit();
       this.changePage();
     }.bind(this))
+  },
+
+  
+  emptyList: function () {
+    this.$tbody.empty()
   },
 
   close: function () {

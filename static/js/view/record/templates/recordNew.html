@@ -2,6 +2,8 @@
 
 <hr>
 
+{{#if activiti}}
+
 {{#if recordState}}
     <div class="row">
       <div class="col-md-6 col-md-offset-3">
@@ -41,6 +43,7 @@
             <label for="inputEmail3" class="col-sm-4 control-label">Talla de pañal</label>
             <div class="col-sm-8">
               <select class="form-control" name="size_diaper">
+                <option value="No aplica">No aplica</option>
                 <option value="S">Pequeña</option>
                 <option value="M">Mediana</option>
                 <option value="L">Grande</option>
@@ -73,8 +76,9 @@
             <label for="inputEmail3" class="col-sm-4 control-label">Discapacidad Motora</label>
             <div class="col-sm-8">
               <select class="form-control" name="disability_moto">
-                <option value="parcial">Parcial</option>
-                <option value="total">Total</option>
+                <option value="No aplica">No aplica</option>
+                <option value="Parcial">Parcial</option>
+                <option value="Total">Total</option>
               </select>
             </div>
           </div>
@@ -83,8 +87,9 @@
             <label for="inputEmail3" class="col-sm-4 control-label">Discapacidad Visual</label>
             <div class="col-sm-8">
               <select class="form-control" name="disability_visual">
-                <option value="parcial">Parcial</option>
-                <option value="total">Total</option>
+                <option value="No aplica">No aplica</option>
+                <option value="Parcial">Parcial</option>
+                <option value="Total">Total</option>
               </select>
             </div>
           </div>
@@ -93,8 +98,9 @@
             <label for="inputEmail3" class="col-sm-4 control-label">Discapacidad Auditiva</label>
             <div class="col-sm-8">
               <select class="form-control" name="disability_hearing">
-                <option value="parcial">Parcial</option>
-                <option value="total">Total</option>
+                <option value="No aplica">No aplica</option>
+                <option value="Parcial">Parcial</option>
+                <option value="Total">Total</option>
               </select>
             </div>
           </div>
@@ -227,3 +233,13 @@
           </div>
       </div>
   </div>
+
+  {{else}}
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+    <div class="alert alert-warning text-center" role="alert">
+      Adulto no residente, no puede registrar historia medica.
+    </div>
+  </div>
+</div>
+{{/if}}

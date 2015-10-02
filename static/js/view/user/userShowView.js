@@ -1,6 +1,7 @@
 var Backbone = require('backbone');
 var $ = require('jquery');
 var Handlebars = require('handlebars');
+var alertify = require('alertifyjs');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
@@ -8,7 +9,8 @@ module.exports = Backbone.View.extend({
   className: 'userShowView',
   events: {
     'submit #register-user': 'register',
-    'click .btn-edit': 'redirectEdit'
+    'click #userEdit': 'redirectEdit',
+    'click #userDelete': 'confirmedDelete'
   },
 
   render: function () {
@@ -47,6 +49,40 @@ module.exports = Backbone.View.extend({
     var employeeId = this.model.get('employee_id');
 
     window.location.href = '#employee/' + employeeId + '/user/edit'
+  },
+
+  confirmedDelete: function () {
+    var title = 'Eliminar Cuenta Usuario';
+    var message = 'Esta seguro de eliminar la cuenta de usuario';
+    var callback = function () {
+      this.delete();
+    }.bind(this);
+
+    alertify.confirm(message, callback)
+    .setting({
+      'title': title,
+      'labels': {
+        'ok': 'Confirmar',
+        'cancel': 'Cancelar'
+      }
+    });
+  },
+
+  delete: function () {
+    var employeeId = this.model.get('employee_id');
+    var userId = this.model.get('id');
+    var url = 'employee/' + employeeId + '/user/' + userId + '/delete?_method=DELETE';
+
+    $.post(Backend_url + url)
+     .done(function (res) {
+      if (res.status == 'success') {
+        var deleteMessage = res.message;
+
+        util.showSuccess(deleteMessage);
+
+        window.location.href = '#employee/' + employeeId;
+      }
+     })
   },
 
   close: function () {

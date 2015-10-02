@@ -8,15 +8,11 @@ module.exports = Backbone.View.extend({
   template: 'instance/templates/instanceWaitingShow.html',
   className: 'instanceWaitingShowView',
   events: {
-    'click .btn-edit': 'edit',
-    'click .btn-cancel': 'cancel',
-    'click #confirm-button': 'confirm',
-    'click #delete-button': 'confirmDelete',
+    'click #instanceBtn-edit': 'edit',
+    'click #instanceBtn-cancel': 'cancel',
+    'click .confirmInstance': 'confirm',
+    'click #instance-waitingDelete': 'confirmDelete',
     'submit #instance-waitingEdit': 'submit'
-  },
-
-  initialize: function () {
-    this.model.on('change', this.render, this);
   },
 
   render: function () {
@@ -37,7 +33,6 @@ module.exports = Backbone.View.extend({
   },
 
   edit: function () {
-    console.log('test');
     this.$submit.removeClass('u-disabled');
     this.$data.addClass('u-disabled');
   },
@@ -84,6 +79,9 @@ module.exports = Backbone.View.extend({
     var data = $('#instance-waitingEdit').serialize();
     var elderId = this.model.get('elder_id');
     var instanceId = this.model.get('id');
+    var oldDate = this.model.get('old_date')
+    var currentDate = util.currentDate();
+
 
     $.post(Backend_url + 'elder/' + elderId + '/instance/' + instanceId + '/edit?_method=PUT', data)
      .done(function (res) {
@@ -91,8 +89,27 @@ module.exports = Backbone.View.extend({
         var instanceData = res.data;
         var successMessage = res.message;
 
-        util.showSuccess(successMessage);
+       
         this.model.set(instanceData);
+
+        var newDate = this.model.get('visit_date');
+
+        if (newDate != oldDate) {
+          if (newDate == currentDate) {
+            Backbone.Main.userLogin.addInstance()
+          } else {
+            if (oldDate == currentDate) {
+              var infoMessage = 'Ha cambiado fecha de visita social, por lo que no aparecera en lista de visitas por confirmar';
+
+              Backbone.Main.userLogin.resInstance();
+              util.showInfo(infoMessage);
+            }
+          }
+        }
+
+        util.showSuccess(successMessage);
+
+        this.render();
 
       } else {
         var errorMessage = res.message;
@@ -109,15 +126,22 @@ module.exports = Backbone.View.extend({
 
     $.get(Backend_url + url)
      .done(function (res) {
-       var message = res.message;
+       if (res.status == 'success') {
+        var stateMessage = res.message;
 
-       util.showSuccess(message);
-       this.clearElder()
+        Backbone.Main.userLogin.resInstance();
+        util.showSuccess(stateMessage);
+        this.clearElder()
 
-       if (state == 'reject') {
-        window.location.replace('#elder/' + elderId);
+        if (state == 'reject') {
+          window.location.replace('#elder/' + elderId);
+        } else {
+          window.location.replace('#elder/' + elderId + '/edit');
+        }
        } else {
-        window.location.replace('#elder/' + elderId + '/edit');
+         var stateError = res.message;
+
+         util.showError(stateError);
        }
 
      }.bind(this))

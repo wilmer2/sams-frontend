@@ -1,4 +1,4 @@
-<h3 class="text-center">Lista de Permisos</h3>
+<h3 class="text-center">Asistencias</h3>
 
 <hr>
 
@@ -6,18 +6,24 @@
   <div class="row">
     <div class="col-md-6 col-md-offset-3">
       <div class="alert alert-warning center-block" role="alert">
-        {{message}}
+       <div>
+         {{message}}
+       </div>
       </div>
     </div>
   </div>
 {{else}}
 
+
 <div class="row">
-  <div class="col-md-6 col-md-offset-3">
+  <div class="col-md-8 col-md-offset-2">
     <table class="table">
       <thead>
-        <th>Fecha</th>
-        <th>Ver</th>
+        <th>Estado</th>
+        <th>Horario</th>
+        <th>Entrada</th>
+        <th>Salida</th>
+        <th class="col-fit">Permiso</th>
       </thead>
       <tbody></tbody>
     </table>

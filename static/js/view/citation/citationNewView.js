@@ -25,21 +25,38 @@ module.exports = Backbone.View.extend({
 
     var elderId = this.model.get('id');
     var data = $('#citation-register').serialize();
+    var currentDate = util.currentDate();
 
     $.post(Backend_url + 'elder/' + elderId + '/citation', data)
      .done(function (res) {
       if (res.status == 'success') {
         var successMessage = res.message;
+        var citationData = res.data;
 
-        util.showSuccess(successMessage);
+        Backbone.Main.Elder.elder.clear();
+        this.model.clear();
+        this.model.set(citationData);
 
-        window.location.href = '#elder/' + elderId;
+        var date = this.model.get('date_day');
+
+        if (currentDate == date) {
+          var infoMessage = 'Ha registrado cita para este dia';
+
+          Backbone.Main.userLogin.addCitation();
+          util.showSuccess(infoMessage);
+        } else {
+          util.showSuccess(successMessage);
+        }
+
+        var citationId = this.model.get('id');
+
+        window.location.href = '#elder/' + elderId + '/citation/' + citationId;
       } else {
         var errorMessage = res.message;
 
         util.showError(errorMessage);
       }
-     })
+     }.bind(this))
   },
 
   close: function () {

@@ -235,11 +235,17 @@ module.exports = Backbone.View.extend({
     })
     .done(function (res) {
       if (res.status == 'success') {
+        var recordData = res.data;
+
         util.showSuccess(res.message);
+        
+        this.model.set(recordData);
+
+        var recordId = this.model.get('id');
         
         this.clearElder();
 
-        window.location.replace('#elder/' + elderId);
+        window.location.href = '#elder/' + elderId + '/record/' + recordId;
       } else {
         util.showError(res.message);
       }

@@ -10,7 +10,6 @@ var util = require('../../util/util');
 module.exports = Backbone.View.extend({
 	template: 'elder/templates/elderListTable.html',
   className: 'elderListTableView',
-	boxError: Handlebars.compile($('#error-elder').html()),
 
 	events: {
 		'keyup .Search': 'search',

@@ -19,5 +19,51 @@ module.exports = Backbone.Model.extend({
 		
 	},
 
+	addCitation: function () {
+		var citationAdd = this.get('citation');
+		citationAdd = citationAdd  + 1;
+
+		this.set('citation', citationAdd);
+	},
+
+	addInstance: function () {
+		var instanceAdd = this.get('instance');
+		instanceAdd =  instanceAdd + 1;
+
+		this.set('instance', instanceAdd);
+	},
+
+	resCitation: function () {
+		var citationRes = this.get('citation');
+
+		if (citationRes > 0) {
+			citationRes = citationRes - 1;
+		}
+
+		this.set('citation', citationRes);
+	},
+
+	resOutput: function () {
+		var outputRes = this.get('output');
+
+
+		if (outputRes > 0) {
+			outputRes = outputRes - 1;
+		}
+
+		this.set('output', outputRes);
+	},
+
+	resInstance: function () {
+		var instanceRes = this.get('instance');
+
+
+		if (instanceRes > 0) {
+			instanceRes = instanceRes - 1;
+		}
+
+		this.set('instance', instanceRes);
+	}
+
 
 });

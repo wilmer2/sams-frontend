@@ -1,0 +1,23 @@
+ <td><span>{{state}}</span></td>
+<td><span>{{start_time}}-{{departure_time}}</span></td>
+  <td>
+    {{#if hour_in}}
+    <span class="u-data">{{hour_in}}</span>
+    {{else}}
+    <span class="u-data">No aplica</span>
+    {{/if}}
+  </td>
+  <td>
+    {{#if hour_out}}
+    <span class="u-data">{{hour_out}}</span>
+    {{else}}
+    <span class="u-data">No aplica</span>
+    {{/if}}
+  </td>
+  <td>
+    {{#if permit_id}}
+     <button class="btn btn-default btn-sm btn-show"><i class="fa fa-eye"></i></button>
+     {{else}}
+     <span>No aplica</span>
+    {{/if}}
+  </td>

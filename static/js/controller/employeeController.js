@@ -3,6 +3,7 @@ var Employee = require('../model/employee');
 var User = require('../model/user');
 var Employees = require('../collection/employees');
 var Schedules = require('../collection/schedules');
+var Attendances = require('../collection/attendances');
 var UserView = require('../view/user/userShowView');
 var UserEdit = require('../view/user/userEditView');
 var EmployeeForm = require('../view/employee/employeeNewView');
@@ -11,6 +12,7 @@ var EmployeeList = require('../view/employee/employeeTableView');
 var EmployeeShow = require('../view/employee/employeeShowView');
 var EmployeeSchedule = require('../view/employee/employeeScheduleNewView');
 var EmployeeScheduleList = require('../view/employee/employeeTableScheduleView');
+var EmployeeAttendances = require('../view/employee/employeeTableAssistanceView');
 
 function EmployeeCtrl () {
 
@@ -75,6 +77,18 @@ function EmployeeCtrl () {
       user.set({employee_id: employeeId});
       user.set(notFound, silentData);
       appView.showEmployeeView(userView);
+    })
+  },
+
+  this.showAttendances = function (employeeId) {
+    var attendances = new Attendances();
+    var employeeAttendances = new EmployeeAttendances({collection: attendances});
+    var url = Backend_url + 'employee/' + employeeId + '/attendances';
+
+    attendances.updateUrl(url);
+    attendances.getFirstPage(fetchData)
+    .done(function () {
+      appView.showEmployeeView(employeeAttendances);
     })
   },
 

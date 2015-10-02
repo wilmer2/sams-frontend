@@ -1,5 +1,6 @@
 var Backbone = require('backbone');
 var $ = require('jquery');
+var Handlebars = require('handlebars');
 var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
@@ -11,16 +12,16 @@ module.exports = Backbone.View.extend({
 
   render: function () {
     $.get(rootView + this.template, function (template) {
-      var template = template;
+      var template = Handlebars.compile(template);
+      var data = this.model.toJSON();
+      var html = template(data);
 
-      this.$el.html(template);
+      this.$el.html(html);
     }.bind(this))
   },
 
   register: function (e) {
     e.preventDefault();
-
-    console.log('test');
 
     var elderId = this.model.get('id');
     var data = $('#outputPernot-register').serialize();
@@ -29,16 +30,21 @@ module.exports = Backbone.View.extend({
      .done(function (res) {
       if (res.status == 'success') {
         var successMessage = res.message;
+        var outputData = res.data;
 
         util.showSuccess(successMessage);
+        this.model.set(outputData);
 
-        window.location.href = '#elder/' + elderId;
+        var outputPernotId = this.model.get('id');
+
+
+        window.location.href = '#elder/' + elderId + '/output/' + outputPernotId;
       } else {
         var errorMessage = res.message;
 
         util.showError(errorMessage);
       }
-     })
+     }.bind(this))
   },
 
   close: function () {

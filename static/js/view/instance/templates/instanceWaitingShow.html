@@ -17,10 +17,10 @@
 
           <div class="row">
             <div class="col-md-2 col-md-offset-2">
-              <button id="confirm-button" class="btn btn-success"><i class="fa fa-check"></i> Confirmar</button>
+              <button class="btn btn-success confirmInstance"><i class="fa fa-check"></i> Confirmar</button>
             </div>
             <div class="col-md-2 col-md-offset-2">
-              <button id="delete-button" class="btn btn-danger"><i class="fa fa-times"></i> Rechazar</button>
+              <button class="btn btn-danger confirmInstance"><i class="fa fa-times"></i> Rechazar</button>
             </div>
           </div>
       </div>
@@ -101,7 +101,7 @@
             <center>
               <div class="u-submit u-disabled">
                 <button class="btn btn-primary" type="submit"><i class="fa fa-save"></i> Guardar</button>
-                <button class="btn btn-danger btn-cancel" type="button"><i class="fa fa-times"></i> Cancelar</button>
+                <button class="btn btn-danger" type="button" id="instanceBtn-cancel"><i class="fa fa-times"></i> Cancelar</button>
               </div>    
             </center>
           </td>
@@ -111,10 +111,10 @@
 
     <div class="row u-data">
       <div class="col-md-1 col-md-offset-4">
-        <button class="btn btn-primary btn-edit"><i class="fa fa-edit"></i> Editar</button>
+        <button class="btn btn-primary btn-edit" id="instanceBtn-edit"><i class="fa fa-edit"></i> Editar</button>
       </div>
       <div class="col-md-1 col-md-offset-1">
-        <button class="btn btn-danger btn-delete"><i class="fa fa-trash-o"></i> Eliminar</button>
+        <button class="btn btn-danger btn-delete" id="instance-waitingDelete"><i class="fa fa-trash-o"></i> Eliminar</button>
       </div>
     </div>
   </div>

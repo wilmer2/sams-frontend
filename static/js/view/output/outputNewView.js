@@ -30,16 +30,20 @@ module.exports = Backbone.View.extend({
      .done(function (res) {
       if (res.status == 'success') {
         var successMessage = res.message;
+        var outputData = res.data;
 
         util.showSuccess(successMessage);
+        this.model.set(outputData);
 
-        window.location.href = '#elder/' + elderId;
+        var outputId = this.model.get('id');
+
+        window.location.href = '#elder/' + elderId + '/output/' + outputId;
       } else {
         var errorMessage = res.message;
 
         util.showError(errorMessage);
       }
-     })
+     }.bind(this))
   },
 
   close:function () {

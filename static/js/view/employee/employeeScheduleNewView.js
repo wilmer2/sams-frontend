@@ -31,7 +31,7 @@ module.exports = Backbone.View.extend({
       if (res.status == 'success') {
         util.showSuccess(res.message);
         
-        window.location.href = '#employee/' + employeeId;
+        window.location.href = '#employee/' + employeeId + '/schedule/list';
       } else {
           util.showError(res.message);
         }

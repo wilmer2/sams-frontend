@@ -6,7 +6,7 @@ module.exports = Backbone.View.extend({
   tagName: 'tr',
   template: 'instance/templates/instanceDateRow.html',
   events: {
-    'click .btn-info': 'redirectShow'
+    'click #instanceDateShow': 'redirectShow'
   },
 
   render: function () {
@@ -25,8 +25,14 @@ module.exports = Backbone.View.extend({
   redirectShow: function () {
     var elderId = this.model.get('elder_id');
     var instanceId = this.model.get('id');
+    var state = this.model.get('old_state');
 
-    window.location.href = '#elder/' + elderId + '/instance/' + instanceId;
+    if (state == 'waiting') {
+      window.location.href = '#elder/' + elderId + '/instance-waiting';
+    } else {
+      window.location.href = '#elder/' + elderId + '/instance/' + instanceId;
+    }
+
   }
 
 })

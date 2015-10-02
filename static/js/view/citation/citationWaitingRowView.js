@@ -9,7 +9,8 @@ module.exports = Backbone.View.extend({
   template: 'citation/templates/citationWaitingRow.html',
   events: {
     'click #citationConfirm': 'confirm',
-    'click #citationCancel': 'reject'
+    'click #citationCancel': 'reject',
+    'click #citationWating-show': 'redirectShow'
   },
 
   render: function () {
@@ -40,19 +41,34 @@ module.exports = Backbone.View.extend({
     this.submitState(confirmedReject);
   },
 
+  redirectShow: function () {
+    var elderId = this.model.get('elder_id');
+    var citationId = this.model.get('id');
+
+    window.location.href = '#elder/' + elderId + '/citation/' + citationId;
+  },
+
   submitState: function (state) {
     var elderId = this.model.get('elder_id');
     var citationId = this.model.get('id');
+    var date = this.model.get('old_date');
     var url = 'elder/' + elderId + '/citation/' + citationId + '/check?state=' + state;
-
+    var currentDate = util.currentDate();
+  
     $.get(Backend_url + url)
      .done(function (res) {
       if (res.status == 'success') {
         var successMessage = res.message;
 
         util.showSuccess(successMessage);
-        this.close();
+          
+        if (currentDate == date) {
+          Backbone.Main.userLogin.resCitation();
+        }
+
         Backbone.Main.Elder.elder.clear();
+        this.close();
+        
       } else {
         var errorMessage = res.message;
 

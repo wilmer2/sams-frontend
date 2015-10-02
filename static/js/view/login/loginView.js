@@ -18,6 +18,7 @@ module.exports = Backbone.View.extend({
   	this.config = opt.config;
 
   	this.config.on('change', this.renderHeader, this);
+  	this.model.on('change:citation change:instance change:output', this.renderHeader, this);
   },
 
 	render: function () {

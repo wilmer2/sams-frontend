@@ -10,7 +10,7 @@
 
   <ol class="breadcrumb">
     <li><a href="#elders"><i class="fa fa-home"></i> Home</a></li>
-    <li><a href="#elder/{{id}}"><i class="fa fa-user"></i> Empleado</a></li>
+    <li><a href="#employee/{{id}}"><i class="fa fa-user"></i> Empleado</a></li>
   </ol>
 
   <ul class="menu">
@@ -68,6 +68,28 @@
     <li> 
       <div class="item">
         <div class="icon">
+          <i class="fa fa-calendar-check-o"></i>
+        </div>
+        <div class="title">
+          Asistencias
+        </div>
+        <div class="arrow">
+        </div>
+      </div>
+
+       <ul class="sub-menu">
+         <li>
+            <a href="#employee/{{id}}/attendances">
+              <i class="fa fa-list"></i>
+              <span>Listar</span>
+            </a>
+          </li>
+       </ul>
+    </li>
+
+    <li> 
+      <div class="item">
+        <div class="icon">
           <i class="fa fa-life-saver"></i>
         </div>
         <div class="title">
@@ -79,9 +101,15 @@
 
        <ul class="sub-menu">
          <li>
-            <a href="#employee/{{id}}/permit/extend">
+            <a href="#employee/{{id}}/permit/">
               <i class="fa fa-plus"></i>
               <span>Registrar</span>
+            </a>
+         </li>
+         <li>
+            <a href="#employee/{{id}}/permit/extend">
+              <i class="fa fa-plus"></i>
+              <span>Registrar (Extendido)</span>
             </a>
           </li>
 
@@ -118,3 +146,5 @@
   </ul>
 </nav>
 <div id="content-employee" class="mainContent"></div>
+
+

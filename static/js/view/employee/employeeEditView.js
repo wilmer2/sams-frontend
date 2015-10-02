@@ -225,6 +225,9 @@ module.exports = Backbone.View.extend({
     var employeeId = this.model.get('id');
     var formData = new FormData($('#form-editEmployee')[0]);
 
+   /* console.log(formData);
+    debugger;*/
+
     if (!_.isEmpty(this.photoSource)) {
       var mime = util.extractMime(this.photoSource);
 

@@ -109,12 +109,13 @@ module.exports = Backbone.View.extend({
     var imageType = /image.*/;
     var canvasFile = this.$canvasForm;
     var ctxFile = canvasFile[0].getContext('2d');
-    var fileCanvas = this.$typeFile.val();
+    var filePic = this.$typeFile.val();
     var dropImg = function () {
+      this.photoSource = '';
       ctxFile.clearRect(0, 0, 150 , 150)
-    };
+    }.bind(this);
 
-    if (_.isEmpty(fileCanvas)) {
+    if (_.isEmpty(filePic)) {
       dropImg();
     } else {
       if (file.type.match(imageType)) {
@@ -221,10 +222,14 @@ module.exports = Backbone.View.extend({
     .done(function (res) {
       if (res.status == 'success') {
         var successMessage = res.message;
+        var occurrenceData = res.data;
 
         util.showSuccess(successMessage);
-        
-        window.location.replace('#elder/' + elderId);
+        this.model.set(occurrenceData);
+
+        var occurrenceId = this.model.get('id');
+
+        window.location.href = '#elder/' + elderId + '/occurrence/' + occurrenceId;
       } else {
         var errorMessage = res.message;
 

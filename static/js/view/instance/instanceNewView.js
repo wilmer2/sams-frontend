@@ -17,6 +17,7 @@ module.exports = Backbone.View.extend({
     e.preventDefault();
 
     var data = $('#form-instance').serialize();
+    var currentDate = util.currentDate();
 
     $.post(Backend_url + 'elder/instance', data)
      .done(function (res) {
@@ -25,9 +26,18 @@ module.exports = Backbone.View.extend({
         var successMessage = res.message;
 
         this.model.set(data);
+
+        var elderId = this.model.get('elder_id');
+        var visitDate = this.model.get('visit_date');
+
+        if (visitDate == currentDate) {
+          successMessage = 'Ha registrado visita para este dia';
+          
+          Backbone.Main.userLogin.addInstance();
+        }
+
         util.showSuccess(successMessage);
 
-        var elderId = this.model.get('id');
 
         window.location.href = '#elder/' + elderId + '/instance-waiting';
       } else {

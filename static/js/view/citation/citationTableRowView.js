@@ -26,6 +26,6 @@ module.exports = Backbone.View.extend({
     var elderId = this.model.get('elder_id');
     var citationId = this.model.get('id');
 
-    window.location.href = '#elder/' + elderId + '/citation/' + citationId;
+    window.location.href = '#elder/' + elderId + '/citation/waiting';
   }
 });

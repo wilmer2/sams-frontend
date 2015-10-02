@@ -26,23 +26,25 @@ module.exports = Backbone.Model.extend({
 
   stateFormat: function () {
     var state = this.get('state');
-    var stateFormat = '';
+    var oldState = this.get('old_state');
+    var stateFormat;
 
-    switch(state) {
-      case 'loading':
-        stateFormat = 'En espera';
-        this.set({waiting: true}, silentData);
-      break;
-      case 'reject':
-        stateFormat = 'Cancelada';
-      break;
-      case 'confirmed':
-        stateFormat = 'Confirmada';
-      break;
-    }
+    if (_.isUndefined(oldState) && !_.isUndefined(state)) {
+      switch(state) {
+        case 'loading':
+          stateFormat = 'En espera';
+          this.set({waiting: true}, silentData);
+        break;
+        case 'reject':
+          stateFormat = 'Cancelada';
+        break;
+        case 'confirmed':
+          stateFormat = 'Confirmada';
+        break;
+      }
 
-    if (!_.isUndefined(state)) {
       this.set('state', stateFormat);
+      this.set('old_state', state);
     }
   },
 

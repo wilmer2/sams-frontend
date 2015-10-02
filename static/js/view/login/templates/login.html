@@ -8,18 +8,18 @@
     </div>
 
     <div class="icon-noty">
-      <a href="#">
+      <a href="#output/waiting" title="Adultos por llegar">
         <i class="fa fa-user"></i>
       </a>
       {{#if user.output}}
       <span class="mini-badge">
-        {{output}}
+        {{user.output}}
       </span>
       {{/if}}
     </div>
 
     <div class="icon-noty">
-      <a href="#">
+      <a href="#citations" title="Citas de hoy">
         <i class="fa fa-user-md"></i>
       </a>
       {{#if user.citation}}
@@ -30,7 +30,7 @@
     </div>
 
     <div class="icon-noty">
-      <a href="#">
+      <a href="#instance/waiting" title="Visitas sociales por confirmar">
         <i class="fa fa-car"></i>
       </a>
       {{#if user.instance}}

@@ -24,9 +24,10 @@ module.exports = Backbone.View.extend({
       var html = template(errorMessage);
 
       this.$el.html(html);
-      this.getPaginateView();
+      
 
       if (_.isEmpty(this.message)) {
+        this.getPaginateView();
         this.$tbody =  this
                          .$el
                          .find('table')

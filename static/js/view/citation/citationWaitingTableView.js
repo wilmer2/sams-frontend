@@ -62,6 +62,7 @@ module.exports = Backbone.View.extend({
 
       this.render();
     }
+
   },
 
   close: function () {
