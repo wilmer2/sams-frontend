@@ -8,8 +8,13 @@ module.exports = Backbone.View.extend({
   template: 'elder/templates/elderShow.html',
   className: 'elderShowView',
   events: {
-    'click .btn-edit': 'redirectEdit',
-    'click .btn-delete': 'confirmDelete'
+    'click #elderEdit': 'redirectEdit',
+    'click #elderDelete': 'confirmDelete',
+    'click #elderConfirm': 'confirmState',
+  },
+
+  initialize: function (opt) {
+    this.user = opt.user;
   },
 
   render: function () {
@@ -18,7 +23,12 @@ module.exports = Backbone.View.extend({
 
     $.get(rootView + this.template, function (template) {
       var template = Handlebars.compile(template);
-      var data = this.model.toJSON();
+      var elderData = this.model.toJSON();
+      var userData = this.user.toJSON();
+      var data = {
+        elder: elderData,
+        user: userData
+      };
       var html = template(data);
 
       this.$el.html(html);
@@ -49,6 +59,23 @@ module.exports = Backbone.View.extend({
     });
   },
 
+  confirmState: function () {
+    var title = ' Estado de Adulto Mayor';
+    var message = 'Esta seguro de cambiar estado de adulto mayor';
+    var callback = function () {
+      this.confirm();
+    }.bind(this);
+
+    alertify.confirm(message, callback)
+    .setting({
+      'title': title,
+      'labels': {
+        'ok': 'Confirmar',
+        'cancel': 'Cancelar'
+      }
+    });
+  },
+
   delete: function () {
     var elderId = this.model.get('id');
 
@@ -61,6 +88,24 @@ module.exports = Backbone.View.extend({
         window.location.replace('#elders');
       }
      })
+  },
+
+  confirm: function () {
+    var elderId = this.model.get('id');
+    var url = 'elder/' + elderId + '/confirmed';
+
+    $.get(Backend_url + url)
+     .done(function (res) {
+      if (res.status == 'success') {
+        var confirmedMessage = res.message;
+        var elderData = res.data;
+
+        this.model.set(elderData);
+        util.showSuccess(confirmedMessage);
+
+        this.render();
+      }
+     }.bind(this))
   },
 
   close: function () {

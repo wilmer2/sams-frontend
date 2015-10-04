@@ -58,6 +58,7 @@ module.exports = Subroute.extend({
   },
 
   show: function () {
+    console.log(this.employee.toJSON());
     this.employeeCtrl.show(this.employee);
   },
 

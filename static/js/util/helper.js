@@ -12,6 +12,12 @@ module.exports = function () {
 		if (!state) {
 			return options.fn(this);
 		}
+	});
+
+	Handlebars.registerHelper('instanceState', function (instance, options) {
+		if (instance == 0) {
+			return options.fn(this);
+		}
 	})
 
   Handlebars.registerHelper('numberMax', function (count, options) {

@@ -1,3 +1,4 @@
+var Backbone = require('backbone');
 var $ = require('jquery');
 var Elder = require('../model/elder');
 var Elders = require('../collection/elders');
@@ -8,7 +9,9 @@ var ElderNotResident = require('../view/elder/elderNotResidentListTableView');
 
 function ElderCtrl () {
   this.show = function (elder) {
-    var elderShow = new ElderShow({model:elder});
+    var user = Backbone.Main.userLogin;
+
+    var elderShow = new ElderShow({model:elder, user: user});
 
     appView.showElderView(elderShow);
   },

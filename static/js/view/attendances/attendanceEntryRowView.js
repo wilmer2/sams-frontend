@@ -7,7 +7,7 @@ module.exports = Backbone.View.extend({
   tagName: 'tr',
   template: 'attendances/templates/attendanceEntryRow.html',
   events: {
-    'click .Table-confirm': 'confirm'
+    'click #attendanceEntry': 'confirm'
   },
 
   render: function () {

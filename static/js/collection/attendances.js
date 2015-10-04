@@ -39,7 +39,7 @@ module.exports = PageableCollection.extend({
 
   search: function (letters) {
     var letters = letters.trim();
-    var searchFor = ['identity_card','first_name', 'last_name', 'date_day'];
+    var searchFor = ['identity_card','full_name', 'date_day'];
 
     if (letters != '') {
       return this.fullCollection.filter(function (model) {

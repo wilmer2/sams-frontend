@@ -25,18 +25,23 @@ var TaskHour = {
   hourStandar: function (hour) {
     var standar = hour.split(':');
     var hourStand = standar[0];
-    var meridian;
+    var meridian = _.indexOf(standar[1], 'm');
 
-    if (hourStand < 12) {
-      hourStand = hourStand + ':' + standar[1] + 'am';
-    } else {
-      if (hourStand >= 13) {
-        hourStand = hourStand - 12;
+    if (meridian < 0) {
+      if (hourStand < 12) {
+        hourStand = hourStand + ':' + standar[1] + 'am';
+      } else {
+        if (hourStand >= 13) {
+          hourStand = hourStand - 12;
+        }
+
+        hourStand = hourStand + ':' + standar[1] + 'pm';
       }
-      hourStand = hourStand + ':' + standar[1] + 'pm';
+    } else {
+      hourStand = hourStand + ':' + standar[1];
     }
-   
-   return hourStand;
+
+    return hourStand;
   },
 
   dateFormat: function (date) {
