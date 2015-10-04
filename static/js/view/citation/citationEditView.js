@@ -59,9 +59,6 @@ module.exports = Backbone.View.extend({
             Backbone.Main.userLogin.addCitation();
           } else {
             if (oldDate == currentDate) {
-              var infoMessage = 'Ha cambiado fecha de cita por lo que no aparecerea en lista de citas de hoy';
-
-              util.showInfo(infoMessage);
               Backbone.Main.userLogin.resCitation();
             }
           }

@@ -27,6 +27,13 @@ module.exports = Backbone.Model.extend({
      }
    }.bind(this))
 
+  },
+
+  dateFormat: function () {
+    var date = this.get('date_day');
+    var dateFormat = utilHour.dateFormat(date);
+
+    this.set('date_day', dateFormat);
   }
 
 });

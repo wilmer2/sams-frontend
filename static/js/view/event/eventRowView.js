@@ -6,10 +6,12 @@ module.exports = Backbone.View.extend({
   tagName: 'tr',
   template: 'event/templates/eventRow.html',
   events: {
-    'click .btn-info': 'redirectShow'
+    'click #eventShow': 'redirectShow'
   },
 
   render: function () {
+    this.model.dateFormat();
+    
     $.get(rootView + this.template, function (template) {
       var template = Handlebars.compile(template);
       var data = this.model.toJSON();

@@ -30,9 +30,7 @@ module.exports = Backbone.View.extend({
         var elderId = this.model.get('elder_id');
         var visitDate = this.model.get('visit_date');
 
-        if (visitDate == currentDate) {
-          successMessage = 'Ha registrado visita para este dia';
-          
+        if (visitDate == currentDate) {  
           Backbone.Main.userLogin.addInstance();
         }
 

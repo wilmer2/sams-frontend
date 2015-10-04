@@ -47,7 +47,7 @@ module.exports = Backbone.View.extend({
     var text = target.text();
     var state;
 
-    if (text == 'Rechazar') {
+    if (text == ' Rechazar') {
       state = 'reject';
     } else {
       state = 'confirmed';
@@ -92,17 +92,15 @@ module.exports = Backbone.View.extend({
        
         this.model.set(instanceData);
 
-        var newDate = this.model.get('visit_date');
+        var visitDate = this.model.get('visit_date');
 
-        if (newDate != oldDate) {
-          if (newDate == currentDate) {
+        if (visitDate != oldDate) {
+          if (visitDate == currentDate) {
             Backbone.Main.userLogin.addInstance()
           } else {
-            if (oldDate == currentDate) {
-              var infoMessage = 'Ha cambiado fecha de visita social, por lo que no aparecera en lista de visitas por confirmar';
+            if (oldDate <= currentDate) {
 
               Backbone.Main.userLogin.resInstance();
-              util.showInfo(infoMessage);
             }
           }
         }

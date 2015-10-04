@@ -40,15 +40,12 @@ module.exports = Backbone.View.extend({
         var date = this.model.get('date_day');
 
         if (currentDate == date) {
-          var infoMessage = 'Ha registrado cita para este dia';
-
           Backbone.Main.userLogin.addCitation();
-          util.showSuccess(infoMessage);
-        } else {
-          util.showSuccess(successMessage);
-        }
+        } 
 
-        var citationId = this.model.get('id');
+        util.showSuccess(successMessage);
+
+        var citationId = this.model.get('id');        
 
         window.location.href = '#elder/' + elderId + '/citation/' + citationId;
       } else {
