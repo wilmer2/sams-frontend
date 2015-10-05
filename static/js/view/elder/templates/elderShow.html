@@ -13,6 +13,9 @@
 
 <hr>
 
+
+<br>
+
 <div class="row">
   <div class="col-md-8 col-md-offset-2">
     <table class="table">
@@ -60,6 +63,27 @@
          <td>No aplica</td>
         {{/if}}
       </tr>
+      <tr>
+        <td><strong>Residente</strong></td>
+        <td>
+          {{#if user.Admin}}
+           
+           {{# instanceState elder.instance}}
+               {{#if elder.activiti}}
+                <strong class="text-success">Si</strong> <button class="btn btn-danger btn-xs" id="elderConfirm">
+                  Expulsar
+                </button>
+               {{else}}
+                <strong class="text-danger">No</strong>  <button class="btn btn-success btn-xs" id="elderConfirm">
+                  Residenciar
+                </button>
+               {{/if}}
+           {{/instanceState}}
+
+          {{/if}}
+          
+        </td>
+      </tr>
     </table>
   </div>
 </div>
@@ -68,21 +92,9 @@
       <button class="btn btn-primary" id="elderEdit"><i class="fa fa-edit"></i> Editar</button>
     </div>
     <div class="col-md-1 col-md-offset-1">
-      <button class="btn btn-danger" id="elderDelete"><i class="fa fa-trash-o"></i> Eliminar</button>
+      <button class="btn btn-danger btn-delete" id="elderDelete"><i class="fa fa-trash-o"></i> Eliminar</button>
     </div>
   </div>
 </div>
 
-{{#if user.Admin}}
- 
- {{# instanceState elder.instance}}
-   <button id="elderConfirm">
-     {{#if elder.activiti}}
-       Confirmar como no residente
-     {{else}}
-         Confirmar como residente
-     {{/if}}
-   </button>
- {{/instanceState}}
-
-{{/if}}
+  <br>
