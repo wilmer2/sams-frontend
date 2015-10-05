@@ -1,30 +1,55 @@
+<h3 class="text-center">Informacion de Incidencia</h3>
 
-<div>
-  <h3>Informacion de Incidencia</h3>
-</div>
+<hr>
+
 {{#if notFound}}
-<div>
-  <p>
-    No se encontro incidencia
-  </p>
-</div>
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3">
+      <div class="alert alert-warning center-block" role="alert">
+        No se encuentra la incidencia
+      </div>
+    </div>
+  </div>
 {{else}}
- <figure>
-     <img src="{{image_url}}">
-</figure>
-<div>
-  <div>
-    <strong>Fecha</strong> <span>{{date}}</span>
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3">
+      <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+          <img class="img-responsive center-block" src="{{image_url}}">
+        </div>
+      </div>
+
+      <br>
+
+      <table class="table">
+        <tr>
+          <td>
+            <strong>Fecha</strong>
+          </td>
+          <td>
+           <span>{{date}}</span>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <strong>Situacion del Caso</strong>
+          </td>
+          <td>
+            <p>{{case_situation}}</p>
+          </td>
+        </tr>
+      </table>
+
+    </div>
   </div>
-  <div>
-    <strong>Situacion del Caso</strong>
-    <p>
-      {{case_situation}}
-    </p>
+
+  <div class="row">
+    <div class="col-md-1 col-md-offset-4">
+      <button class="btn btn-primary btn-edit"><i class="fa fa-edit"></i> Editar</button>
+    </div>
+    <div class="col-md-1 col-md-offset-1">
+      <button class="btn btn-danger btn-delete"><i class="fa fa-trash-o"></i> Eliminar</button>
+    </div>
   </div>
-  <div>
-    <button class="btn btn-primary btn-edit">Editar</button>
-    <button class="btn btn-danger btn-delete">Eliminar</button>
-  </div>
-</div>
+
 {{/if}}
