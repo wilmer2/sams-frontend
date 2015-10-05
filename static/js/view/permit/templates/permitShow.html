@@ -1,40 +1,78 @@
-<div>
-  <h3>Informacion de Permiso</h3>
-</div>
+<h3 class="text-center">Informacion de Permiso</h3>
+
+<hr>
 
 {{#if notFound}}
-<div>
-  <p>
-    Permiso no encontrado
-  </p>
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+    <div class="alert alert-warning center-block" role="alert">
+      Permiso no encontrado
+    </div>
+  </div>
 </div>
 {{else}}
-<div>
- {{#if date_end}}
-    <div>
-      <strong>Desde</strong> <span>{{date_start}}</span>
-    </div>
-    <div>
-      <strong>Hasta</strong> <span>{{date_end}}</span>
-    </div>
-    {{#if date_cancel}}
-      <div>
-        <strong>Fecha de Cancelacion</strong> <span>{{date_cancel}}</span>
-      </div>
+
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+    <table class="table">
+     {{#if date_end}}
+        <tr>
+          <td>
+            <strong>Desde</strong>
+          </td>
+          <td>
+            <span>{{date_start}}</span>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <strong>Hasta</strong>
+          </td>
+          <td>
+            <span>{{date_end}}</span>
+          </td>
+        </tr>
+        {{#if date_cancel}}
+          <tr>
+            <td>
+              <strong>Fecha de Cancelacion</strong>
+            </td>
+            <td>
+              <span>{{date_cancel}}</span>
+            </td>
+          </tr>
+        {{/if}}
+     {{else}}
+      <tr>
+        <td>
+          <strong>Fecha</strong>
+        </td> 
+        <td>
+          <span>{{date_start}}</span>
+        </td>
+     </tr>
+      <tr>
+        <td>
+          <strong>Turno</strong>
+        </td> 
+        <td>
+          <span>{{turn}}</span>
+        </td>
+     </tr>
+     {{/if}}
+      <tr>
+        <td>
+          <strong>Estado</strong>
+        </td> 
+        <td>
+          <span>{{state}}</span>
+        </td>
+      </tr>
+    </table>
     {{/if}}
- {{else}}
- <div>
-   <strong>Fecha</strong> <span>{{date_start}}</span>
- </div>
- <div>
-   <strong>Turno</strong> <span>{{turn}}</span>
- </div>
- {{/if}}
- <div>
-   <strong>Estado</strong> <span>{{state}}</span>
- </div>
- {{#if isWaiting}}
-  <button class="btn btn-danger" id="permitShow-cancel">Cancelar</button>
- {{/if}}
+
+     {{#if isWaiting}}
+      <button class="btn btn-danger center-block" id="permitShow-cancel"><i class="fa fa-times"></i> Cancelar</button>
+     {{/if}}
+  </div>
 </div>
-{{/if}}
