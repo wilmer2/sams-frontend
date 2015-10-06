@@ -33,6 +33,13 @@ module.exports = Backbone.Model.extend({
 		this.set('instance', instanceAdd);
 	},
 
+	addOutput: function () {
+		var outputAdd = this.get('output');
+		outputAdd = outputAdd + 1;
+
+		this.set('output', outputAdd);
+	},
+
 	resCitation: function () {
 		var citationRes = this.get('citation');
 

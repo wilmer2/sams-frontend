@@ -1,0 +1,61 @@
+{{#outputPending notFound}}
+
+<h3 class="text-center">Salida por confirmar</h3>
+  <hr>
+  
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <table class="table">
+        <tr>
+          <td>
+            <strong>Tipo</strong> 
+          </td>
+          <td>
+            <span>{{type}}</span>
+          </td>
+        </tr>
+        {{#if date_start}}
+          <tr>
+            <td>
+              <strong>Fecha de Salida</strong>
+            </td>
+            <td>
+              <span>{{date_start}}</span>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <strong>
+              Fecha de Llegada
+            </strong>
+            </td>
+            <td>
+              <span>{{date_end}}</span>
+            </td>
+          </tr>
+        {{/if}}
+
+        {{#if info}}
+          <tr>
+            <td>
+              <strong>Informacion</strong>
+            </td>
+            <td>
+                {{info}}
+            </td>
+          </tr>
+        {{/if}}
+      </table>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-1 col-md-offset-4">
+      <button class="btn btn-primary" id="outputPendingEdit"><i class="fa fa-edit"></i> Editar</button>
+    </div>
+    <div class="col-md-1 col-md-offset-1">
+      <button class="btn btn-danger btn-delete" id="outputPendingDelete"><i class="fa fa-trash-o"></i> Eliminar</button>
+    </div>
+  </div>
+   <button id="outputPendingConfirm">Confirmar</button>
+{{/outputPending}}

@@ -4,7 +4,7 @@ var $ = require('jquery');
 module.exports = function () {
   Handlebars.registerHelper('checkView', function (notification, count ,options) {
     if (!notification && count > 0) {
-      	return options.fn(this);
+      return options.fn(this);
     }
 	});
 
@@ -19,6 +19,12 @@ module.exports = function () {
 			return options.fn(this);
 		}
 	})
+
+	Handlebars.registerHelper('outputPending', function (notFound, options) {
+		if (!notFound) {
+			return options.fn(this);
+		}
+	});
 
   Handlebars.registerHelper('numberMax', function (count, options) {
 	  if (count > 20) {
@@ -55,9 +61,8 @@ module.exports = function () {
 		}
 	});
 
-
- Handlebars.registerHelper('selected', function(foo, bar) {
-   return foo == bar ? ' selected' : '';
- });
+	Handlebars.registerHelper('selected', function(foo, bar) {
+  	return foo == bar ? ' selected' : '';
+	});
 
 }

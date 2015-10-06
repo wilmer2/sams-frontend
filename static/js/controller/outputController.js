@@ -9,7 +9,8 @@ var OutputEdit = require('../view/output/outputEditView');
 var OutputPernotForm = require('../view/output/outputPernotNewView');
 var OutputList = require('../view/output/outputTableView');
 var OutputListPernot = require('../view/output/outputPernotTableView');
-var OutputListElder = require('../view/output/outputElderTableView');
+// var OutputListElder = require('../view/output/outputElderTableView');
+var OutputShowWaiting = require('../view/output/outputWaitingShowView');
 var OutputWaiting = require('../view/output/outputWaitingTableView');
 
 function OutputCtrl () {
@@ -51,6 +52,27 @@ function OutputCtrl () {
     })
   },
 
+  this.showListElder = function (elderId) {
+    var output = new Output();
+    var outputWatingShow = new  OutputShowWaiting({model: output});
+
+    $.get(Backend_url + 'elder/' + elderId + '/output/pending')
+     .done(function (res) {
+      if (res.status == 'success') {
+        var outputData = res.data
+        output.set(outputData);
+        appView.showElderView(outputWatingShow);
+      }
+     })
+     .fail(function (err) {
+      if (err.status == 404) {
+        output.set({elder_id:elderId});
+        output.set(notFound, silentData);
+        appView.showElderView(outputWatingShow);
+      }
+     })
+  },
+
   this.showFormPernot = function () {
     var elder = Backbone.Main.Elder.elder;
     var outputPernotForm = new OutputPernotForm({model: elder});
@@ -78,7 +100,7 @@ function OutputCtrl () {
     })
   },
 
-  this.showListElder = function (elderId) {
+  /*this.showListElder = function (elderId) {
     var outputs = new Outputs();
     var outputsElder = new OutputListElder({collection: outputs});
     var url = Backend_url + 'elder/' + elderId +'/outputs';
@@ -88,7 +110,8 @@ function OutputCtrl () {
     .done(function () {
       appView.showElderView(outputsElder);
     })
-  },
+  },*/
+ 
 
   this.showListWaiting = function () {
     var outputs = new Outputs();

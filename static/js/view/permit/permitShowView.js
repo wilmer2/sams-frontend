@@ -14,6 +14,7 @@ module.exports = Backbone.View.extend({
   render: function () {
     this.model.isWaiting();
     this.model.dateFormat();
+    this.model.turnFormat();
     
     $.get(rootView + this.template, function (template) {
       var template = Handlebars.compile(template);

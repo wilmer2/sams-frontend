@@ -33,6 +33,7 @@ var TaskHour = {
       } else {
         if (hourStand >= 13) {
           hourStand = hourStand - 12;
+          hourStand = '0' + hourStand;
         }
 
         hourStand = hourStand + ':' + standar[1] + 'pm';

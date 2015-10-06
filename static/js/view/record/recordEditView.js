@@ -167,9 +167,6 @@ module.exports = Backbone.View.extend({
 
     if (!_.isUndefined(imageUrl)) {
       var defaultUrl = 'http://localhost/image/geriatric/default/profile_default_man.png';
-       
-       console.log(imageUrl);
-       console.log(defaultUrl);
 
       if (imageUrl != defaultUrl) {
         var image = new Image();
@@ -182,7 +179,7 @@ module.exports = Backbone.View.extend({
         var ctx = canvas[0].getContext('2d');
 
         image.onload = function () {
-          ctx.drawImage(image, 0, 0);
+          ctx.drawImage(image, 0, 0, 150, 150);
         }
       }
     }

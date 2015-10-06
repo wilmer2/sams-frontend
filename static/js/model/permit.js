@@ -33,5 +33,28 @@ module.exports = Backbone.Model.extend({
       }
     }.bind(this))
 
+  },
+
+  turnFormat: function () {
+    var turn = this.get('turn');
+ 
+    if (!_.isUndefined(turn)) {
+      switch(turn) {
+        case 'morning':
+         turn = 'Mañana'
+        break;
+        case 'afternoon':
+         turn = 'Tarde'
+        break;
+        case 'night':
+         turn = 'Noche'
+        break;
+        case 'complete':
+         turn = 'Todos los turnos'
+        break;
+      }
+
+      this.set('turn', turn);
+    }
   }
 });

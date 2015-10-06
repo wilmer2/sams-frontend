@@ -73,9 +73,6 @@ module.exports = Backbone.View.extend({
         util.showError(errorMessage);
       }
     }.bind(this));
-
-
-   
   },
 
   close: function () {

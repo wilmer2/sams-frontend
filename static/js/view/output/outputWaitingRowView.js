@@ -13,6 +13,8 @@ module.exports = Backbone.View.extend({
   },
 
   render: function () {
+    this.model.dateFormat();
+    
     $.get(rootView + this.template, function (template) {
       var template = Handlebars.compile(template);
       var data = this.model.toJSON();

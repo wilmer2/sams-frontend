@@ -136,7 +136,7 @@ module.exports = Backbone.View.extend({
         var ctx = canvas[0].getContext('2d');
 
         image.onload = function () {
-          ctx.drawImage(image, 0, 0);
+          ctx.drawImage(image, 0, 0, 150, 150);
         }
       }
     }

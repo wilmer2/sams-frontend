@@ -1,5 +1,5 @@
  <td><span>{{state}}</span></td>
-<td><span>{{start_time}}-{{departure_time}}</span></td>
+<td><span>{{start_time}} - {{departure_time}}</span></td>
   <td>
     {{#if hour_in}}
     <span class="u-data">{{hour_in}}</span>
@@ -13,6 +13,9 @@
     {{else}}
     <span class="u-data">No aplica</span>
     {{/if}}
+  </td>
+  <td>  
+   {{date_day}}
   </td>
   <td>
     {{#if permit_id}}

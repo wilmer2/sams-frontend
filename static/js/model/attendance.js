@@ -10,7 +10,6 @@ module.exports = Backbone.Model.extend({
     var hours = _.pick(times, 'hour_in', 'hour_out');
     
     _.mapObject(times, function (val, key) {
-      console.log(val);
       if (!_.isNull(val) && !_.isUndefined(val)) {
         var newHour = utilHour.hourStandar(val);
 

@@ -198,11 +198,13 @@ module.exports = Backbone.View.extend({
         image.src = imageUrl;
 
         var canvas = this.$canvasForm;
+
         canvas.attr({'width': 150, 'height': 150});
+
         var ctx = canvas[0].getContext('2d');
 
         image.onload = function () {
-          ctx.drawImage(image, 0, 0);
+          ctx.drawImage(image, 0, 0, 150, 150);
         }
       }
     }

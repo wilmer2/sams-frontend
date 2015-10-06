@@ -132,25 +132,6 @@ module.exports = Subroute.extend({
       Backbone.Main.Occurrence = new OccurrenceRouter('elder/:elderId/occurrence/');
     }
   }
-
-  // test: function () {
-  //   this.instanceCtrl.test();
-  // }
-
-
-
-  // edit: function () {
-  //   this.elderCtrl.showEdit(this.elder);
-  // },
-
-  // instWaiting: function () {
-  //   var elderId = this.elder.get('id');
-
-  //   this.instCtrl.showWaiting(elderId);
-  // },
-
-  
-
  
 })
 

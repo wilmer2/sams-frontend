@@ -8,6 +8,9 @@ module.exports = Backbone.View.extend({
   template: 'employee/templates/employeeTableAssistanceRow.html',
 
   render: function () {
+    this.model.hourStandar();
+    this.model.dateFormat();
+    
     $.get(rootView + this.template, function (template) {
       var template = Handlebars.compile(template);
       var data = this.model.toJSON();

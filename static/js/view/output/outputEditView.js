@@ -26,14 +26,25 @@ module.exports = Backbone.View.extend({
     var elderId = this.model.get('elder_id');
     var outputId = this.model.get('id');
     var url = 'elder/' + elderId + '/output/' + outputId + '/edit?_method=PUT';
+    var dateEnd = this.model.get('date_end');
     var data = $('#formOutput-edit').serialize();
-
-    console.log(data);
 
     $.post(Backend_url + url, data)
      .done(function (res) {
       if (res.status == 'success') {
         var successMessage = res.message;
+        var newDataOutput = res.data;
+
+        this.model.set(newDataOutput);
+
+        var state = this.model.get('state');
+        var type = this.model.get('type');
+
+        if (!state && type == 'pernot') {
+          var newDateEnd = this.model.get('date_end');
+
+          this.confirmDate(newDateEnd, dateEnd);
+        }
 
         util.showSuccess(successMessage);
         window.location.href = '#elder/' + elderId + '/output/' + outputId;
@@ -42,7 +53,21 @@ module.exports = Backbone.View.extend({
 
         util.showError(errorMessage);
       }
-     })
+     }.bind(this))
+  },
+
+  confirmDate: function (newDateEnd, dateEnd) {
+    var currentDate = util.currentDate();
+
+    if (newDateEnd != dateEnd) {
+      if (newDateEnd == currentDate) {
+        Backbone.Main.userLogin.addOutput();
+      } else {
+        if (dateEnd == currentDate) {
+          Backbone.Main.userLogin.resOutput();
+        }
+      }
+    }
   },
 
   close: function () {
