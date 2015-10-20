@@ -8,7 +8,6 @@ var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
   template: 'occurrence/templates/occurrenceTable.html',
-  boxError: Handlebars.compile($('#error-occurrence').html()),
 
   initialize: function () {
     var collectionData = {collection: this.collection};

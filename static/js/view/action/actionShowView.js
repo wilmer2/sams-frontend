@@ -9,7 +9,6 @@ var util = require('../../util/util');
 
 module.exports = Backbone.View.extend({
   template: 'action/templates/actionShow.html',
-  boxError: Handlebars.compile($('#error-actionHour').html()),
   events: {
     'click .btn-edit': 'redirectEdit',
     'click .btn-delete': 'confirmDelete',

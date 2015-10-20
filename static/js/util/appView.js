@@ -8,6 +8,7 @@ function appView () {
       }
 
       this.currentMenuView = view;
+
       
       this.currentMenuView
         .render()
@@ -18,12 +19,6 @@ function appView () {
         }.bind(this))
 
     }.bind(this));
-  },
-
-  this.showNotFound = function () {
-    var notFoundView = $('#error-NotFound').html();
-
-    $('#main-content').html(notFoundView);
   },
 
   this.showUserView = function (view) {

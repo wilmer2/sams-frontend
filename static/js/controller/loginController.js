@@ -1,6 +1,5 @@
 var $ = require('jquery');
 var MenuUser = require('../view/menu/menuUserView');
-var MenuAdmin = require('../view/menu/menuAdminView');
 var Configuration = require('../view/configuration/configurationEditView');
 var util = require('../util/util');
 
@@ -59,22 +58,6 @@ function LoginCtrl () {
         .showMenuView(menuUser)
         .then(resolve);
     }.bind(this))
-  },
-
-  this.menuAdminRender = function (user) {
-    return new Promise(function (resolve, reject) {
-      var role = user.get('role');
-
-      if (role == 'User') {
-        window.location.href = '#elders'
-      } else {
-        var menuAdmin = new MenuAdmin({model:user});
-
-        appView
-          .showMenuView(menuAdmin)
-          .then(resolve)
-      }   
-    }.bind(this));
   }
 }
 

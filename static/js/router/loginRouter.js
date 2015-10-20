@@ -3,6 +3,7 @@ var $ = require('jquery');
 var AuthUser = require('../model/authUser');
 var Config = require('../model/config');
 var LoginView = require('../view/login/loginView');
+var NotFoundView = require('../view/notFound/notFoundView');
 var LoginCtrl = require('../controller/loginController');
 var ElderCtrl = require('../controller/elderController');
 var EmployeeCtrl = require('../controller/employeeController');
@@ -40,7 +41,8 @@ module.exports = Backbone.Router.extend({
 		'attendance/*subroute': 'invokeAttendanceModule',
 		'product/*subroute': 'invokeProductModule',
 		'event/*subroute': 'invokeEventModule',
-		'output/*subroute': 'invokeOutputModule'
+		'output/*subroute': 'invokeOutputModule',
+		'*other': 'notFound'
 	},
 
 	initialize: function () {
@@ -131,16 +133,6 @@ module.exports = Backbone.Router.extend({
 		}.bind(this))
 	},
 
-	renderMenuAdmin: function () {
-		return new Promise(function (resolve, reject) {
-			this.renderHeader();
-			this
-				.loginCtrl
-				.menuUserRender(this.userLogin)
-				.then(resolve) 
-		}.bind(this));
-	},
-
 	elders: function () {
 		this.renderMenuUser()
 		  .then(function () {
@@ -205,7 +197,11 @@ module.exports = Backbone.Router.extend({
 
 	notFound: function () {
 		this.renderHeader();
-		appView.showNotFound();
+
+		var notFound = new NotFoundView();
+
+		appView
+		 .showMenuView(notFound)
 	},
 	
 	invokeEmployeeModule: function (subroute) {
@@ -255,9 +251,7 @@ module.exports = Backbone.Router.extend({
 		if (!Backbone.Main.Attendance) {
 			Backbone.Main.Attendance = new AttendanceRouter('attendance/');
 		}
-	},
-
-	
+	}
 	
 });
 

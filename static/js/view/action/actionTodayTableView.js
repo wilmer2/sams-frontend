@@ -6,7 +6,6 @@ var ActionToday = require('./actionTodayRowView');
 
 module.exports = Backbone.View.extend({
   template: 'action/templates/actionTodayTable.html',
-  boxError: Handlebars.compile($('#error-action').html()),
 
   initialize: function () {  
     this.listenTo(this.collection, 'notAction', function (message) {

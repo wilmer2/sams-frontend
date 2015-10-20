@@ -54,7 +54,6 @@ module.exports = Backbone.View.extend({
 		 		var data = res.data;
 
 		 		this.model.set(data);
-		 		console.log(this.model.toJSON());
 		 		window.location.replace('');
 		 	} else {
 		 		util.showError(res.message);
@@ -70,10 +69,15 @@ module.exports = Backbone.View.extend({
 
 		$.get(Backend_url + 'user/logout')
 		 .done(function (res) {
-		 	Backbone.Main.config.clear();
-			Backbone.Main.userLogin.clear();
-			Backbone.Main.navigate('login', triggerData);
-		 })
+		 	Backbone.Main
+		 	         .config
+		 	          .clear();
+			Backbone.Main
+			          .userLogin
+			          .clear();
+			Backbone.Main
+			         .navigate('login', triggerData);
+		})
 	}
 
 });
