@@ -9,16 +9,15 @@ module.exports = Backbone.View.extend({
 
   initialize: function () {
     this.photoSource = '';
-
   },
 
   events: {
-    'click .Form-btnCamera' : 'showModal',
-    'click .Modal-snap': 'snapShot',
-    'click .Modal-repeat': 'repeat',
-    'click .Modal-btnPic': 'showPic',
+    'click #employeeCamera' : 'showModal',
+    'click #employeeSnap': 'snapShot',
+    'click #employeeRepeat': 'repeat',
+    'click #employeeBtnPic': 'showPic',
     'click .close': 'closeModal',
-    'change .Form-file': 'uploadPic',
+    'change #employeeFile': 'uploadPic',
     'submit #form-employee': 'register'
   },
 
@@ -32,7 +31,7 @@ module.exports = Backbone.View.extend({
       this.$camera = this.$el.find('.Modal-camera');
       this.$canvas = this.$el.find('.Modal-lienzo');
       this.$confirmBtn = this.$el.find('.Modal-btnConf');
-      this.$snap = this.$el.find('.Modal-snap');
+      this.$snap = this.$el.find('#employeeSnap');
       this.$canvasForm = this.$el.find('.Lienzo');
       this.$containerBtn = this.$el.find('.Modal-btn');
       this.$close = this.$el.find('.close');

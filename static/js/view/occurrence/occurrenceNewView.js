@@ -8,12 +8,12 @@ module.exports = Backbone.View.extend({
   template: 'occurrence/templates/occurrenceNew.html',
 
   events: {
-    'click .Form-btnCamera' : 'showModal',
-    'click .Modal-snap': 'snapShot',
-    'click .Modal-repeat': 'repeat',
-    'click .Modal-btnPic': 'showPic',
+    'click #occurrenceCamera' : 'showModal',
+    'click #occurrenceSnap': 'snapShot',
+    'click #occurrenceRepeat': 'repeat',
+    'click #occurrenceBtnPic': 'showPic',
     'click .close': 'closeModal',
-    'change .Form-file': 'uploadPic',
+    'change #occurrenceFile': 'uploadPic',
     'submit #form-occurrence': 'register'
   },
 
@@ -33,7 +33,7 @@ module.exports = Backbone.View.extend({
       this.$camera = this.$el.find('.Modal-camera');
       this.$canvas = this.$el.find('.Modal-lienzo');
       this.$confirmBtn = this.$el.find('.Modal-btnConf');
-      this.$snap = this.$el.find('.Modal-snap');
+      this.$snap = this.$el.find('#occurrenceSnap');
       this.$canvasForm = this.$el.find('.Lienzo');
       this.$containerBtn = this.$el.find('.Modal-btn');
       this.$close = this.$el.find('.close');
@@ -146,6 +146,7 @@ module.exports = Backbone.View.extend({
   },
 
   showPic: function () {
+    this.$typeFile.val('');
     this.photoSource = this.$canvas[0].toDataURL('image/png');
     var canvasForm = this.$canvasForm;
 

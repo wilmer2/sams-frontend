@@ -13,11 +13,11 @@ module.exports = Backbone.View.extend({
   },
 
   events: {
-    'click .Form-btnCamera' : 'showModal',
-    'click .Modal-snap': 'snapShot',
-    'click .Modal-repeat': 'repeat',
-    'click .Modal-btnPic': 'showPic',
-    'change .Form-file': 'uploadPic',
+    'click #employeeEditCamera' : 'showModal',
+    'click #employeeEditSnap': 'snapShot',
+    'click #employeeEditRepeat': 'repeat',
+    'click #employeeBtnPic': 'showPic',
+    'change #employeeEditFile': 'uploadPic',
     'click .close': 'closeModal',
     'submit #form-editEmployee': 'edit'
   },
@@ -34,7 +34,7 @@ module.exports = Backbone.View.extend({
       this.$camera = this.$el.find('.Modal-camera');
       this.$canvas = this.$el.find('.Modal-lienzo');
       this.$confirmBtn = this.$el.find('.Modal-btnConf');
-      this.$snap = this.$el.find('.Modal-snap');
+      this.$snap = this.$el.find('#employeeEditSnap');
       this.$canvasForm = this.$el.find('.Lienzo');
       this.$containerBtn = this.$el.find('.Modal-btn');
       this.$typeFile = this.$el.find('input[type="file"]');

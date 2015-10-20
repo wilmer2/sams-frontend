@@ -25,13 +25,13 @@
         <div class="form-group">
           <label for="inputEmail3" class="col-sm-4 control-label">Foto</label>
           <div class="col-sm-8">
-            <input type="file" class="Form-file">
+            <input type="file" id="occurrenceFile">
           </div>
         </div>
       
         <br>
 
-        <button class="Form-btnCamera btn btn-info center-block" type="button"><i class="fa fa-camera" ></i> Tomar foto</button>
+        <button class="btn btn-info center-block" type="button" id="occurrenceCamera"><i class="fa fa-camera" ></i> Tomar foto</button>
         <br>
         <canvas class="Lienzo center-block"></canvas>
 
@@ -55,10 +55,10 @@
             </div>
             <div class="modal-footer">
              <div class="Modal-btn">
-              <a href="#" class="Modal-snap">Tomar foto</a>
+              <a href="#" id="occurrenceSnap">Tomar foto</a>
              <div class="Modal-btnConf" class="u-disabled">
-                <button class="Modal-repeat btn btn-info" type="button">repiter foto</button>
-                <button class="Modal-btnPic btn btn-primary" type="button">confirmar</button>
+                <button class="btn btn-info" type="button" id="occurrenceRepeat">Repiter foto</button>
+                <button class="btn btn-primary" type="button" id="occurrenceBtnPic">Confirmar</button>
              </div>
              </div>
             </div>

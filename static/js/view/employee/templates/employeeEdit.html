@@ -98,12 +98,12 @@
       <div class="form-group">
         <label for="inputEmail3" class="col-sm-4 control-label">Foto</label>
         <div class="col-sm-8">
-         <input class="form-control Form-file" type="file">
+         <input class="form-control" type="file" id="employeeEditFile">
         </div>
       </div>
 
       <br>
-      <button type="button" class="Form-btnCamera btn btn-info center-block"><i class="fa fa-camera"></i> Tomar Foto</button> 
+      <button type="button" class="btn btn-info center-block" id="employeeEditCamera"><i class="fa fa-camera"></i> Tomar Foto</button> 
       <br>
       <canvas class="Lienzo center-block"></canvas>
       <br>
@@ -126,10 +126,10 @@
         </div>
         <div class="modal-footer">
           <div class="Modal-btn">
-            <a href="#" class="Modal-snap">Tomar foto</a>
+            <a href="#" id="employeeEditSnap">Tomar foto</a>
             <div class="Modal-btnConf" class="u-disabled">
-                <button class="Modal-repeat btn btn-info" type="button">Repiter foto</button>
-                <button class="Modal-btnPic btn btn-primary" type="button">Confirmar</button>
+                <button class="btn btn-info" type="button" id="employeeEditRepeat">Repiter foto</button>
+                <button class="btn btn-primary" type="button" id="employeeBtnPic">Confirmar</button>
             </div>
           </div>
         </div>

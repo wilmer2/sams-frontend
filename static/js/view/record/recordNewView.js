@@ -8,10 +8,10 @@ module.exports = Backbone.View.extend({
   template: 'record/templates/recordNew.html',
 
   events: {
-    'click .Form-btnCamera' : 'showModal',
-    'click .Modal-snap': 'snapShot',
-    'click .Modal-repeat': 'repeat',
-    'click .Modal-btnPic': 'showPic',
+    'click #recordCamera' : 'showModal',
+    'click #recordSnap': 'snapShot',
+    'click #recordRepeat': 'repeat',
+    'click #recordConfirm': 'showPic',
     'click .close': 'closeModal',
     'change #recordFile': 'uploadPic',
     'submit #form-record': 'register',
@@ -33,7 +33,7 @@ module.exports = Backbone.View.extend({
       this.$camera = this.$el.find('.Modal-camera');
       this.$canvas = this.$el.find('.Modal-lienzo');
       this.$confirmBtn = this.$el.find('.Modal-btnConf');
-      this.$snap = this.$el.find('.Modal-snap');
+      this.$snap = this.$el.find('#recordSnap');
       this.$canvasForm = this.$el.find('.Lienzo');
       this.$containerBtn = this.$el.find('.Modal-btn');
       this.$close = this.$el.find('.close');

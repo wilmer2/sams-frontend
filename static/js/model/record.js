@@ -20,6 +20,23 @@ module.exports = Backbone.Model.extend({
       this.set('created_at', dateFormat);
       this.set('old_date', createdDate);
     }
+  },
+
+  showConfig: function () {
+    var baston = this.get('baston');
+    var segment = baston.split(' ');
+    baston = segment[0] + ' Punto';
+
+    var muleta = this.get('muleta');
+
+    if (muleta == 'auxiliary') {
+      muleta = 'Auxiliar';
+    } else {
+      muleta = 'Canadiense';
+    }
+
+    this.set('muleta', muleta);
+    this.set('baston', baston);
   }
 
 });
