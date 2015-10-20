@@ -23,7 +23,7 @@ module.exports = Backbone.View.extend({
         if (_.isObject(this.message)) {
           util.showError(this.message);
 
-          var message = 'No es posible visitas';
+          var message = 'No es posible ver visitas sociales';
           errorMessage = {message: message};
         } else {
           errorMessage = {message: this.message};
@@ -31,10 +31,9 @@ module.exports = Backbone.View.extend({
       }
 
       var html = template(errorMessage);
+      var totalInstance = this.collection.length;
 
       this.$el.html(html);
-
-      var totalInstance = this.collection.length;
 
       if (totalInstance > 0) {
         this.$tbody = this

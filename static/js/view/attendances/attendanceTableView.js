@@ -26,20 +26,33 @@ module.exports = Backbone.View.extend({
   render: function () {
     $.get(rootView + this.template, function (template) {
       var template = Handlebars.compile(template);
-      var errorMessage = {message: this.message};
+      var errorMessage;
+
+      if (!_.isEmpty(this.message)) {
+        if (_.isObject(this.message)) {
+          util.showError(this.message);
+
+          var message = 'No es posible ver asistencias';
+          errorMessage = {message: message};
+        } else {
+          errorMessage = {message: this.message};
+        }
+      }
+
       var html = template(errorMessage);
+      var totalAttendance = this.collection.length;
 
       this.$el.html(html);
-      if (_.isEmpty(this.message)) {
-        this.getPaginateView();
 
+      if (totalAttendance > 0) {
         this.$tbody = this
                         .$el
                         .find('table')
                         .children('tbody');
 
         this.addAll();
-      } 
+      }
+
     }.bind(this))
    
   },

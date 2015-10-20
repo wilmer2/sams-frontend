@@ -102,8 +102,11 @@ module.exports = Backbone.View.extend({
 
         this.model.set(elderData);
         util.showSuccess(confirmedMessage);
-
         this.render();
+      } else {
+        var errorMessage = res.message;
+
+        util.showError(errorMessage);
       }
      }.bind(this))
   },

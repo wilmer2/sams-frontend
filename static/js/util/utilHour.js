@@ -33,13 +33,21 @@ var TaskHour = {
       } else {
         if (hourStand >= 13) {
           hourStand = hourStand - 12;
-          hourStand = '0' + hourStand;
+          hourStand = this.oneDigit(hourStand);
         }
 
         hourStand = hourStand + ':' + standar[1] + 'pm';
       }
     } else {
       hourStand = hourStand + ':' + standar[1];
+    }
+
+    return hourStand;
+  },
+
+  oneDigit: function (hourStand) {
+    if (hourStand < 10) {
+      hourStand = '0' + hourStand;
     }
 
     return hourStand;

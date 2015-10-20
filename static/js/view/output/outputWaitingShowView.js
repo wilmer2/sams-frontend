@@ -92,8 +92,7 @@ module.exports = Backbone.View.extend({
       if (res.status == 'success') {
         var successMessage = res.message;
 
-        util.showSuccess(successMessage);
-        
+        util.showSuccess(successMessage); 
         this.redirectEdit();
         
       }

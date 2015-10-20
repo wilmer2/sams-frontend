@@ -63,7 +63,7 @@ module.exports = Backbone.View.extend({
       if (newDateEnd == currentDate) {
         Backbone.Main.userLogin.addOutput();
       } else {
-        if (dateEnd == currentDate) {
+        if (dateEnd <= currentDate) {
           Backbone.Main.userLogin.resOutput();
         }
       }

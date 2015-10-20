@@ -15,6 +15,11 @@ module.exports = Backbone.View.extend({
   },
 
   render: function () {
+    var maxHourOrigin = this.model.get('max_hours');
+    var maxHourFormat = this.maxHourFormat(maxHourOrigin);
+
+    this.model.set('max_hours', maxHourFormat);
+
     $.get(rootView + this.template, function (template) {
       var template = Handlebars.compile(template);
       var data = this.model.toJSON();
@@ -30,7 +35,7 @@ module.exports = Backbone.View.extend({
     var formData = new FormData($('#configuration')[0]);
     var url = 'config/edit?_method=PUT';
     var maxHour = $('#maxHour').val();
-    maxHour = utilHour.hourFormat(maxHour);
+    maxHour = this.maxHourFormat(maxHour);
 
     formData.append('max_hours', maxHour);
 
@@ -55,6 +60,12 @@ module.exports = Backbone.View.extend({
         util.showError(errorMessage);
       }
     }.bind(this))
+  },
+
+  maxHourFormat: function (maxHour) {
+    maxHour = utilHour.hourFormat(maxHour);
+
+    return maxHour;
   },
 
   close: function () {

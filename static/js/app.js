@@ -1,16 +1,16 @@
-var Backbone    = require('backbone');
-var _           = require('underscore');
+var Backbone = require('backbone');
+var _ = require('underscore');
 window._ = _;
 window.Backbone = Backbone;
-var $           = require('jquery');
+var $ = require('jquery');
 window.jQuery = $;
-var Bootstrap   = require('bootstrap');
-var RouterMain  = require('./router/loginRouter');
-var Handlebars  = require('handlebars');
-var AppView     = require('./util/appView');
-var Helpers     = require('./util/helper');
-var Filter      = require('../../node_modules/backbone-async-route-filters/backbone-async-route-filter');
-var alertify    = require('alertifyjs');
+var Bootstrap = require('bootstrap');
+var RouterMain = require('./router/loginRouter');
+var Handlebars = require('handlebars');
+var AppView = require('./util/appView');
+var Helpers = require('./util/helper');
+var Filter = require('../../node_modules/backbone-async-route-filters/backbone-async-route-filter');
+var alertify = require('alertifyjs');
 
 Backbone.$ = $;
 

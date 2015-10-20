@@ -35,6 +35,8 @@ module.exports = Backbone.View.extend({
     var hour = $('input[type="time"]').val();
     hour = utilHour.hourFormat(hour);
 
+    console.log(hour);
+
     formData.append('hour', hour);
 
     $.ajax({
