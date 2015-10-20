@@ -7,7 +7,7 @@ module.exports = Backbone.View.extend({
   template: 'output/templates/outputConfirm.html',
   events: {
     'submit #output-confirm': 'confirm',
-    'click .btn-cancel': 'redirect'
+    'click #outputConfirmCancel': 'redirect'
   },
 
   render: function () {
@@ -26,7 +26,11 @@ module.exports = Backbone.View.extend({
     var elderId = this.model.get('elder_id');
     var outputId = this.model.get('id');
     var url = 'elder/' + elderId + '/output/' + outputId + '/edit?_method=PUT';
-    var data = $('#output-confirm').serialize();
+    var info = $('#outputInfo').val();
+
+    this.model.set('info', info);
+
+    var data = this.model.toJSON();
 
     $.post(Backend_url + url, data)
      .done(function (res) {

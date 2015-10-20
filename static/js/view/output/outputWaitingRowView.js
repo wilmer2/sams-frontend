@@ -62,6 +62,7 @@ module.exports = Backbone.View.extend({
         var successMessage = res.message;
 
         this.model.trigger('check');
+        Backbone.Main.userLogin.resOutput();
         util.showSuccess(successMessage);
         
         window.location.href = '#output/' + outputId + '/elder/' + elderId + '/confirm';

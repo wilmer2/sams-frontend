@@ -1,5 +1,6 @@
 var Backbone = require('backbone');
 var $ = require('jquery');
+var _ = require('underscore');
 var Handlebars = require('handlebars');
 var alertify = require('alertifyjs');
 var Outputs = require('../../collection/outputs');
@@ -16,8 +17,11 @@ module.exports = Backbone.View.extend({
   },
 
   render: function () {
+    var originDateEnd = this.model.get('date_end');
+
     this.model.typeFormat();
     this.model.dateFormat();
+    this.model.set('date_org', originDateEnd, silentData);
 
     var outputs = new Outputs();
     var outputElders = new OutputElders({collection: outputs});
@@ -86,13 +90,19 @@ module.exports = Backbone.View.extend({
   confirm: function () {
     var elderId = this.model.get('elder_id');
     var outputId = this.model.get('id');
+    var dateEnd = this.model.get('date_org');
+    var currentDate = util.currentDate();
 
     $.get(Backend_url + 'elder/' + elderId + '/output/' + outputId + '/confirmed')
      .done(function (res) {
       if (res.status == 'success') {
+        if (!_.isUndefined(dateEnd) && dateEnd <= currentDate) {
+          Backbone.Main.userLogin.resOutput();
+        }
+
         var successMessage = res.message;
 
-        util.showSuccess(successMessage); 
+        util.showSuccess(successMessage);
         this.redirectEdit();
         
       }

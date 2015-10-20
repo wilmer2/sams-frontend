@@ -59,15 +59,21 @@ module.exports = Backbone.View.extend({
   confirmDate: function (newDateEnd, dateEnd) {
     var currentDate = util.currentDate();
 
-    if (newDateEnd != dateEnd) {
+    if (dateEnd <= currentDate && newDateEnd > currentDate) {
+      Backbone.Main.userLogin.resOutput();
+    } else if (dateEnd > currentDate && newDateEnd <= currentDate) {
+      Backbone.Main.userLogin.addOutput();
+    }
+
+    /*if (newDateEnd != dateEnd) {
       if (newDateEnd == currentDate) {
         Backbone.Main.userLogin.addOutput();
       } else {
-        if (dateEnd <= currentDate) {
+        if (dateEnd == currentDate) {
           Backbone.Main.userLogin.resOutput();
         }
       }
-    }
+    }*/
   },
 
   close: function () {
