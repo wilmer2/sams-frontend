@@ -7,6 +7,10 @@ module.exports = Backbone.View.extend({
   tagName: 'tr',
   template: 'employee/templates/employeeTableAssistanceRow.html',
 
+  events: {
+    'click #showPermit': 'redirectPermit'
+  },
+
   render: function () {
     this.model.hourStandar();
     this.model.dateFormat();
@@ -20,5 +24,12 @@ module.exports = Backbone.View.extend({
     }.bind(this))
 
     return this;
+  },
+
+  redirectPermit: function () {
+    var employeeId = this.model.get('employee_id');
+    var permitId = this.model.get('permit_id');
+
+    Backbone.Main.navigate('employee/' + employeeId + '/permit/' + permitId, triggerData);
   }
 })

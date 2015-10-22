@@ -40,8 +40,12 @@ module.exports = Backbone.View.extend({
   },
 
   addAll: function () {
-    this.collection
-         .forEach(this.addOne, this);
+    var sortByAttendances = this.collection
+                                  .sortBy(function (attendance) {
+                                    return attendance.get('date_day');
+                                  });
+    sortByAttendances
+     .forEach(this.addOne, this);
   },
 
   addOne: function (assistance) {
