@@ -8,7 +8,7 @@ module.exports = Backbone.View.extend({
   template: 'employee/templates/employeeTableAssistanceRow.html',
 
   events: {
-    'click #showPermit': 'redirectPermit'
+    'click .btn-show': 'redirectPermit'
   },
 
   render: function () {
@@ -26,7 +26,9 @@ module.exports = Backbone.View.extend({
     return this;
   },
 
-  redirectPermit: function () {
+  redirectPermit: function (e) {
+    e.stopPropagation();
+    
     var employeeId = this.model.get('employee_id');
     var permitId = this.model.get('permit_id');
 
