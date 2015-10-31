@@ -8,9 +8,9 @@ module.exports = Backbone.View.extend({
   tagName: 'tr',
   template: 'citation/templates/citationWaitingRow.html',
   events: {
-    'click #citationConfirm': 'confirm',
-    'click #citationCancel': 'reject',
-    'click #citationWating-show': 'redirectShow'
+    'click .citationConfirm': 'confirm',
+    'click .citationCancel': 'reject',
+    'click .citationWating-show': 'redirectShow'
   },
 
   render: function () {
@@ -29,19 +29,25 @@ module.exports = Backbone.View.extend({
     return this;
   },
 
-  confirm: function () {
+  confirm: function (e) {
+    e.stopPropagation();
+
     var confirmedState = 'confirmed';
     
     this.submitState(confirmedState);
   },
 
-  reject: function () {
+  reject: function (e) {
+    e.stopPropagation();
+    
     var confirmedReject = 'reject';
 
     this.submitState(confirmedReject);
   },
 
-  redirectShow: function () {
+  redirectShow: function (e) {
+    e.stopPropagation();
+    
     var elderId = this.model.get('elder_id');
     var citationId = this.model.get('id');
 

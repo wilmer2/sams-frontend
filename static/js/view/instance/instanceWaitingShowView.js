@@ -82,14 +82,12 @@ module.exports = Backbone.View.extend({
     var oldDate = this.model.get('old_date')
     var currentDate = util.currentDate();
 
-
     $.post(Backend_url + 'elder/' + elderId + '/instance/' + instanceId + '/edit?_method=PUT', data)
      .done(function (res) {
       if (res.status == 'success') {
         var instanceData = res.data;
         var successMessage = res.message;
 
-       
         this.model.set(instanceData);
 
         var visitDate = this.model.get('visit_date');
@@ -99,16 +97,13 @@ module.exports = Backbone.View.extend({
             Backbone.Main.userLogin.addInstance()
           } else {
             if (oldDate <= currentDate) {
-
               Backbone.Main.userLogin.resInstance();
             }
           }
         }
 
         util.showSuccess(successMessage);
-
         this.render();
-
       } else {
         var errorMessage = res.message;
 
@@ -141,7 +136,6 @@ module.exports = Backbone.View.extend({
 
          util.showError(stateError);
        }
-
      }.bind(this))
   },
 
@@ -152,6 +146,8 @@ module.exports = Backbone.View.extend({
   delete: function () {
     var elderId = this.model.get('elder_id');
     var instanceId = this.model.get('id');
+    var date = this.model.get('old_date');
+    var currentDate = util.currentDate();
     var url = 'elder/' + elderId + '/instance/' + instanceId + '/delete?_method=DELETE';
 
     $.post(Backend_url + url)
@@ -159,9 +155,12 @@ module.exports = Backbone.View.extend({
       if (res.status == 'success') {
         var deleteMessage = res.message;
 
+        if (date <= currentDate) {
+          Backbone.Main.userLogin.resInstance();
+        }
+
         util.showSuccess(deleteMessage);
         this.clearElder();
-
         window.location.replace('#elder/' + elderId);
       }
      }.bind(this))

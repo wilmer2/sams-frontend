@@ -3,6 +3,7 @@ var $ = require('jquery');
 var Handlebars = require('handlebars');
 var alertify = require('alertifyjs');
 var util = require('../../util/util');
+var utilHour = require('../../util/utilHour');
 
 module.exports = Backbone.View.extend({
   template: 'citation/templates/citationShow.html',
@@ -53,6 +54,9 @@ module.exports = Backbone.View.extend({
   delete: function () {
     var elderId = this.model.get('elder_id');
     var citationId = this.model.get('id');
+    var state = this.model.get('state');
+    var date = this.model.get('date_day');
+    var confirmDate = this.confirmDate(date);
     var url = 'elder/' + elderId + '/citation/' + citationId + '/delete?_method=DELETE';
 
     $.post(Backend_url + url)
@@ -62,9 +66,25 @@ module.exports = Backbone.View.extend({
 
         util.showSuccess(deleteMessage);
 
+        if (confirmDate && state == 'En espera') {
+          Backbone.Main.userLogin.resCitation();
+          Backbone.Main.Elder.elder.clear();
+        }
+
         window.location.replace('#elder/' + elderId);
       }
      })
+  },
+
+  confirmDate: function (date) {
+    var currentDate = util.currentDate();
+    currentDate = utilHour.dateFormat(currentDate);
+
+    if (date == currentDate) {
+      return true;
+    } else {
+      return false;
+    }
   },
 
   close: function () {

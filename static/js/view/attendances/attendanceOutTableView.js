@@ -19,7 +19,6 @@ module.exports = Backbone.View.extend({
 
     this.collection.on('goTo', this.changePage, this);
     this.collection.on('destroy', this.countAssitance, this);
-
     this.listenTo(this.collection, 'notAttendance', function (message) {
       this.message = message;
     })

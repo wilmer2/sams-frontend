@@ -11,12 +11,8 @@ module.exports = Backbone.Model.extend({
 
   dateFormat: function () {
     var date = this.get('date_birth');
-    var dateFormat = this.get('date_format');
+    var dateFormat = utilHour.dateFormat(date);
 
-    if (_.isUndefined(dateFormat) && !_.isUndefined(date)) {
-      dateFormat = utilHour.dateFormat(date);
-
-      this.set('date_format', dateFormat);
-    }
+    this.set('date_format', dateFormat);
   }
 });

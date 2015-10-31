@@ -22,7 +22,7 @@ module.exports = Backbone.View.extend({
 
   addHour: function (e) {
     e.preventDefault();
-
+    
     var actionId = this.model.get('id');
     var data = $('#form-actionSchedule').serialize();
 

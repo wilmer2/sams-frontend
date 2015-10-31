@@ -26,6 +26,7 @@ module.exports = Backbone.View.extend({
     $.get(rootView + this.template, function (template) {
       var template = Hanblebars.compile(template);
       var data = this.model.toJSON();
+      console.log(data);
       var html = template(data);
       var gender = this.model.get('gender');
 

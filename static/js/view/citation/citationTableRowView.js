@@ -6,7 +6,7 @@ module.exports = Backbone.View.extend({
   tagName: 'tr',
   template: 'citation/templates/citationTableRow.html',
   events: {
-    'click #citation-show': 'redirectShow'
+    'click .citation-show': 'redirectShow'
   },
 
   render: function () {

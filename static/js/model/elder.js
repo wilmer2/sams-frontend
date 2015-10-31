@@ -20,14 +20,13 @@ module.exports = Backbone.Model.extend({
 
   dateFormat: function () {
     var date = this.get('date_birth');
-    var oldDate = this.get('old_date');
-    
-    if (_.isUndefined(oldDate) && !_.isNull(date)) {
-       var dateBirth = utilHour.dateFormat(date);
 
-      this.set('date_birth', dateBirth);
-      this.set('old_date', date);
+    if (!_.isNull(date)) {
+      var dateFormat = utilHour.dateFormat(date);
+
+      this.set('date_format', dateFormat);
     }
+   
   },
 
   civilStatus: function () {
