@@ -8,8 +8,8 @@ module.exports = Backbone.View.extend({
   tagName: 'tr',
   template: 'output/templates/outputWaitingRow.html',
   events: {
-    'click #outputWaitingShow': 'redirectShow',
-    'click #outputWaitingConfirm': 'modalConfirm'
+    'click .outputWaitingShow': 'redirectShow',
+    'click .outputWaitingConfirm': 'modalConfirm'
   },
 
   render: function () {

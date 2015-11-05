@@ -18,7 +18,7 @@ module.exports = Backbone.View.extend({
     var maxHourOrigin = this.model.get('max_hours');
     var maxHourFormat = this.maxHourFormat(maxHourOrigin);
 
-    this.model.set('max_hours', maxHourFormat);
+    this.model.set('max_hours', maxHourFormat, silentData);
 
     $.get(rootView + this.template, function (template) {
       var template = Handlebars.compile(template);
@@ -53,7 +53,6 @@ module.exports = Backbone.View.extend({
 
         util.showSuccess(successMessage);
         this.model.set(configurationData);
-        this.render();
       } else {
         var errorMessage = res.message;
 

@@ -71,7 +71,7 @@ module.exports = Backbone.View.extend({
 		 .done(function (res) {
 		 	Backbone.Main
 		 	         .config
-		 	          .clear();
+		 	          .clear(silentData);
 			Backbone.Main
 			          .userLogin
 			          .clear();

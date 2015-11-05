@@ -7,7 +7,7 @@ module.exports = Backbone.View.extend({
   tagName: 'tr',
   template: 'output/templates/outputPernotRow.html',
   events: {
-    'click  #outputPernotShow': 'redirectShow'
+    'click  .outputPernotShow': 'redirectShow'
   },
 
   render: function () {
