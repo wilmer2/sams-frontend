@@ -6,7 +6,7 @@ module.exports = Backbone.View.extend({
   tagName: 'tr',
   template: 'event/templates/eventRow.html',
   events: {
-    'click #eventShow': 'redirectShow'
+    'click .eventShow': 'redirectShow'
   },
 
   render: function () {

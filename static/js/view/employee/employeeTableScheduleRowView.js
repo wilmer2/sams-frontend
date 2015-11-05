@@ -8,7 +8,7 @@ module.exports = Backbone.View.extend({
   tagName: 'tr',
   template: 'employee/templates/employeeTableScheduleRow.html',
   events: {
-    'click #employeeSchedule-btn': 'confirmRemove'
+    'click .employeeSchedule-btn': 'confirmRemove'
   },
 
   initialize: function (opt) {

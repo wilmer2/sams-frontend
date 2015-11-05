@@ -6,7 +6,7 @@ module.exports = Backbone.View.extend({
   tagName: 'tr',
   template: 'instance/templates/instanceDateRow.html',
   events: {
-    'click #instanceDateShow': 'redirectShow'
+    'click .instanceDateShow': 'redirectShow'
   },
 
   render: function () {

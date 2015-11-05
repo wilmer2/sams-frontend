@@ -12,7 +12,7 @@ module.exports = Backbone.Model.extend({
   },
 
   hourStandar: function () {
-    var data = this.toJSON();
+    var data = this.convertData();
     var times = _.pick(data, 'entry_time', 'departure_time');
     
     _.mapObject(times, function (val, key) {
@@ -25,13 +25,19 @@ module.exports = Backbone.Model.extend({
   },
 
   dateFormat: function () {
-    var date = this.get('date_end');
+    var allData = this.convertData();
+    var dates = _.pick(allData, 'date_start', 'date_end');
 
-    if (!_.isNull(date) && !_.isUndefined(date)) {
-      var dateFormat = utilHour.dateFormat(date);
+    _.mapObject(dates, function (val, key) {
+      if (!_.isNull(val)) {
+        var dateFormat = utilHour.dateFormat(val);
 
-      this.set('date_end', dateFormat);
-    }
-  
+        this.set(key, dateFormat);
+      }
+    }.bind(this))
+  },
+
+  convertData: function () {
+    return this.toJSON();
   }
 });

@@ -62,6 +62,7 @@
           <label for="inputEmail3" class="col-sm-4 control-label">Muleta</label>
           <div class="col-sm-8">
             <select class="form-control" name="muleta">
+             <option value="No aplica" {{selected disability_moto "No aplica"}}>No aplica</option>
              <option value="canadian" {{selected muleta "canadian"}}>Canadiense</option>
              <option value="auxiliary"{{selected muleta "auxiliary"}}>Auixiliares</option>
             </select>
@@ -72,8 +73,9 @@
           <label for="inputEmail3" class="col-sm-4 control-label">Discapacidad motora</label>
           <div class="col-sm-8">
             <select class="form-control" name="disability_moto">
-             <option value="parcial" {{selected disability_moto "parcial"}}>Parcial</option>
-             <option value="total"  {{selected disability_moto  "total"}}>Total</option>
+             <option value="No aplica" {{selected disability_moto "No aplica"}}>No aplica</option>
+             <option value="Parcial" {{selected disability_moto "Parcial"}}>Parcial</option>
+             <option value="Total"  {{selected disability_moto  "Total"}}>Total</option>
             </select>
           </div>
         </div>
@@ -82,8 +84,9 @@
           <label for="inputEmail3" class="col-sm-4 control-label">Discapacidad visual</label>
           <div class="col-sm-8">
             <select class="form-control" name="disability_visual">
-             <option value="parcial" {{selected disability_visual "parcial"}}>Parcial</option>
-             <option value="total"  {{selected disability_visual  "total"}}>Total</option>
+             <option value="No aplica" {{selected disability_moto "No aplica"}}>No aplica</option>
+             <option value="Parcial" {{selected disability_visual "Parcial"}}>Parcial</option>
+             <option value="Total"  {{selected disability_visual  "Total"}}>Total</option>
             </select>
           </div>
         </div>
@@ -92,8 +95,9 @@
           <label for="inputEmail3" class="col-sm-4 control-label">Discapacidad auditiva</label>
           <div class="col-sm-8">
             <select class="form-control" name="disability_hearing">
-             <option value="parcial" {{selected disability_hearing "parcial"}}>Parcial</option>
-             <option value="total"  {{selected disability_hearing  "total"}}>Total</option>
+             <option value="No aplica" {{selected disability_moto "No aplica"}}>No aplica</option>
+             <option value="Parcial" {{selected disability_hearing "Parcial"}}>Parcial</option>
+             <option value="Total"  {{selected disability_hearing  "Total"}}>Total</option>
             </select>
           </div>
         </div>

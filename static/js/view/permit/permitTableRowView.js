@@ -8,7 +8,7 @@ module.exports = Backbone.View.extend({
   tagName: 'tr',
   template: 'permit/templates/permitTableRow.html',
   events: {
-    'click #btn-permitShow': 'redirectShow',
+    'click .btn-permitShow': 'redirectShow',
   },
 
   render: function () {
