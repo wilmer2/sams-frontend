@@ -23,7 +23,7 @@ module.exports = Backbone.Model.extend({
       case 'health':
         referredFormat = 'Gerencia de Salud '
       break;
-      case 'crr':
+      case 'cssr':
         referredFormat = 'Director del C.S.S.R';
       break;
       default:
@@ -31,7 +31,7 @@ module.exports = Backbone.Model.extend({
     }
 
     if (!_.isUndefined(referred)) {
-      this.set('referred', referredFormat);
+      this.set('referredFormat', referredFormat);
     }
 
   },

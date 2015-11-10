@@ -7,8 +7,8 @@ var util = require('../../util/util');
 module.exports = Backbone.View.extend({
   template: 'instance/templates/instanceShow.html',
   events: {
-    'click .btn-edit': 'redirectEdit',
-    'click .btn-delete': 'confirmDelete'
+    'click #instanceEdit': 'redirectEdit',
+    'click #instanceDelete': 'confirmDelete'
   },
 
   render: function () {

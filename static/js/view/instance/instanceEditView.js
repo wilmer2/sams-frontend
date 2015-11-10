@@ -27,16 +27,15 @@ module.exports = Backbone.View.extend({
     var data = $('#instance-edit').serialize();
     var url = 'elder/' + elderId + '/instance/' + instanceId + '/edit?_method=PUT';
 
-    data = this.prepareData(data)
+    data = this.prepareData(data);
 
-    
     $.post(Backend_url + url, data)
     .done(function (res) {
       if (res.status == 'success') {
         var successMessage = res.message;
 
         util.showSuccess(successMessage);
-        
+
         window.location.replace('#elder/' + elderId + '/instance/' + instanceId);
       } else {
         var errorMessage = res.message;
@@ -50,7 +49,9 @@ module.exports = Backbone.View.extend({
   prepareData: function (data) {
     var identityCard = this.model.get('identity_card');
     var visitDate = this.model.get('visit_date');
-    data  = data + '&identity_card=' + identityCard + '&visit_date=' + visitDate;
+    data = data + '&identity_card=' + identityCard + '&visit_date=' + visitDate;
+
+    console.log(data);
 
     return data;
   },

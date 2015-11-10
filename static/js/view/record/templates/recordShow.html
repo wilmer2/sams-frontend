@@ -130,11 +130,9 @@
           <strong>Muleta</strong>
         </td>
         <td>
-          {{#if muleta}}
+        
           <span>{{muleta}}</span>
-          {{else}}
-          <span>No aplica</span>
-          {{/if}}
+         
         </td>
       </tr>
 
@@ -237,10 +235,10 @@
     
     <div class="row">
       <div class="col-md-1 col-md-offset-4">
-        <button class="btn btn-primary btn-edit"><i class="fa fa-edit"></i> Editar</button>
+        <button class="btn btn-primary" id="recordEdit"><i class="fa fa-edit"></i> Editar</button>
       </div>
       <div class="col-md-1 col-md-offset-1">
-        <button class="btn btn-danger btn-delete"><i class="fa fa-trash-o"></i> Eliminar</button>
+        <button class="btn btn-danger" id="recordDelete"><i class="fa fa-trash-o"></i> Eliminar</button>
       </div>
     </div>
 

@@ -24,14 +24,17 @@ module.exports = Backbone.Model.extend({
 
   showConfig: function () {
     var baston = this.get('baston');
-    var segment = baston.split(' ');
-    baston = segment[0] + ' Punto';
 
+    if (baston != 'No aplica') {
+      var segment = baston.split(' ');
+      baston = segment[0] + ' Punto';
+    }
+    
     var muleta = this.get('muleta');
 
     if (muleta == 'auxiliary') {
       muleta = 'Auxiliar';
-    } else {
+    } else if (muleta == 'canadian'){
       muleta = 'Canadiense';
     }
 

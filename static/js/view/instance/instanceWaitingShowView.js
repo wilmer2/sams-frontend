@@ -16,6 +16,7 @@ module.exports = Backbone.View.extend({
   },
 
   render: function () {
+    this.model.referenceFormat();
     this.model.dateFormat();
     this.model.stateFormat();
 

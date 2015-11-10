@@ -40,6 +40,7 @@
           <label for="inputEmail3" class="col-sm-4 control-label">Talla de pañal</label>
           <div class="col-sm-8">
             <select class="form-control" name="size_diaper">
+              <option value="No aplica" {{selected size_diaper "No aplica"}}>No aplica</option>
               <option value="S" {{selected size_diaper "S"}}>Pequeña</option>
               <option value="M" {{selected size_diaper "M"}}>Mediana</option>
               <option value="L" {{selected size_diaper "L"}}>Grande</option>
@@ -51,6 +52,7 @@
           <label for="inputEmail3" class="col-sm-4 control-label">Baston</label>
           <div class="col-sm-8">
             <select class="form-control" name="baston">
+              <option value="No aplica" {{selected baston "No aplica"}}>No aplica</option>
               <option value="1 point" {{selected baston "1 point"}}>1 Punto</option>
               <option value="3 point" {{selected baston "3 point"}}>3 Punto</option>
               <option value="4 point" {{selected baston "4 point"}}>4 Punto</option>
@@ -62,7 +64,7 @@
           <label for="inputEmail3" class="col-sm-4 control-label">Muleta</label>
           <div class="col-sm-8">
             <select class="form-control" name="muleta">
-             <option value="No aplica" {{selected disability_moto "No aplica"}}>No aplica</option>
+             <option value="No aplica" {{selected muleta "No aplica"}}>No aplica</option>
              <option value="canadian" {{selected muleta "canadian"}}>Canadiense</option>
              <option value="auxiliary"{{selected muleta "auxiliary"}}>Auixiliares</option>
             </select>
@@ -84,7 +86,7 @@
           <label for="inputEmail3" class="col-sm-4 control-label">Discapacidad visual</label>
           <div class="col-sm-8">
             <select class="form-control" name="disability_visual">
-             <option value="No aplica" {{selected disability_moto "No aplica"}}>No aplica</option>
+             <option value="No aplica" {{selected disability_visual "No aplica"}}>No aplica</option>
              <option value="Parcial" {{selected disability_visual "Parcial"}}>Parcial</option>
              <option value="Total"  {{selected disability_visual  "Total"}}>Total</option>
             </select>
@@ -95,7 +97,7 @@
           <label for="inputEmail3" class="col-sm-4 control-label">Discapacidad auditiva</label>
           <div class="col-sm-8">
             <select class="form-control" name="disability_hearing">
-             <option value="No aplica" {{selected disability_moto "No aplica"}}>No aplica</option>
+             <option value="No aplica" {{selected disability_hearing "No aplica"}}>No aplica</option>
              <option value="Parcial" {{selected disability_hearing "Parcial"}}>Parcial</option>
              <option value="Total"  {{selected disability_hearing  "Total"}}>Total</option>
             </select>
