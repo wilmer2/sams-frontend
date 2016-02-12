@@ -35,8 +35,6 @@ module.exports = Backbone.View.extend({
     var hour = $('input[type="time"]').val();
     hour = utilHour.hourFormat(hour);
 
-    console.log(hour);
-
     formData.append('hour', hour);
 
     $.ajax({
@@ -68,7 +66,7 @@ module.exports = Backbone.View.extend({
 
         util.showSuccess(successMessage);
 
-        window.location.replace('#elder/'+ elderId + '/citation/' + citationId);
+        window.location.href = '#elder/' + elderId + '/citation/' + citationId;
       } else {
         var errorMessage = res.message;
 

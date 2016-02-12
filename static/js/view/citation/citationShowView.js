@@ -68,10 +68,10 @@ module.exports = Backbone.View.extend({
 
         if (confirmDate && state == 'En espera') {
           Backbone.Main.userLogin.resCitation();
-          Backbone.Main.Elder.elder.clear();
         }
 
-        window.location.replace('#elder/' + elderId);
+        Backbone.Main.Elder.elder.clear();
+        window.location.href = '#elder/' + elderId;
       }
      })
   },
