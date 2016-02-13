@@ -9,7 +9,6 @@ var OutputEdit = require('../view/output/outputEditView');
 var OutputPernotForm = require('../view/output/outputPernotNewView');
 var OutputList = require('../view/output/outputTableView');
 var OutputListPernot = require('../view/output/outputPernotTableView');
-// var OutputListElder = require('../view/output/outputElderTableView');
 var OutputShowWaiting = require('../view/output/outputWaitingShowView');
 var OutputWaiting = require('../view/output/outputWaitingTableView');
 
@@ -100,18 +99,6 @@ function OutputCtrl () {
     })
   },
 
-  /*this.showListElder = function (elderId) {
-    var outputs = new Outputs();
-    var outputsElder = new OutputListElder({collection: outputs});
-    var url = Backend_url + 'elder/' + elderId +'/outputs';
-
-    outputs.updateUrl(url);
-    outputs.getFirstPage(fetchData)
-    .done(function () {
-      appView.showElderView(outputsElder);
-    })
-  },*/
- 
 
   this.showListWaiting = function () {
     var outputs = new Outputs();
