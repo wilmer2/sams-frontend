@@ -3,9 +3,7 @@ var Attendances = require('../collection/attendances');
 var AttendanceEntryTable = require('../view/attendances/attendanceEntryTableView');
 var AttendanceOutTable = require('../view/attendances/attendanceOutTableView');
 var AttendanceContent = require('../view/attendances/attendanceContentView');
-/*var AttendanceTableOut = require('../view/attendanceTableOutView');
-var AttendanceTableEmp = require('../view/attendanceTableEmployeeView');
-var AttendancesContent = require('../view/attendanceContentView');*/
+
 
 function AttendanceCtrl () {
   this.entryAttendance = function () {
@@ -37,23 +35,7 @@ function AttendanceCtrl () {
     appView.showUserView(attendanceContent);
   }
 
-  /*this.allAttendance = function () {
-    var attendancesContent = new AttendancesContent();
-
-    appView.showUserView(attendancesContent);
-  },
-
-  this.employeeAttendance = function (employeeId) {
-    var attendances = this.instAttendance();
-    var attendanceTableEmp = new AttendanceTableEmp({collection: attendances});
-    var url = Backend_url + 'employee/' + employeeId + '/attendances';
-    
-    attendances.updateUrl(url);
-    attendances.getFirstPage(fetchData)
-    .done(function () {
-      appView.showEmployeeView(attendanceTableEmp);
-    });
-  },*/
+  
 }
 
 module.exports = AttendanceCtrl;

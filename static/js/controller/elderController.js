@@ -41,33 +41,6 @@ function ElderCtrl () {
       appView.showUserView(elderNotResident);
     })
   }
-/*  this.showElder = function (elder) {
-    var instance = elder.get('instance');  
-
-    if (instance > 0) {
-      window.location.replace('#elder/' + elder.get('id') + '/instance-waiting');
-    } else {
-      var elderView = new ElderData({model:elder});
-
-      appView.showElderView(elderView);
-    }
-  },
-
-  this.showElders = function () {
-    var elders = new Elders();
-    var eldersTable = new ElderTable({collection: elders});
-
-    elders.getFirstPage(fetchData)
-    .done(function () {
-      appView.showUserView(eldersTable);
-    })
-  },
-
-  this.showEdit = function (elder) {
-    var editView = new ElderEdit({model: elder});
-
-    appView.showElderView(editView);
-  },*/
 
   this.getElder = function (elderId) {
     return new Promise(function (resolve, reject) {
