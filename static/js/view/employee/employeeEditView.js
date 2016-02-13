@@ -73,6 +73,8 @@ module.exports = Backbone.View.extend({
         }, function(streamVideo) {
             dataVideo.StreamVideo = streamVideo;
             dataVideo.url = window.URL.createObjectURL(streamVideo);
+            dataVideo.track = streamVideo.getTracks()[0];
+
             this.closeCanvas();
             this.$containerBtn.show();
             this.showBtn();
@@ -218,7 +220,7 @@ module.exports = Backbone.View.extend({
 
   closeReception: function () {
     if (dataVideo.StreamVideo) {
-      dataVideo.StreamVideo.stop();
+      dataVideo.track.stop();
       window.URL.revokeObjectURL(dataVideo.url);
     }
   },
