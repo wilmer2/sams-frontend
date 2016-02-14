@@ -51,8 +51,6 @@ module.exports = Backbone.View.extend({
     var visitDate = this.model.get('visit_date');
     data = data + '&identity_card=' + identityCard + '&visit_date=' + visitDate;
 
-    console.log(data);
-
     return data;
   },
 
